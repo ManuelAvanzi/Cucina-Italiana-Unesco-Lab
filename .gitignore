@@ -1,8 +1,22 @@
 node_modules/
+
+# Variabili d'ambiente (contiene chiavi API!)
+.env
+
+# Database SQLite
 db/*.db
+db/*.db-shm
+db/*.db-wal
+
+# File caricati dagli utenti
 uploads/immagini/*
 uploads/video/*
 !uploads/immagini/.gitkeep
 !uploads/video/.gitkeep
-.env
+
+# Configurazioni locali IDE/Claude
+.claude/
+memory/
+
+# Log
 *.log
