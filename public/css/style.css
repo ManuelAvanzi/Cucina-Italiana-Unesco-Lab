@@ -482,7 +482,7 @@ footer {
 .footer-links a:hover { color: var(--verde-ch); }
 .footer-bottom {
   text-align: center;
-  padding-top: 2.5rem;
+  padding-top: 2rem;
   margin-top: 2.5rem;
   border-top: 1px solid rgba(255,255,255,0.1);
   font-size: 0.82rem;
@@ -490,6 +490,41 @@ footer {
   max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+.footer-loghi {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+.footer-logo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+.footer-logo-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.3);
+}
+.footer-logo-item img.logo-carrarolab {
+  height: 28px;
+  width: auto;
+  opacity: 0.85;
+  filter: brightness(1);
+}
+.footer-logo-item img.logo-renaia {
+  height: 48px;
+  width: auto;
+  border-radius: 6px;
+  opacity: 0.85;
 }
 
 /* ---- LOADING / SKELETON ---- */
