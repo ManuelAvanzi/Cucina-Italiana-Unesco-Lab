@@ -27,7 +27,7 @@ const upload = multer({
 router.get('/', (req, res) => {
   const db = getDb();
   const { regione, search } = req.query;
-  let sql = `SELECT id, nome, citta, regione, provincia, indirizzo, lat, lng, logo, descrizione, sito_web, telefono
+  let sql = `SELECT id, nome, citta, regione, provincia, indirizzo, lat, lng, logo, cover_url, descrizione, sito_web, telefono
              FROM istituti WHERE active = 1`;
   const params = [];
   if (regione) { sql += ' AND regione = ?'; params.push(regione); }
@@ -47,7 +47,7 @@ router.get('/regioni', (req, res) => {
 router.get('/:id', (req, res) => {
   const db = getDb();
   const istituto = db.prepare(
-    'SELECT id, nome, citta, regione, provincia, indirizzo, lat, lng, logo, descrizione, sito_web, telefono FROM istituti WHERE id = ? AND active = 1'
+    'SELECT id, nome, citta, regione, provincia, indirizzo, lat, lng, logo, cover_url, descrizione, sito_web, telefono FROM istituti WHERE id = ? AND active = 1'
   ).get(req.params.id);
   if (!istituto) return res.status(404).json({ error: 'Istituto non trovato' });
 
@@ -82,7 +82,7 @@ router.get('/:id/mappa', (req, res) => {
 router.get('/me/profilo', authIstituto, (req, res) => {
   const db = getDb();
   const istituto = db.prepare(
-    'SELECT id, nome, citta, regione, provincia, indirizzo, lat, lng, email, username, logo, descrizione, sito_web, telefono FROM istituti WHERE id = ?'
+    'SELECT id, nome, citta, regione, provincia, indirizzo, lat, lng, email, username, logo, cover_url, descrizione, sito_web, telefono FROM istituti WHERE id = ?'
   ).get(req.istituto.id);
   res.json(istituto);
 });
@@ -104,6 +104,22 @@ router.post('/me/logo', authIstituto, upload.single('logo'), (req, res) => {
   const db = getDb();
   db.prepare('UPDATE istituti SET logo=? WHERE id=?').run(url, req.istituto.id);
   res.json({ url });
+});
+
+// POST /api/istituti/me/cover
+router.post('/me/cover', authIstituto, upload.single('cover'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Nessun file caricato' });
+  const url = `/uploads/immagini/${req.file.filename}`;
+  const db = getDb();
+  db.prepare('UPDATE istituti SET cover_url=? WHERE id=?').run(url, req.istituto.id);
+  res.json({ url });
+});
+
+// DELETE /api/istituti/me/cover
+router.delete('/me/cover', authIstituto, (req, res) => {
+  const db = getDb();
+  db.prepare('UPDATE istituti SET cover_url=NULL WHERE id=?').run(req.istituto.id);
+  res.json({ success: true });
 });
 
 // PUT /api/istituti/me/password

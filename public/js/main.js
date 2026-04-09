@@ -151,11 +151,18 @@ function openVideoModal(youtubeId) {
       <div class="video-modal-inner">
         <button class="video-modal-close" onclick="closeVideoModal()">&#x2715;</button>
         <iframe id="video-modal-iframe" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        <div style="text-align:center;margin-top:.6rem;">
+          <a id="video-yt-link" href="#" target="_blank" rel="noopener"
+            style="color:rgba(255,255,255,.6);font-size:.8rem;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.3);">
+            Il video non si carica? Aprilo direttamente su YouTube →
+          </a>
+        </div>
       </div>`;
     modal.addEventListener('click', e => { if (e.target === modal) closeVideoModal(); });
     document.body.appendChild(modal);
   }
   document.getElementById('video-modal-iframe').src = ytEmbed(youtubeId);
+  document.getElementById('video-yt-link').href = `https://www.youtube.com/watch?v=${youtubeId}`;
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
 }

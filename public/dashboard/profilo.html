@@ -11,7 +11,7 @@
 <div class="dash-layout">
 
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header"><div class="sidebar-brand">UNESCO Lab<small>AREA ISTITUTO</small></div></div>
+    <div class="sidebar-header"><a href="/" class="sidebar-brand" style="text-decoration:none;">UNESCO Lab<small>AREA ISTITUTO</small></a></div>
     <div class="sidebar-istituto"><div class="nome" id="sb-nome">…</div><div class="citta" id="sb-citta">…</div></div>
     <nav class="sidebar-nav">
       <div class="nav-section-label">Pannello</div>
@@ -75,17 +75,18 @@
                 <input type="tel" id="p-tel" class="form-control" placeholder="+39 …">
               </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-              <div class="form-group">
-                <label>Latitudine</label>
-                <input type="number" id="p-lat" class="form-control" step="any" placeholder="es. 41.9028">
+            <input type="hidden" id="p-lat">
+            <input type="hidden" id="p-lng">
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label>Posizione sulla mappa</label>
+              <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="geocodeAddress()" id="geo-btn" style="flex-shrink:0;">
+                  Rileva coordinate
+                </button>
+                <span id="geo-status" style="font-size:.8rem;color:#666;"></span>
               </div>
-              <div class="form-group">
-                <label>Longitudine</label>
-                <input type="number" id="p-lng" class="form-control" step="any" placeholder="es. 12.4964">
-              </div>
+              <div style="font-size:.75rem;color:#aaa;margin-top:.4rem;">Inserisci prima l'indirizzo, poi clicca il pulsante per posizionare automaticamente il marker sulla mappa.</div>
             </div>
-            <div style="font-size:.78rem;color:#888;margin-bottom:1rem;">Le coordinate posizionano il marker sulla mappa interattiva. Cerca su <a href="https://www.openstreetmap.org" target="_blank">OpenStreetMap</a> per trovarle.</div>
             <button type="button" class="btn btn-primary btn-block" onclick="saveProfilo()">Salva modifiche</button>
           </div>
         </div>
@@ -103,6 +104,25 @@
                 <div style="font-size:.75rem;color:#aaa;">JPG, PNG — max 5MB</div>
               </div>
               <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="uploadLogo(this)">
+            </div>
+          </div>
+
+          <!-- IMMAGINE DI COPERTINA -->
+          <div class="panel">
+            <div class="panel-header"><h3>Immagine di copertina</h3></div>
+            <div class="panel-body">
+              <div id="cover-preview" style="width:100%;height:100px;border-radius:10px;background:linear-gradient(135deg,#1B4332,#2D6A4F);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:1rem;position:relative;">
+                <span id="cover-placeholder" style="color:rgba(255,255,255,.5);font-size:.82rem;">Nessuna immagine — verrà usata quella di default</span>
+              </div>
+              <div style="display:flex;gap:.75rem;">
+                <div class="upload-zone" onclick="document.getElementById('cover-input').click()" style="padding:.75rem;flex:1;">
+                  <div style="font-size:.82rem;">Carica immagine</div>
+                  <div style="font-size:.72rem;color:#aaa;">JPG, PNG — max 5MB</div>
+                </div>
+                <button type="button" id="cover-remove-btn" class="btn btn-ghost btn-sm" onclick="removeCover()" style="display:none;align-self:center;color:var(--rosso);">Rimuovi</button>
+              </div>
+              <input type="file" id="cover-input" accept="image/*" style="display:none;" onchange="uploadCover(this)">
+              <div style="font-size:.75rem;color:#aaa;margin-top:.6rem;">Se non carichi un'immagine, verrà mostrata automaticamente una foto della tua regione.</div>
             </div>
           </div>
 
@@ -157,13 +177,28 @@ function fillForm(d) {
   document.getElementById('p-tel').value       = d.telefono || '';
   document.getElementById('p-lat').value       = d.lat || '';
   document.getElementById('p-lng').value       = d.lng || '';
+  if (d.lat && d.lng) {
+    document.getElementById('geo-status').innerHTML =
+      `<span style="color:#2D6A4F;">✔ Coordinate salvate (${parseFloat(d.lat).toFixed(4)}, ${parseFloat(d.lng).toFixed(4)})</span>`;
+  }
   if (d.logo) {
     const prev = document.getElementById('logo-preview');
     prev.innerHTML = `<img src="${d.logo}" style="width:100%;height:100%;object-fit:cover;">`;
   }
+  if (d.cover_url) {
+    const cp = document.getElementById('cover-preview');
+    cp.style.backgroundImage = `url('${d.cover_url}')`;
+    cp.style.backgroundSize = 'cover';
+    cp.style.backgroundPosition = 'center';
+    document.getElementById('cover-placeholder').style.display = 'none';
+    document.getElementById('cover-remove-btn').style.display = 'inline-flex';
+  }
 }
 
 async function saveProfilo() {
+  const btn = document.querySelector('[onclick="saveProfilo()"]');
+  const orig = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Salvataggio…'; }
   try {
     await dashFetch('/istituti/me/profilo', {
       method: 'PUT',
@@ -176,8 +211,12 @@ async function saveProfilo() {
         lng:         parseFloat(document.getElementById('p-lng').value) || null
       })
     });
-    showAlert('page-alert', 'Profilo aggiornato con successo!', 'success');
-  } catch (e) { showAlert('page-alert', e.message); }
+    if (btn) { btn.textContent = 'Salvato!'; btn.style.background = '#1B7A4A'; }
+    setTimeout(() => { if (btn) { btn.textContent = orig; btn.style.background = ''; btn.disabled = false; } }, 2000);
+  } catch (e) {
+    showAlert('page-alert', e.message);
+    if (btn) { btn.disabled = false; btn.textContent = orig; }
+  }
 }
 
 async function uploadLogo(input) {
@@ -209,9 +248,73 @@ async function changePassword() {
   } catch (e) { showAlert('pw-alert', e.message); }
 }
 
+async function uploadCover(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('cover', file);
+  try {
+    const data = await dashForm('/istituti/me/cover', fd);
+    const cp = document.getElementById('cover-preview');
+    cp.style.backgroundImage = `url('${data.url}')`;
+    cp.style.backgroundSize = 'cover';
+    cp.style.backgroundPosition = 'center';
+    document.getElementById('cover-placeholder').style.display = 'none';
+    document.getElementById('cover-remove-btn').style.display = 'inline-flex';
+    showAlert('page-alert', 'Immagine di copertina aggiornata!', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+async function removeCover() {
+  if (!confirm('Rimuovere l\'immagine di copertina? Verrà usata quella automatica.')) return;
+  try {
+    await dashFetch('/istituti/me/cover', { method: 'DELETE' });
+    const cp = document.getElementById('cover-preview');
+    cp.style.backgroundImage = '';
+    document.getElementById('cover-placeholder').style.display = '';
+    document.getElementById('cover-remove-btn').style.display = 'none';
+    showAlert('page-alert', 'Immagine rimossa.', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+async function geocodeAddress() {
+  const indirizzo = document.getElementById('p-indirizzo').value.trim();
+  const citta     = document.getElementById('p-citta').value.trim();
+  const regione   = document.getElementById('p-regione').value.trim();
+  const query     = [indirizzo, citta, regione, 'Italia'].filter(Boolean).join(', ');
+  if (!citta && !indirizzo) {
+    document.getElementById('geo-status').innerHTML = '<span style="color:#C44B2F;">Inserisci prima almeno l\'indirizzo o la città.</span>';
+    return;
+  }
+  const btn = document.getElementById('geo-btn');
+  btn.disabled = true;
+  btn.textContent = 'Ricerca…';
+  document.getElementById('geo-status').innerHTML = '<span style="color:#888;">Ricerca in corso…</span>';
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=it`;
+    const res = await fetch(url, { headers: { 'Accept-Language': 'it' } });
+    const data = await res.json();
+    if (!data.length) throw new Error('Indirizzo non trovato. Prova a essere più specifico.');
+    const { lat, lon, display_name } = data[0];
+    document.getElementById('p-lat').value = lat;
+    document.getElementById('p-lng').value = lon;
+    const short = display_name.split(',').slice(0, 3).join(',');
+    document.getElementById('geo-status').innerHTML =
+      `<span style="color:#2D6A4F;">✔ Trovato: ${short}</span>`;
+  } catch (e) {
+    document.getElementById('geo-status').innerHTML = `<span style="color:#C44B2F;">${e.message}</span>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Rileva coordinate';
+  }
+}
+
 window.saveProfilo = saveProfilo;
 window.uploadLogo = uploadLogo;
+window.uploadCover = uploadCover;
+window.removeCover = removeCover;
 window.changePassword = changePassword;
+window.geocodeAddress = geocodeAddress;
 </script>
 </body>
 </html>

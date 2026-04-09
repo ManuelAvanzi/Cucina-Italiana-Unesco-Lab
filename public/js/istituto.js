@@ -21,8 +21,40 @@ async function initIstitutoPage() {
   }
 }
 
+function checkIsOwner(istitutiId) {
+  try {
+    const me = JSON.parse(localStorage.getItem('istituto') || 'null');
+    return me && me.id === istitutiId;
+  } catch { return false; }
+}
+
+function addPreviewBar(istitutiId) {
+  const bar = document.createElement('div');
+  bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#1B4332;color:#fff;padding:.55rem 1.25rem;display:flex;align-items:center;justify-content:space-between;font-size:.83rem;box-shadow:0 2px 8px rgba(0,0,0,.3);';
+  bar.innerHTML = `<span style="opacity:.85;">Stai visualizzando l'anteprima pubblica del tuo istituto</span><div style="display:flex;gap:1rem;"><a href="/dashboard/profilo.html" style="color:#81b99a;text-decoration:none;">Modifica profilo</a><a href="/dashboard/contenuti.html" style="color:#81b99a;text-decoration:none;font-weight:600;">Gestisci contenuti →</a></div>`;
+  document.body.prepend(bar);
+  document.body.style.paddingTop = (parseInt(getComputedStyle(document.body).paddingTop) || 0) + 42 + 'px';
+}
+
+async function previewDeleteContenuto(id, btn) {
+  if (!confirm('Eliminare questo contenuto? L\'azione è irreversibile.')) return;
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  try {
+    btn.disabled = true;
+    const res = await fetch(`/api/contenuti/${id}`, { method: 'DELETE', headers: { Authorization: 'Bearer ' + token } });
+    if (res.ok) btn.closest('.card').remove();
+  } catch { btn.disabled = false; }
+}
+
 function renderIstituto(data) {
   document.title = `${data.nome} — Cucina Italiana UNESCO Lab`;
+  const isOwner = checkIsOwner(data.id);
+  if (isOwner) {
+    addPreviewBar(data.id);
+    const crumb = document.getElementById('breadcrumb-back');
+    if (crumb) { crumb.href = '/dashboard/profilo.html'; crumb.textContent = '← Torna alla dashboard'; }
+  }
 
   // Hero
   const hero = document.getElementById('istituto-hero');
@@ -46,9 +78,14 @@ function renderIstituto(data) {
       </div>`;
     hero.style.position = 'relative';
     hero.style.overflow = 'hidden';
-    // Load Unsplash background for this region
-    if (window.loadUnsplashImage && regioneSlug) {
-      window.loadUnsplashImage('regione', regioneSlug, hero.querySelector('.istituto-hero-bg'));
+    // Cover personalizzata o Unsplash di default
+    const heroBg = hero.querySelector('.istituto-hero-bg');
+    if (data.cover_url) {
+      heroBg.style.backgroundImage = `url('${data.cover_url}')`;
+      heroBg.style.backgroundSize = 'cover';
+      heroBg.style.backgroundPosition = 'center';
+    } else if (window.loadUnsplashImage && regioneSlug) {
+      window.loadUnsplashImage('regione', regioneSlug, heroBg);
     }
   }
 
@@ -57,10 +94,10 @@ function renderIstituto(data) {
   (data.contenuti || []).forEach(c => { if (sezioni[c.sezione]) sezioni[c.sezione].push(c); });
 
   // Render tabs
-  renderSezione('artusi', sezioni.artusi);
-  renderSezione('campanello', sezioni.campanello);
-  renderSezione('storie', sezioni.storie);
-  renderSezione('generale', sezioni.generale);
+  renderSezione('artusi', sezioni.artusi, isOwner);
+  renderSezione('campanello', sezioni.campanello, isOwner);
+  renderSezione('storie', sezioni.storie, isOwner);
+  renderSezione('generale', sezioni.generale, isOwner);
 
   // Show tab if has content, else hide tab button
   ['artusi','campanello','storie','generale'].forEach(s => {
@@ -83,19 +120,19 @@ function renderIstituto(data) {
   });
 }
 
-function renderSezione(sezione, contenuti) {
+function renderSezione(sezione, contenuti, isOwner = false) {
   const container = document.getElementById(`tab-${sezione}`);
   if (!container) return;
   if (!contenuti.length) {
-    container.innerHTML = `<div class="empty-state"><p>Nessun contenuto disponibile.</p></div>`;
+    container.innerHTML = isOwner
+      ? `<div class="empty-state"><p>Nessun contenuto in questa sezione. <a href="/dashboard/contenuti.html?sezione=${sezione}" style="color:var(--verde);font-weight:600;">Aggiungi contenuto →</a></p></div>`
+      : `<div class="empty-state"><p>Nessun contenuto disponibile.</p></div>`;
     return;
   }
-
-  const html = contenuti.map(c => renderContenuto(c)).join('');
-  container.innerHTML = html;
+  container.innerHTML = contenuti.map(c => renderContenuto(c, isOwner)).join('');
 }
 
-function renderContenuto(c) {
+function renderContenuto(c, isOwner = false) {
   const typeIcons = { testo: '', immagine: '', video: '', ricetta: '' };
   let mediaHtml = '';
 
@@ -111,15 +148,21 @@ function renderContenuto(c) {
     mediaHtml = `<video controls style="width:100%;border-radius:10px;margin-bottom:1rem;"><source src="${c.media_url}"></video>`;
   }
 
+  const ownerActions = isOwner ? `
+    <div style="display:flex;gap:.5rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid #f0f0f0;">
+      <a href="/dashboard/contenuti.html" onclick="sessionStorage.setItem('preview_edit_id','${c.id}');return true;" style="font-size:.78rem;padding:.3rem .75rem;border:1px solid #2D6A4F;border-radius:6px;color:#2D6A4F;text-decoration:none;font-weight:600;">Modifica</a>
+      <button onclick="previewDeleteContenuto(${c.id},this)" style="font-size:.78rem;padding:.3rem .75rem;border:1px solid #C44B2F;border-radius:6px;color:#C44B2F;background:none;cursor:pointer;font-weight:600;">Elimina</button>
+    </div>` : '';
+
   return `
-    <div class="card" style="margin-bottom:1.75rem;" data-animate>
+    <div class="card" style="margin-bottom:1.75rem;">
       <div class="card-body">
         <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;">
-          
           <h3 style="font-size:1.15rem;color:#1B4332;">${sanitizeText(c.titolo)}</h3>
         </div>
         ${mediaHtml}
         ${c.corpo ? `<div style="font-size:.95rem;line-height:1.7;color:#333;white-space:pre-wrap;">${sanitizeText(c.corpo)}</div>` : ''}
+        ${ownerActions}
       </div>
     </div>`;
 }
@@ -176,7 +219,7 @@ async function initIstitutiList() {
     grid.innerHTML = list.map(i => {
       const regioneSlug = (i.regione || '').toLowerCase().replace(/\s+/g, '-');
       return `
-      <a href="/istituto.html?id=${i.id}" class="card" data-regione="${sanitizeText(regioneSlug)}" style="display:block;text-decoration:none;color:inherit;" data-animate>
+      <a href="/istituto.html?id=${i.id}" class="card" data-regione="${sanitizeText(regioneSlug)}" style="display:block;text-decoration:none;color:inherit;">
         <div class="ist-card-bg" style="height:140px;background:linear-gradient(135deg,#1B4332,#2D6A4F);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
           ${i.logo ? `<img src="${i.logo}" alt="" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.5);position:relative;z-index:1;">` : ''}
           <div style="position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(to bottom,transparent,rgba(0,0,0,.3));z-index:2;"></div>
@@ -202,6 +245,8 @@ async function initIstitutiList() {
     }
   }
 }
+
+window.previewDeleteContenuto = previewDeleteContenuto;
 
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('istituto-hero')) initIstitutoPage();

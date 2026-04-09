@@ -11,7 +11,7 @@
 <div class="dash-layout">
 
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header"><div class="sidebar-brand">UNESCO Lab<small>AREA ISTITUTO</small></div></div>
+    <div class="sidebar-header"><a href="/" class="sidebar-brand" style="text-decoration:none;">UNESCO Lab<small>AREA ISTITUTO</small></a></div>
     <div class="sidebar-istituto"><div class="nome" id="sb-nome">…</div><div class="citta" id="sb-citta">…</div></div>
     <nav class="sidebar-nav">
       <div class="nav-section-label">Pannello</div>
@@ -112,6 +112,13 @@
             </select>
           </div>
         </div>
+        <div class="form-group" id="v-pubblica-group" style="display:none;">
+          <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+            <input type="checkbox" id="v-pubblicato" style="width:16px;height:16px;">
+            Pubblica questo video
+          </label>
+          <div style="font-size:.75rem;color:#888;margin-top:.25rem;">Se non spuntato il video rimane in bozza e non è visibile al pubblico.</div>
+        </div>
       </form>
     </div>
     <div class="modal-footer">
@@ -171,10 +178,13 @@ function renderTable() {
       <td><div style="font-weight:700;font-size:.9rem;">${esc(v.titolo)}</div>${v.descrizione?`<div style="font-size:.78rem;color:#999;">${esc(v.descrizione.slice(0,60))}…</div>`:''}</td>
       <td style="font-size:.85rem;">${v.territorio ? esc(v.territorio) : '—'}</td>
       <td style="font-size:.85rem;">${v.tema ? `<span class="badge badge-info">${esc(v.tema)}</span>` : '—'}</td>
-      <td>${v.pubblicato ? '<span class="badge badge-success">Attivo</span>' : '<span class="badge badge-warning">Nascosto</span>'}</td>
+      <td>${v.pubblicato
+        ? '<span class="badge badge-success">Pubblico</span>'
+        : '<span class="badge badge-warning">Bozza</span>'}</td>
       <td style="font-size:.82rem;color:#888;">${formatDate(v.created_at)}</td>
       <td><div class="td-actions">
         <button class="btn btn-ghost btn-sm" onclick="editVideo(${v.id})">Modifica</button>
+        <button class="btn btn-ghost btn-sm" onclick="togglePubblicato(${v.id},${v.pubblicato})" style="${v.pubblicato ? 'color:#888;' : 'color:var(--verde);font-weight:600;'}">${v.pubblicato ? 'Rendi privato' : 'Pubblica'}</button>
         <button class="btn btn-ghost btn-sm" onclick="deleteVideo(${v.id})" style="color:var(--rosso);">Elimina</button>
       </div></td>
     </tr>`).join('');
@@ -186,6 +196,7 @@ function openModal() {
   document.getElementById('video-form').reset();
   document.getElementById('yt-preview').style.display = 'none';
   document.getElementById('modal-alert').innerHTML = '';
+  document.getElementById('v-pubblica-group').style.display = 'none';
   document.getElementById('video-modal').classList.add('active');
 }
 function closeModal() { document.getElementById('video-modal').classList.remove('active'); editingId = null; }
@@ -201,6 +212,8 @@ function editVideo(id) {
   document.getElementById('v-desc').value = v.descrizione || '';
   document.getElementById('v-territorio').value = v.territorio || '';
   document.getElementById('v-tema').value = v.tema || '';
+  document.getElementById('v-pubblicato').checked = !!v.pubblicato;
+  document.getElementById('v-pubblica-group').style.display = 'block';
   document.getElementById('yt-thumb').src = ytThumb(v.youtube_id);
   document.getElementById('yt-preview').style.display = 'block';
   document.getElementById('modal-alert').innerHTML = '';
@@ -212,12 +225,12 @@ async function saveVideo() {
   btn.disabled = true; btn.textContent = 'Salvataggio…';
   try {
     const body = {
-      youtube_id: document.getElementById('v-youtube').value.trim(),
-      titolo:     document.getElementById('v-titolo').value.trim(),
-      descrizione:document.getElementById('v-desc').value,
-      territorio: document.getElementById('v-territorio').value.trim(),
-      tema:       document.getElementById('v-tema').value,
-      pubblicato: 1
+      youtube_id:  document.getElementById('v-youtube').value.trim(),
+      titolo:      document.getElementById('v-titolo').value.trim(),
+      descrizione: document.getElementById('v-desc').value,
+      territorio:  document.getElementById('v-territorio').value.trim(),
+      tema:        document.getElementById('v-tema').value,
+      pubblicato:  editingId ? (document.getElementById('v-pubblicato').checked ? 1 : 0) : 0
     };
     if (!body.youtube_id || !body.titolo) throw new Error('Compila tutti i campi obbligatori');
     if (editingId) {
@@ -230,6 +243,16 @@ async function saveVideo() {
     await loadVideos();
   } catch (e) { showAlert('modal-alert', e.message); }
   finally { btn.disabled = false; btn.textContent = 'Salva'; }
+}
+
+async function togglePubblicato(id, current) {
+  try {
+    await dashFetch(`/video/me/${id}/pubblica`, { method: 'PATCH' });
+    const v = allVideos.find(x => x.id === id);
+    if (v) v.pubblicato = current ? 0 : 1;
+    renderTable();
+    showAlert('page-alert', current ? 'Video reso privato.' : 'Video pubblicato!', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
 }
 
 async function deleteVideo(id) {
@@ -246,6 +269,7 @@ window.openModal = openModal;
 window.closeModal = closeModal;
 window.editVideo = editVideo;
 window.saveVideo = saveVideo;
+window.togglePubblicato = togglePubblicato;
 window.deleteVideo = deleteVideo;
 </script>
 </body>

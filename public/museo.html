@@ -31,7 +31,7 @@
 <div id="museo-hero-container">
   <!-- populated via JS -->
   <section class="museo-hero" style="min-height:85vh;">
-    <div class="museo-bg" style="background-image:url('/assets/museo-hero.jpg');"></div>
+    <div class="museo-slideshow" id="museo-slideshow"></div>
     <div class="museo-overlay"></div>
     <div class="museo-badge">Mostra Digitale</div>
     <div class="museo-content">
@@ -174,35 +174,50 @@
 <script src="/js/main.js"></script>
 <script src="/js/unsplash.js"></script>
 <script>
+const SLIDESHOW_IMAGES = [
+  '/assets/immaginiMuseoSfondo/mostra%20unesco%20cilindrica.png',
+  '/assets/immaginiMuseoSfondo/mostra%20unesco%20grande.png',
+  '/assets/immaginiMuseoSfondo/mostra%20unesco%20luminosa.png'
+];
+
+function startSlideshow(images) {
+  const container = document.getElementById('museo-slideshow');
+  if (!container) return;
+  container.innerHTML = images.map(src =>
+    `<div class="museo-slide" style="background-image:url('${src}');"></div>`
+  ).join('');
+  const slides = container.querySelectorAll('.museo-slide');
+  let current = 0;
+  slides[0].classList.add('active');
+  setInterval(() => {
+    slides[current].classList.remove('active');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('active');
+  }, 5000);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     const items = await apiFetch('/museo');
+    // Avvia sempre il slideshow con le immagini locali
+    startSlideshow(SLIDESHOW_IMAGES);
     if (items.length > 0) {
       const item = items[0];
-      const bg = document.querySelector('.museo-bg');
-      if (bg && item.immagine_url) {
-        bg.style.backgroundImage = `url('${item.immagine_url}')`;
-      } else if (bg) {
-        // Fallback Unsplash se non c'è immagine caricata dall'admin
-        loadUnsplashImage('tema', 'museo', bg);
-      }
       const title = document.querySelector('.museo-content h1');
       if (title) title.textContent = item.titolo;
       const desc = document.querySelector('.museo-content p');
       if (desc && item.descrizione) desc.textContent = item.descrizione;
       const link = document.getElementById('museo-link');
       if (link && item.link_esterno) link.href = item.link_esterno;
-    } else {
-      // Nessun item configurato: carica immagine Unsplash hero
-      loadUnsplashImage('tema', 'museo', '.museo-bg');
     }
     const hero = document.querySelector('.museo-hero');
     if (hero) {
-      hero.style.cursor = 'pointer';
       const link = document.getElementById('museo-link');
       hero.addEventListener('click', (e) => { if (!e.target.closest('a') && !e.target.closest('button')) link?.click(); });
     }
-  } catch {}
+  } catch {
+    startSlideshow(SLIDESHOW_IMAGES);
+  }
 });
 </script>
 </body>

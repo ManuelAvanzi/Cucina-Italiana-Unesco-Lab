@@ -86,7 +86,7 @@ async function initVideoTour() {
     }
 
     grid.innerHTML = page.map(v => `
-      <div class="video-card" data-animate>
+      <div class="video-card">
         <div class="video-thumb" onclick="openVideoModal('${sanitizeText(v.youtube_id)}')">
           <img src="${ytThumb(v.youtube_id)}" alt="${sanitizeText(v.titolo)}" loading="lazy">
           <div class="video-play-btn">

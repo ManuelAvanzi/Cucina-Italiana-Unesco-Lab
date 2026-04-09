@@ -6,11 +6,21 @@
 let map, markers = [], allIstituti = [];
 
 async function initMappa() {
-  map = L.map('map', { center: [42.5, 12.5], zoom: 6, zoomControl: true });
+  const italyBounds = L.latLngBounds([32.0, 3.0], [51.0, 22.0]);
+  map = L.map('map', {
+    center: [42.5, 12.5],
+    zoom: 6,
+    zoomControl: true,
+    minZoom: 5,
+    maxZoom: 16,
+    maxBounds: italyBounds,
+    maxBoundsViscosity: 0.7
+  });
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>',
-    maxZoom: 18
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 16
   }).addTo(map);
 
   // Custom icon factory
@@ -47,8 +57,15 @@ async function initMappa() {
     list.forEach(ist => {
       if (!ist.lat || !ist.lng) return;
       const m = L.marker([ist.lat, ist.lng], { icon: createMarkerIcon(ist.regione) });
-      m.bindPopup(buildPopup(ist), { maxWidth: 280 });
-      m.on('click', () => loadPopupDetail(ist.id, m));
+      m.bindPopup(buildPopup(ist), {
+        maxWidth: 310,
+        autoPanPaddingTopLeft: L.point(10, 60),
+        autoPanPaddingBottomRight: L.point(10, 20)
+      });
+      m.on('click', () => {
+        map.panTo(m.getLatLng(), { animate: true, duration: 0.5 });
+        loadPopupDetail(ist.id, m);
+      });
       m.addTo(map);
       markers.push(m);
     });
@@ -59,14 +76,16 @@ async function initMappa() {
   }
 
   function buildPopup(ist) {
+    const desc = (ist.descrizione || 'Istituto alberghiero e di ristorazione').slice(0, 100);
+    const tail = ist.descrizione && ist.descrizione.length > 100 ? '…' : '';
     return `
       <div class="popup-header">
         <h4>${sanitizeText(ist.nome)}</h4>
-        <small>${sanitizeText(ist.citta)}, ${sanitizeText(ist.regione)}</small>
+        <div class="popup-loc">${sanitizeText(ist.citta)}, ${sanitizeText(ist.regione)}</div>
       </div>
-      <p style="font-size:.82rem;color:#555;margin-bottom:8px;">${sanitizeText(ist.descrizione || 'Istituto alberghiero')}</p>
-      <div id="popup-detail-${ist.id}">
-        <div style="height:8px;background:#e8e8e8;border-radius:4px;animation:shimmer 1.4s infinite;"></div>
+      <div class="popup-body">
+        <p class="popup-desc">${sanitizeText(desc)}${tail}</p>
+        <div id="popup-detail-${ist.id}" style="min-height:10px;"></div>
       </div>
       <a href="/istituto.html?id=${ist.id}" class="popup-btn">Scopri l'istituto &rarr;</a>
     `;
@@ -92,7 +111,7 @@ async function initMappa() {
         });
         html += `</div>`;
       }
-      if (!html) html = `<p style="font-size:.8rem;color:#888;">Nessun contenuto disponibile.</p>`;
+      if (!html) html = `<p class="popup-no-content">Nessun contenuto ancora disponibile.</p>`;
       el.innerHTML = html;
       marker.update && marker.update();
     } catch {}

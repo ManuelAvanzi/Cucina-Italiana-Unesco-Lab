@@ -47,7 +47,7 @@ router.post('/me', authIstituto, (req, res) => {
   const db = getDb();
   const result = db.prepare(
     'INSERT INTO video_tour (istituto_id, youtube_id, titolo, descrizione, territorio, tema, pubblicato) VALUES (?,?,?,?,?,?,?)'
-  ).run(req.istituto.id, cleanId, titolo, descrizione || null, territorio || null, tema || null, pubblicato ? 1 : 1);
+  ).run(req.istituto.id, cleanId, titolo, descrizione || null, territorio || null, tema || null, pubblicato ? 1 : 0);
   res.json({ id: result.lastInsertRowid, success: true });
 });
 
@@ -69,6 +69,15 @@ router.put('/me/:id', authIstituto, (req, res) => {
     req.params.id
   );
   res.json({ success: true });
+});
+
+// PATCH /api/video/me/:id/pubblica - Toggles pubblicato
+router.patch('/me/:id/pubblica', authIstituto, (req, res) => {
+  const db = getDb();
+  const video = db.prepare('SELECT * FROM video_tour WHERE id=? AND istituto_id=?').get(req.params.id, req.istituto.id);
+  if (!video) return res.status(404).json({ error: 'Non trovato' });
+  db.prepare('UPDATE video_tour SET pubblicato=? WHERE id=?').run(video.pubblicato ? 0 : 1, req.params.id);
+  res.json({ success: true, pubblicato: !video.pubblicato });
 });
 
 // DELETE /api/video/me/:id
