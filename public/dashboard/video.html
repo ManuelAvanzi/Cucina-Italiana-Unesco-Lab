@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Tour — Dashboard</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="dash-layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><div class="sidebar-brand">UNESCO Lab<small>AREA ISTITUTO</small></div></div>
+    <div class="sidebar-istituto"><div class="nome" id="sb-nome">…</div><div class="citta" id="sb-citta">…</div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Pannello</div>
+      <a href="/dashboard/index.html"><span class="nav-icon"></span> Dashboard</a>
+      <div class="nav-section-label">Contenuti</div>
+      <a href="/dashboard/contenuti.html"><span class="nav-icon"></span> Gestisci Contenuti</a>
+      <a href="/dashboard/video.html" class="active"><span class="nav-icon"></span> Video Tour</a>
+      <div class="nav-section-label">Istituto</div>
+      <a href="/dashboard/profilo.html"><span class="nav-icon"></span> Profilo Istituto</a>
+      <a href="/istituto.html?id=" id="sb-preview-link"><span class="nav-icon"></span> Anteprima pubblica</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn-logout" onclick="logout()">Esci</button></div>
+  </aside>
+
+  <main class="dash-main">
+    <header class="dash-topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title">Video Tour</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-primary btn-sm" onclick="openModal()">+ Aggiungi video</button>
+      </div>
+    </header>
+
+    <div class="dash-content">
+      <div id="page-alert"></div>
+
+      <div class="panel" style="margin-bottom:1.5rem;">
+        <div class="panel-body" style="padding:1rem 1.5rem;">
+          <p style="color:#666;font-size:.9rem;">Aggiungi i video YouTube sul turismo enogastronomico del tuo territorio. Usa URL completi di YouTube o solo l'ID del video.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3>I tuoi video <span id="video-count" style="font-size:.85rem;color:#888;font-weight:400;"></span></h3>
+        </div>
+        <div class="panel-body" style="padding:0;">
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr><th style="width:80px;">Anteprima</th><th>Titolo</th><th>Territorio</th><th>Tema</th><th>Stato</th><th>Data</th><th>Azioni</th></tr>
+              </thead>
+              <tbody id="video-tbody">
+                <tr><td colspan="7" style="text-align:center;padding:2rem;color:#aaa;">Caricamento…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="video-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Aggiungi Video</h3>
+      <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-alert"></div>
+      <form id="video-form">
+        <input type="hidden" id="v-id">
+        <div class="form-group">
+          <label>URL o ID YouTube *</label>
+          <input type="text" id="v-youtube" class="form-control" placeholder="https://youtube.com/watch?v=... oppure dQw4w9WgXcQ" required>
+          <div style="font-size:.78rem;color:#888;margin-top:.3rem;">Incolla l'URL completo del video YouTube.</div>
+        </div>
+        <div id="yt-preview" style="margin-bottom:1rem;display:none;">
+          <img id="yt-thumb" style="width:100%;border-radius:8px;aspect-ratio:16/9;object-fit:cover;" alt="">
+        </div>
+        <div class="form-group">
+          <label>Titolo *</label>
+          <input type="text" id="v-titolo" class="form-control" placeholder="Titolo del video" required>
+        </div>
+        <div class="form-group">
+          <label>Descrizione</label>
+          <textarea id="v-desc" class="form-control" rows="3" placeholder="Breve descrizione del contenuto…"></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group">
+            <label>Territorio / Regione</label>
+            <input type="text" id="v-territorio" class="form-control" placeholder="es. Campania, Sicilia…">
+          </div>
+          <div class="form-group">
+            <label>Tema</label>
+            <select id="v-tema" class="form-control">
+              <option value="">— Seleziona —</option>
+              <option>Ricette tradizionali</option>
+              <option>Prodotti tipici</option>
+              <option>Turismo enogastronomico</option>
+              <option>Storia e cultura</option>
+              <option>Tecniche di cucina</option>
+              <option>Mercati e sagre</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Annulla</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveVideo()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<script src="/dashboard/js/dashboard.js"></script>
+<script>
+let allVideos = [], editingId = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const istituto = await requireAuth();
+  if (!istituto) return;
+  document.getElementById('sb-nome').textContent = istituto.nome;
+  document.getElementById('sb-citta').textContent = istituto.citta + ', ' + istituto.regione;
+  document.getElementById('sb-preview-link').href = '/istituto.html?id=' + istituto.id;
+  await loadVideos();
+
+  // YouTube preview on input
+  let t;
+  document.getElementById('v-youtube').addEventListener('input', () => {
+    clearTimeout(t);
+    t = setTimeout(() => {
+      const val = document.getElementById('v-youtube').value;
+      const m = val.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+      const id = m ? m[1] : (val.length === 11 ? val : null);
+      if (id) {
+        document.getElementById('yt-thumb').src = ytThumb(id);
+        document.getElementById('yt-preview').style.display = 'block';
+      } else {
+        document.getElementById('yt-preview').style.display = 'none';
+      }
+    }, 500);
+  });
+});
+
+async function loadVideos() {
+  try {
+    allVideos = await dashFetch('/video/me');
+    renderTable();
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+function renderTable() {
+  document.getElementById('video-count').textContent = `(${allVideos.length})`;
+  const tbody = document.getElementById('video-tbody');
+  if (!allVideos.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:#aaa;">Nessun video ancora. <a href="#" onclick="openModal();return false;" style="color:var(--verde);">Aggiungi il primo!</a></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allVideos.map(v => `
+    <tr>
+      <td><img src="${ytThumb(v.youtube_id)}" style="width:72px;border-radius:6px;aspect-ratio:16/9;object-fit:cover;" alt=""></td>
+      <td><div style="font-weight:700;font-size:.9rem;">${esc(v.titolo)}</div>${v.descrizione?`<div style="font-size:.78rem;color:#999;">${esc(v.descrizione.slice(0,60))}…</div>`:''}</td>
+      <td style="font-size:.85rem;">${v.territorio ? esc(v.territorio) : '—'}</td>
+      <td style="font-size:.85rem;">${v.tema ? `<span class="badge badge-info">${esc(v.tema)}</span>` : '—'}</td>
+      <td>${v.pubblicato ? '<span class="badge badge-success">Attivo</span>' : '<span class="badge badge-warning">Nascosto</span>'}</td>
+      <td style="font-size:.82rem;color:#888;">${formatDate(v.created_at)}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-ghost btn-sm" onclick="editVideo(${v.id})">Modifica</button>
+        <button class="btn btn-ghost btn-sm" onclick="deleteVideo(${v.id})" style="color:var(--rosso);">Elimina</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+function openModal() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Aggiungi Video';
+  document.getElementById('video-form').reset();
+  document.getElementById('yt-preview').style.display = 'none';
+  document.getElementById('modal-alert').innerHTML = '';
+  document.getElementById('video-modal').classList.add('active');
+}
+function closeModal() { document.getElementById('video-modal').classList.remove('active'); editingId = null; }
+
+function editVideo(id) {
+  const v = allVideos.find(x => x.id === id);
+  if (!v) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Modifica Video';
+  document.getElementById('v-id').value = v.id;
+  document.getElementById('v-youtube').value = v.youtube_id;
+  document.getElementById('v-titolo').value = v.titolo;
+  document.getElementById('v-desc').value = v.descrizione || '';
+  document.getElementById('v-territorio').value = v.territorio || '';
+  document.getElementById('v-tema').value = v.tema || '';
+  document.getElementById('yt-thumb').src = ytThumb(v.youtube_id);
+  document.getElementById('yt-preview').style.display = 'block';
+  document.getElementById('modal-alert').innerHTML = '';
+  document.getElementById('video-modal').classList.add('active');
+}
+
+async function saveVideo() {
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true; btn.textContent = 'Salvataggio…';
+  try {
+    const body = {
+      youtube_id: document.getElementById('v-youtube').value.trim(),
+      titolo:     document.getElementById('v-titolo').value.trim(),
+      descrizione:document.getElementById('v-desc').value,
+      territorio: document.getElementById('v-territorio').value.trim(),
+      tema:       document.getElementById('v-tema').value,
+      pubblicato: 1
+    };
+    if (!body.youtube_id || !body.titolo) throw new Error('Compila tutti i campi obbligatori');
+    if (editingId) {
+      await dashFetch(`/video/me/${editingId}`, { method: 'PUT', body: JSON.stringify(body) });
+    } else {
+      await dashFetch('/video/me', { method: 'POST', body: JSON.stringify(body) });
+    }
+    closeModal();
+    showAlert('page-alert', editingId ? 'Video aggiornato!' : 'Video aggiunto!', 'success');
+    await loadVideos();
+  } catch (e) { showAlert('modal-alert', e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Salva'; }
+}
+
+async function deleteVideo(id) {
+  if (!confirm('Eliminare questo video?')) return;
+  try {
+    await dashFetch(`/video/me/${id}`, { method: 'DELETE' });
+    allVideos = allVideos.filter(v => v.id !== id);
+    renderTable();
+    showAlert('page-alert', 'Video eliminato.', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.editVideo = editVideo;
+window.saveVideo = saveVideo;
+window.deleteVideo = deleteVideo;
+</script>
+</body>
+</html>

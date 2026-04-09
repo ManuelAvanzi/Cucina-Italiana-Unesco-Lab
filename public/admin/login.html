@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accesso Amministratore — Cucina Italiana UNESCO Lab</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="login-page" style="background:linear-gradient(135deg,#1a1a1a 0%,#2D6A4F 100%);">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon"></div>
+      <h1 style="font-size:1.3rem;">Pannello Amministratore</h1>
+      <p>Cucina Italiana UNESCO Lab</p>
+    </div>
+    <div id="login-alert"></div>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="username">Username Admin</label>
+        <input type="text" id="username" class="form-control" placeholder="admin" autocomplete="username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="login-btn">
+        <span id="login-label">Accedi come Admin</span>
+      </button>
+    </form>
+    <div style="text-align:center;margin-top:1.5rem;font-size:.82rem;">
+      <a href="/" style="color:#2D6A4F;">&#8592; Torna al sito</a>
+      &nbsp;·&nbsp;
+      <a href="/dashboard/login.html" style="color:#888;">Accesso Istituti</a>
+    </div>
+  </div>
+</div>
+<script>
+const token = localStorage.getItem('admin_token');
+if (token) {
+  fetch('/api/auth/verify', { headers: { Authorization: 'Bearer ' + token } })
+    .then(r => r.json()).then(d => { if (d.valid && d.payload.role === 'admin') window.location = '/admin/index.html'; });
+}
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  const label = document.getElementById('login-label');
+  const alertEl = document.getElementById('login-alert');
+  alertEl.innerHTML = '';
+  btn.disabled = true; label.textContent = 'Accesso in corso…';
+  try {
+    const res = await fetch('/api/auth/admin/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: document.getElementById('username').value.trim(), password: document.getElementById('password').value })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Errore di accesso');
+    localStorage.setItem('admin_token', data.token);
+    localStorage.setItem('admin', JSON.stringify(data.admin));
+    window.location = '/admin/index.html';
+  } catch (err) {
+    alertEl.innerHTML = `<div class="alert alert-error">${err.message}</div>`;
+    btn.disabled = false; label.textContent = 'Accedi come Admin';
+  }
+});
+</script>
+</body>
+</html>

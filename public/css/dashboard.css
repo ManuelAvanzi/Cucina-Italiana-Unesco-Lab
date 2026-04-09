@@ -1,0 +1,360 @@
+/* ===================================================
+   CUCINA ITALIANA UNESCO LAB — Dashboard / Admin CSS
+   =================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap');
+
+:root {
+  --verde:    #2D6A4F;
+  --verde-sc: #1B4332;
+  --verde-ch: #52B788;
+  --rosso:    #C44B2F;
+  --terra:    #8B5E3C;
+  --crema:    #F4E8C1;
+  --sidebar-w: 260px;
+  --header-h:  60px;
+  --font-h:   'Playfair Display', serif;
+  --font-b:   'Lato', sans-serif;
+  --trans:    0.25s ease;
+  --radius:   10px;
+  --shadow:   0 2px 12px rgba(0,0,0,0.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-b); background: #F0F2F5; color: #1A1A1A; font-size: 15px; }
+
+/* ---- LOGIN PAGE ---- */
+.login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--verde-sc) 0%, #1a3a2a 60%, #2d1b12 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem;
+}
+.login-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.login-logo { text-align: center; margin-bottom: 2rem; }
+.login-logo .logo-icon { font-size: 3rem; }
+.login-logo h1 { font-family: var(--font-h); font-size: 1.5rem; color: var(--verde-sc); margin-top: 0.5rem; }
+.login-logo p { color: #666; font-size: 0.85rem; }
+
+/* ---- FORM ELEMENTS ---- */
+.form-group { margin-bottom: 1.25rem; }
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #444;
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-control {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 2px solid #E0E0E0;
+  border-radius: 8px;
+  font-family: var(--font-b);
+  font-size: 0.95rem;
+  transition: border-color var(--trans), box-shadow var(--trans);
+  background: #fff;
+}
+.form-control:focus {
+  outline: none;
+  border-color: var(--verde);
+  box-shadow: 0 0 0 3px rgba(45,106,79,0.12);
+}
+select.form-control { cursor: pointer; }
+textarea.form-control { resize: vertical; min-height: 100px; }
+
+/* ---- DASHBOARD LAYOUT ---- */
+.dash-layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--verde-sc);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  transition: transform var(--trans);
+  overflow-y: auto;
+}
+.sidebar-header {
+  padding: 1.5rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.sidebar-brand { font-family: var(--font-h); font-size: 1.1rem; color: var(--crema); }
+.sidebar-brand small { display: block; font-family: var(--font-b); font-size: 0.72rem; color: rgba(255,255,255,0.5); letter-spacing: 1px; margin-top: 2px; }
+.sidebar-istituto {
+  padding: 1rem 1.25rem;
+  background: rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-istituto .nome { font-weight: 700; font-size: 0.9rem; color: #fff; }
+.sidebar-istituto .citta { font-size: 0.78rem; color: rgba(255,255,255,0.55); margin-top: 2px; }
+
+.sidebar-nav { flex: 1; padding: 1rem 0; }
+.nav-section-label {
+  padding: 0.75rem 1.25rem 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.65rem 1.25rem;
+  color: rgba(255,255,255,0.75);
+  font-size: 0.9rem;
+  border-left: 3px solid transparent;
+  transition: all var(--trans);
+  text-decoration: none;
+}
+.sidebar-nav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.sidebar-nav a.active { background: rgba(255,255,255,0.12); color: #fff; border-left-color: var(--verde-ch); }
+.sidebar-nav a .nav-icon { width: 20px; font-size: 1rem; opacity: 0.9; }
+
+.sidebar-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.btn-logout {
+  width: 100%;
+  padding: 0.6rem;
+  background: rgba(196,75,47,0.2);
+  color: #ff9f8a;
+  border: 1px solid rgba(196,75,47,0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: var(--font-b);
+  font-weight: 700;
+  transition: all var(--trans);
+}
+.btn-logout:hover { background: var(--rosso); color: #fff; }
+
+.dash-main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.dash-topbar {
+  height: var(--header-h);
+  background: #fff;
+  border-bottom: 1px solid #E8E8E8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.75rem;
+  position: sticky; top: 0; z-index: 50;
+  box-shadow: var(--shadow);
+}
+.topbar-title { font-family: var(--font-h); font-size: 1.15rem; color: var(--verde-sc); }
+.topbar-right { display: flex; align-items: center; gap: 1rem; }
+.topbar-user { font-size: 0.85rem; color: #666; }
+
+.dash-content { padding: 2rem 1.75rem; flex: 1; }
+
+/* ---- STAT CARDS ---- */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+.stat-card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.stat-icon {
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+.stat-icon.verde  { background: #d8f3e8; }
+.stat-icon.rosso  { background: #fde4de; }
+.stat-icon.terra  { background: #f5e6d4; }
+.stat-icon.blu    { background: #e0f0ff; }
+.stat-value { font-family: var(--font-h); font-size: 2rem; line-height: 1; color: var(--verde-sc); }
+.stat-label { font-size: 0.8rem; color: #888; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ---- CONTENT PANELS ---- */
+.panel {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.panel-header {
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid #F0F0F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.panel-header h3 { font-family: var(--font-h); font-size: 1.05rem; color: var(--verde-sc); }
+.panel-body { padding: 1.5rem; }
+
+/* ---- TABLE ---- */
+.table-responsive { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: #F8F9FA;
+  color: #555;
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #E8E8E8;
+}
+td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #F0F0F0;
+  vertical-align: middle;
+}
+tr:hover td { background: #FAFAFA; }
+.td-actions { display: flex; gap: 0.5rem; }
+
+/* ---- BUTTONS (dash) ---- */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 0.55rem 1.1rem; border-radius: 8px; font-family: var(--font-b); font-size: 0.88rem; font-weight: 700; cursor: pointer; border: 2px solid transparent; transition: all var(--trans); text-decoration: none; }
+.btn-primary { background: var(--verde); color: #fff; }
+.btn-primary:hover { background: var(--verde-sc); }
+.btn-danger  { background: var(--rosso); color: #fff; }
+.btn-danger:hover { background: #9E2A2B; }
+.btn-outline { background: transparent; color: var(--verde); border-color: var(--verde); }
+.btn-outline:hover { background: var(--verde); color: #fff; }
+.btn-ghost   { background: #F0F2F5; color: #555; border-color: #E0E0E0; }
+.btn-ghost:hover { background: #E0E0E0; }
+.btn-sm      { padding: 0.35rem 0.7rem; font-size: 0.8rem; }
+.btn-block   { width: 100%; justify-content: center; }
+
+/* ---- BADGE STATUS ---- */
+.badge { display: inline-block; padding: 0.22rem 0.6rem; border-radius: 4px; font-size: 0.74rem; font-weight: 700; }
+.badge-success { background: #d8f3e8; color: #1B4332; }
+.badge-warning { background: #fff3cd; color: #856404; }
+.badge-danger  { background: #fde4de; color: #9E2A2B; }
+.badge-info    { background: #e0f0ff; color: #0a4a7a; }
+
+/* ---- MODAL ---- */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:none;opacity:1} }
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #EEE;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-header h3 { font-family: var(--font-h); font-size: 1.1rem; color: var(--verde-sc); }
+.modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999; line-height: 1; }
+.modal-close:hover { color: var(--rosso); }
+.modal-body { padding: 1.5rem; }
+.modal-footer { padding: 1rem 1.5rem; border-top: 1px solid #EEE; display: flex; gap: 0.75rem; justify-content: flex-end; }
+
+/* ---- FILE UPLOAD ZONE ---- */
+.upload-zone {
+  border: 2px dashed #C8C8C8;
+  border-radius: 10px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--trans);
+  color: #888;
+  font-size: 0.9rem;
+}
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--verde);
+  background: #f0faf4;
+  color: var(--verde);
+}
+.upload-zone .upload-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.upload-preview { max-width: 200px; max-height: 150px; border-radius: 8px; margin-top: 0.75rem; object-fit: cover; }
+
+/* ---- ALERT ---- */
+.alert { padding: 0.85rem 1.1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.88rem; }
+.alert-success { background: #d8f3e8; color: #1B4332; border-left: 4px solid #2D6A4F; }
+.alert-error   { background: #fde4de; color: #9E2A2B; border-left: 4px solid #C44B2F; }
+.alert-info    { background: #e0f0ff; color: #0a4a7a; border-left: 4px solid #2196F3; }
+
+/* ---- SEZIONE TABS (istituto) ---- */
+.section-tabs {
+  display: flex; gap: 0.4rem; flex-wrap: wrap;
+  border-bottom: 2px solid #E8E8E8;
+  margin-bottom: 1.5rem;
+}
+.section-tab {
+  padding: 0.6rem 1.2rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-family: var(--font-b);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #888;
+  transition: all var(--trans);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.section-tab.active { color: var(--verde); border-bottom-color: var(--verde); }
+.section-tab:hover  { color: var(--verde); }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: none; }
+  .dash-main { margin-left: 0; }
+  .dash-topbar { padding: 0 1rem; }
+  .dash-content { padding: 1.25rem 1rem; }
+  .menu-toggle { display: flex !important; }
+}
+.menu-toggle {
+  display: none;
+  background: none; border: none;
+  font-size: 1.4rem; cursor: pointer;
+  color: var(--verde-sc);
+}
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+}
+.sidebar-overlay.active { display: block; }

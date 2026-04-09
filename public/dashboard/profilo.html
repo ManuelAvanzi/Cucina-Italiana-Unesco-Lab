@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profilo Istituto — Dashboard</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="dash-layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><div class="sidebar-brand">UNESCO Lab<small>AREA ISTITUTO</small></div></div>
+    <div class="sidebar-istituto"><div class="nome" id="sb-nome">…</div><div class="citta" id="sb-citta">…</div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Pannello</div>
+      <a href="/dashboard/index.html"><span class="nav-icon"></span> Dashboard</a>
+      <div class="nav-section-label">Contenuti</div>
+      <a href="/dashboard/contenuti.html"><span class="nav-icon"></span> Gestisci Contenuti</a>
+      <a href="/dashboard/video.html"><span class="nav-icon"></span> Video Tour</a>
+      <div class="nav-section-label">Istituto</div>
+      <a href="/dashboard/profilo.html" class="active"><span class="nav-icon"></span> Profilo Istituto</a>
+      <a href="/istituto.html?id=" id="sb-preview-link"><span class="nav-icon"></span> Anteprima pubblica</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn-logout" onclick="logout()">Esci</button></div>
+  </aside>
+
+  <main class="dash-main">
+    <header class="dash-topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title">Profilo Istituto</span>
+      </div>
+    </header>
+
+    <div class="dash-content">
+      <div id="page-alert"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+
+        <!-- DATI ISTITUTO -->
+        <div class="panel">
+          <div class="panel-header"><h3>Informazioni Istituto</h3></div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label>Nome istituto</label>
+              <input type="text" id="p-nome" class="form-control" disabled style="background:#f8f9fa;color:#666;">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+              <div class="form-group">
+                <label>Città</label>
+                <input type="text" id="p-citta" class="form-control" disabled style="background:#f8f9fa;color:#666;">
+              </div>
+              <div class="form-group">
+                <label>Regione</label>
+                <input type="text" id="p-regione" class="form-control" disabled style="background:#f8f9fa;color:#666;">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Indirizzo</label>
+              <input type="text" id="p-indirizzo" class="form-control" placeholder="Via, numero civico…">
+            </div>
+            <div class="form-group">
+              <label>Descrizione pubblica</label>
+              <textarea id="p-descrizione" class="form-control" rows="4" placeholder="Descrivi brevemente il tuo istituto e la sua specializzazione…"></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+              <div class="form-group">
+                <label>Sito web</label>
+                <input type="url" id="p-sito" class="form-control" placeholder="https://…">
+              </div>
+              <div class="form-group">
+                <label>Telefono</label>
+                <input type="tel" id="p-tel" class="form-control" placeholder="+39 …">
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+              <div class="form-group">
+                <label>Latitudine</label>
+                <input type="number" id="p-lat" class="form-control" step="any" placeholder="es. 41.9028">
+              </div>
+              <div class="form-group">
+                <label>Longitudine</label>
+                <input type="number" id="p-lng" class="form-control" step="any" placeholder="es. 12.4964">
+              </div>
+            </div>
+            <div style="font-size:.78rem;color:#888;margin-bottom:1rem;">Le coordinate posizionano il marker sulla mappa interattiva. Cerca su <a href="https://www.openstreetmap.org" target="_blank">OpenStreetMap</a> per trovarle.</div>
+            <button class="btn btn-primary btn-block" onclick="saveProfilo()">Salva modifiche</button>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+          <!-- LOGO -->
+          <div class="panel">
+            <div class="panel-header"><h3>Logo Istituto</h3></div>
+            <div class="panel-body" style="text-align:center;">
+              <div id="logo-preview" style="width:120px;height:120px;border-radius:50%;background:#e8e8e8;display:flex;align-items:center;justify-content:center;font-size:3rem;margin:0 auto 1.25rem;overflow:hidden;border:4px solid #e0e0e0;"></div>
+              <div class="upload-zone" onclick="document.getElementById('logo-input').click()" style="padding:1rem;">
+                
+                <div style="font-size:.85rem;">Carica nuovo logo</div>
+                <div style="font-size:.75rem;color:#aaa;">JPG, PNG — max 5MB</div>
+              </div>
+              <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="uploadLogo(this)">
+            </div>
+          </div>
+
+          <!-- CAMBIO PASSWORD -->
+          <div class="panel">
+            <div class="panel-header"><h3>Cambia Password</h3></div>
+            <div class="panel-body">
+              <div id="pw-alert"></div>
+              <div class="form-group">
+                <label>Password attuale</label>
+                <input type="password" id="pw-current" class="form-control" placeholder="••••••••" autocomplete="current-password">
+              </div>
+              <div class="form-group">
+                <label>Nuova password</label>
+                <input type="password" id="pw-new" class="form-control" placeholder="Min. 8 caratteri" autocomplete="new-password">
+              </div>
+              <div class="form-group">
+                <label>Conferma nuova password</label>
+                <input type="password" id="pw-confirm" class="form-control" placeholder="••••••••" autocomplete="new-password">
+              </div>
+              <button class="btn btn-outline btn-block" onclick="changePassword()">Aggiorna password</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/dashboard/js/dashboard.js"></script>
+<script>
+let istitutoData = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const istituto = await requireAuth();
+  if (!istituto) return;
+  istitutoData = istituto;
+  document.getElementById('sb-nome').textContent = istituto.nome;
+  document.getElementById('sb-citta').textContent = istituto.citta + ', ' + istituto.regione;
+  document.getElementById('sb-preview-link').href = '/istituto.html?id=' + istituto.id;
+  fillForm(istituto);
+});
+
+function fillForm(d) {
+  document.getElementById('p-nome').value      = d.nome || '';
+  document.getElementById('p-citta').value     = d.citta || '';
+  document.getElementById('p-regione').value   = d.regione || '';
+  document.getElementById('p-indirizzo').value = d.indirizzo || '';
+  document.getElementById('p-descrizione').value = d.descrizione || '';
+  document.getElementById('p-sito').value      = d.sito_web || '';
+  document.getElementById('p-tel').value       = d.telefono || '';
+  document.getElementById('p-lat').value       = d.lat || '';
+  document.getElementById('p-lng').value       = d.lng || '';
+  if (d.logo) {
+    const prev = document.getElementById('logo-preview');
+    prev.innerHTML = `<img src="${d.logo}" style="width:100%;height:100%;object-fit:cover;">`;
+  }
+}
+
+async function saveProfilo() {
+  try {
+    await dashFetch('/istituti/me/profilo', {
+      method: 'PUT',
+      body: JSON.stringify({
+        descrizione: document.getElementById('p-descrizione').value,
+        sito_web:    document.getElementById('p-sito').value,
+        telefono:    document.getElementById('p-tel').value,
+        indirizzo:   document.getElementById('p-indirizzo').value,
+        lat:         parseFloat(document.getElementById('p-lat').value) || null,
+        lng:         parseFloat(document.getElementById('p-lng').value) || null
+      })
+    });
+    showAlert('page-alert', 'Profilo aggiornato con successo!', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+async function uploadLogo(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('logo', file);
+  try {
+    const data = await dashForm('/istituti/me/logo', fd);
+    const prev = document.getElementById('logo-preview');
+    prev.innerHTML = `<img src="${data.url}" style="width:100%;height:100%;object-fit:cover;">`;
+    showAlert('page-alert', 'Logo aggiornato!', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+async function changePassword() {
+  const current = document.getElementById('pw-current').value;
+  const nw      = document.getElementById('pw-new').value;
+  const confirm = document.getElementById('pw-confirm').value;
+  if (!current || !nw || !confirm) return showAlert('pw-alert', 'Compila tutti i campi.');
+  if (nw !== confirm) return showAlert('pw-alert', 'Le password non coincidono.');
+  if (nw.length < 8) return showAlert('pw-alert', 'La nuova password deve avere almeno 8 caratteri.');
+  try {
+    await dashFetch('/istituti/me/password', { method: 'PUT', body: JSON.stringify({ currentPassword: current, newPassword: nw }) });
+    document.getElementById('pw-current').value = '';
+    document.getElementById('pw-new').value = '';
+    document.getElementById('pw-confirm').value = '';
+    showAlert('pw-alert', 'Password aggiornata!', 'success');
+  } catch (e) { showAlert('pw-alert', e.message); }
+}
+
+window.saveProfilo = saveProfilo;
+window.uploadLogo = uploadLogo;
+window.changePassword = changePassword;
+</script>
+</body>
+</html>

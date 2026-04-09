@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestione Istituti — Admin</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><div class="sidebar-brand">Admin Panel<small>UNESCO LAB</small></div></div>
+    <div class="sidebar-istituto"><div class="nome" id="sb-user">Amministratore</div><div class="citta">Accesso globale</div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Pannello</div>
+      <a href="/admin/index.html"><span class="nav-icon"></span> Dashboard Admin</a>
+      <div class="nav-section-label">Gestione</div>
+      <a href="/admin/istituti.html" class="active"><span class="nav-icon"></span> Istituti</a>
+      <a href="/admin/contenuti.html"><span class="nav-icon"></span> Contenuti</a>
+      <a href="/admin/museo.html"><span class="nav-icon"></span> Museo</a>
+      <div class="nav-section-label">Sito</div>
+      <a href="/" target="_blank"><span class="nav-icon"></span> Vedi sito pubblico</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn-logout" onclick="adminLogout()">Esci</button></div>
+  </aside>
+
+  <main class="dash-main">
+    <header class="dash-topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title">Gestione Istituti</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-primary btn-sm" onclick="openModal()">+ Nuovo istituto</button>
+      </div>
+    </header>
+
+    <div class="dash-content">
+      <div id="page-alert"></div>
+
+      <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;">
+        <input type="text" id="search-input" class="form-control" placeholder="Cerca nome, email, regione…" style="max-width:320px;" oninput="filterTable()">
+        <span id="count-label" style="font-size:.85rem;color:#888;font-weight:700;"></span>
+      </div>
+
+      <div class="panel">
+        <div class="panel-body" style="padding:0;">
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr><th>Istituto</th><th>Regione</th><th>Email</th><th>Username</th><th>Stato</th><th>Iscritto</th><th>Azioni</th></tr>
+              </thead>
+              <tbody id="istituti-tbody">
+                <tr><td colspan="7" style="text-align:center;padding:2rem;color:#aaa;">Caricamento…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL CREA ISTITUTO -->
+<div class="modal-overlay" id="istituto-modal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header">
+      <h3>Nuovo Istituto</h3>
+      <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-alert"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Nome istituto *</label>
+          <input type="text" id="i-nome" class="form-control" placeholder="IPSSAR …" required>
+        </div>
+        <div class="form-group">
+          <label>Città *</label>
+          <input type="text" id="i-citta" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Regione *</label>
+          <select id="i-regione" class="form-control" required>
+            <option value="">— Seleziona —</option>
+            <option>Abruzzo</option><option>Basilicata</option><option>Calabria</option>
+            <option>Campania</option><option>Emilia-Romagna</option><option>Friuli-Venezia Giulia</option>
+            <option>Lazio</option><option>Liguria</option><option>Lombardia</option>
+            <option>Marche</option><option>Molise</option><option>Piemonte</option>
+            <option>Puglia</option><option>Sardegna</option><option>Sicilia</option>
+            <option>Toscana</option><option>Trentino-Alto Adige</option><option>Umbria</option>
+            <option>Valle d'Aosta</option><option>Veneto</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Provincia</label>
+          <input type="text" id="i-prov" class="form-control" placeholder="Sigla es. RM">
+        </div>
+        <div class="form-group">
+          <label>Latitudine</label>
+          <input type="number" id="i-lat" class="form-control" step="any" placeholder="es. 41.9028">
+        </div>
+        <div class="form-group">
+          <label>Longitudine</label>
+          <input type="number" id="i-lng" class="form-control" step="any" placeholder="es. 12.4964">
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Email *</label>
+          <input type="email" id="i-email" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Username *</label>
+          <input type="text" id="i-username" class="form-control" placeholder="ipssar_roma" required>
+        </div>
+        <div class="form-group">
+          <label>Password iniziale *</label>
+          <input type="text" id="i-password" class="form-control" placeholder="Min. 8 caratteri" required>
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Descrizione</label>
+          <textarea id="i-desc" class="form-control" rows="3" placeholder="Breve presentazione dell'istituto…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Annulla</button>
+      <button class="btn btn-primary" id="save-btn" onclick="createIstituto()">Crea istituto</button>
+    </div>
+  </div>
+</div>
+
+<script src="/admin/js/admin.js"></script>
+<script>
+let allIstituti = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const admin = await requireAdmin();
+  if (!admin) return;
+  document.getElementById('sb-user').textContent = admin.username;
+  await loadIstituti();
+});
+
+async function loadIstituti() {
+  try {
+    allIstituti = await adminFetch('/istituti/admin/all');
+    renderTable(allIstituti);
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+function filterTable() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  renderTable(allIstituti.filter(i => i.nome.toLowerCase().includes(q) || i.email.toLowerCase().includes(q) || i.regione.toLowerCase().includes(q) || i.username.toLowerCase().includes(q)));
+}
+
+function renderTable(list) {
+  document.getElementById('count-label').textContent = `${list.length} istituti`;
+  const tbody = document.getElementById('istituti-tbody');
+  if (!list.length) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#aaa;">Nessun risultato.</td></tr>`; return; }
+  tbody.innerHTML = list.map(i => `
+    <tr>
+      <td><div style="font-weight:700;font-size:.88rem;">${esc(i.nome)}</div><div style="font-size:.75rem;color:#999;">${esc(i.citta||'')}</div></td>
+      <td style="font-size:.85rem;"><span class="badge badge-info">${esc(i.regione)}</span></td>
+      <td style="font-size:.82rem;">${esc(i.email)}</td>
+      <td style="font-size:.82rem;font-family:monospace;">${esc(i.username)}</td>
+      <td>${i.active ? '<span class="badge badge-success">Attivo</span>' : '<span class="badge badge-danger">Disabilitato</span>'}</td>
+      <td style="font-size:.78rem;color:#aaa;">${formatDate(i.created_at)}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-ghost btn-sm" onclick="toggleIstituto(${i.id}, ${i.active})" title="${i.active?'Disabilita':'Abilita'}">${i.active?'Disabilita':'Abilita'}</button>
+        <a href="/istituto.html?id=${i.id}" target="_blank" class="btn btn-ghost btn-sm" title="Visualizza">Vedi</a>
+        <button class="btn btn-ghost btn-sm" onclick="deleteIstituto(${i.id})" style="color:var(--rosso);" title="Elimina">Elimina</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+function openModal() {
+  document.getElementById('istituto-modal').classList.add('active');
+  document.getElementById('modal-alert').innerHTML = '';
+}
+function closeModal() { document.getElementById('istituto-modal').classList.remove('active'); }
+
+async function createIstituto() {
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true; btn.textContent = 'Creazione…';
+  try {
+    await adminFetch('/istituti/admin/create', {
+      method: 'POST',
+      body: JSON.stringify({
+        nome:      document.getElementById('i-nome').value.trim(),
+        citta:     document.getElementById('i-citta').value.trim(),
+        regione:   document.getElementById('i-regione').value,
+        provincia: document.getElementById('i-prov').value.trim(),
+        lat:       parseFloat(document.getElementById('i-lat').value) || null,
+        lng:       parseFloat(document.getElementById('i-lng').value) || null,
+        email:     document.getElementById('i-email').value.trim(),
+        username:  document.getElementById('i-username').value.trim(),
+        password:  document.getElementById('i-password').value,
+        descrizione: document.getElementById('i-desc').value
+      })
+    });
+    closeModal();
+    document.getElementById('istituto-modal').querySelector('form')?.reset();
+    showAlert('page-alert', 'Istituto creato con successo!', 'success');
+    await loadIstituti();
+  } catch (e) { showAlert('modal-alert', e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Crea istituto'; }
+}
+
+async function toggleIstituto(id, current) {
+  try {
+    await adminFetch(`/istituti/admin/${id}/toggle`, { method: 'PUT' });
+    const i = allIstituti.find(x => x.id === id);
+    if (i) i.active = current ? 0 : 1;
+    renderTable(allIstituti);
+    showAlert('page-alert', current ? 'Istituto disabilitato.' : 'Istituto riabilitato!', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+async function deleteIstituto(id) {
+  if (!confirm('Eliminare definitivamente questo istituto e tutti i suoi contenuti? Azione irreversibile.')) return;
+  try {
+    await adminFetch(`/istituti/admin/${id}`, { method: 'DELETE' });
+    allIstituti = allIstituti.filter(i => i.id !== id);
+    renderTable(allIstituti);
+    showAlert('page-alert', 'Istituto eliminato.', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.createIstituto = createIstituto;
+window.toggleIstituto = toggleIstituto;
+window.deleteIstituto = deleteIstituto;
+window.filterTable = filterTable;
+</script>
+</body>
+</html>

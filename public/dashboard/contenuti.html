@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestione Contenuti — Dashboard</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="dash-layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><div class="sidebar-brand">UNESCO Lab<small>AREA ISTITUTO</small></div></div>
+    <div class="sidebar-istituto"><div class="nome" id="sb-nome">…</div><div class="citta" id="sb-citta">…</div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Pannello</div>
+      <a href="/dashboard/index.html"><span class="nav-icon"></span> Dashboard</a>
+      <div class="nav-section-label">Contenuti</div>
+      <a href="/dashboard/contenuti.html" class="active"><span class="nav-icon"></span> Gestisci Contenuti</a>
+      <a href="/dashboard/video.html"><span class="nav-icon"></span> Video Tour</a>
+      <div class="nav-section-label">Istituto</div>
+      <a href="/dashboard/profilo.html"><span class="nav-icon"></span> Profilo Istituto</a>
+      <a href="/istituto.html?id=" id="sb-preview-link"><span class="nav-icon"></span> Anteprima pubblica</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn-logout" onclick="logout()">Esci</button></div>
+  </aside>
+
+  <main class="dash-main">
+    <header class="dash-topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title">Gestione Contenuti</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-primary btn-sm" onclick="openModal()">+ Nuovo contenuto</button>
+      </div>
+    </header>
+
+    <div class="dash-content">
+      <div id="page-alert"></div>
+
+      <!-- FILTRI SEZIONE -->
+      <div class="panel" style="margin-bottom:1.5rem;">
+        <div class="panel-body" style="padding:1rem 1.5rem;">
+          <div class="section-tabs" id="sezione-tabs">
+            <button class="section-tab active" data-s="all">Tutti</button>
+            <button class="section-tab" data-s="artusi">Artusi</button>
+            <button class="section-tab" data-s="campanello">Campanello</button>
+            <button class="section-tab" data-s="storie">Storie</button>
+            <button class="section-tab" data-s="generale">Generale</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3>Contenuti <span id="contenuti-count" style="font-size:.85rem;color:#888;font-weight:400;"></span></h3>
+        </div>
+        <div class="panel-body" style="padding:0;">
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Titolo</th>
+                  <th>Tipo</th>
+                  <th>Sezione</th>
+                  <th>Stato</th>
+                  <th>Data</th>
+                  <th>Azioni</th>
+                </tr>
+              </thead>
+              <tbody id="contenuti-tbody">
+                <tr><td colspan="6" style="text-align:center;padding:2rem;color:#aaa;">Caricamento…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL CREA/MODIFICA -->
+<div class="modal-overlay" id="contenuto-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Nuovo Contenuto</h3>
+      <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-alert"></div>
+      <form id="contenuto-form" enctype="multipart/form-data">
+        <input type="hidden" id="c-id">
+        <div class="form-group">
+          <label>Sezione *</label>
+          <select id="c-sezione" class="form-control" required>
+            <option value="artusi">A Scuola da Artusi</option>
+            <option value="campanello">Cucina del Campanello</option>
+            <option value="storie">Storie Culinarie</option>
+            <option value="generale">Generale</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo *</label>
+          <select id="c-tipo" class="form-control" required onchange="onTipoChange()">
+            <option value="testo">Testo</option>
+            <option value="ricetta">Ricetta</option>
+            <option value="immagine">Immagine</option>
+            <option value="video">Video YouTube</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Titolo *</label>
+          <input type="text" id="c-titolo" class="form-control" placeholder="Titolo del contenuto" required>
+        </div>
+        <div class="form-group">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;">
+            <label style="margin-bottom:0;">Testo / Descrizione</label>
+            <button type="button" id="ai-genera-btn" onclick="generaTestoAI()"
+              style="background:linear-gradient(135deg,#6b21a8,#9333ea);color:#fff;border:none;border-radius:8px;padding:.3rem .85rem;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:opacity .2s;">
+              Genera con AI
+            </button>
+          </div>
+          <textarea id="c-corpo" class="form-control" rows="5" placeholder="Scrivi il contenuto… oppure usa 'Genera con AI' per creare un testo narrativo automatico."></textarea>
+          <div id="ai-status" style="font-size:.76rem;color:#888;margin-top:.3rem;min-height:1rem;"></div>
+        </div>
+        <!-- AI: analisi immagine (solo sezione storie) -->
+        <div class="form-group" id="g-ai-immagine" style="display:none;">
+          <label style="display:flex;align-items:center;gap:.5rem;">
+            <span>Analisi immagine storica con AI</span>
+            <span style="background:linear-gradient(135deg,#6b21a8,#9333ea);color:#fff;font-size:.68rem;font-weight:700;padding:.15rem .5rem;border-radius:50px;">BETA</span>
+          </label>
+          <div style="display:flex;gap:.5rem;">
+            <input type="url" id="ai-img-url" class="form-control" placeholder="URL immagine storica da analizzare…" style="flex:1;">
+            <button type="button" onclick="analizzaImmagineAI()"
+              style="background:linear-gradient(135deg,#6b21a8,#9333ea);color:#fff;border:none;border-radius:8px;padding:.5rem 1rem;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;">
+              Analizza
+            </button>
+          </div>
+          <div style="font-size:.74rem;color:#aaa;margin-top:.3rem;">Incolla l'URL di un'immagine storica: l'AI genererà un testo narrativo basato su di essa.</div>
+        </div>
+        <div class="form-group" id="g-youtube" style="display:none;">
+          <label>ID o URL YouTube *</label>
+          <input type="text" id="c-youtube" class="form-control" placeholder="es. dQw4w9WgXcQ o https://youtube.com/watch?v=…">
+          <div style="font-size:.78rem;color:#888;margin-top:.3rem;">Incolla l'URL completo o solo l'ID del video.</div>
+        </div>
+        <div class="form-group" id="g-media" style="display:none;">
+          <label>Immagine</label>
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('c-media').click()">
+            <div class="upload-icon"></div>
+            <div>Clicca o trascina un'immagine qui</div>
+            <div style="font-size:.78rem;margin-top:.3rem;">JPG, PNG, WEBP — max 5MB</div>
+            <img id="upload-preview" class="upload-preview" style="display:none;">
+          </div>
+          <input type="file" id="c-media" accept="image/*" style="display:none;" onchange="previewImage(this)">
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+            <input type="checkbox" id="c-pubblicato" style="width:16px;height:16px;"> Pubblica subito
+          </label>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Annulla</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveContenuto()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<script src="/dashboard/js/dashboard.js"></script>
+<script>
+let allContenuti = [], currentSezione = 'all', editingId = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const istituto = await requireAuth();
+  if (!istituto) return;
+  document.getElementById('sb-nome').textContent = istituto.nome;
+  document.getElementById('sb-citta').textContent = istituto.citta + ', ' + istituto.regione;
+  document.getElementById('sb-preview-link').href = '/istituto.html?id=' + istituto.id;
+
+  // Pre-select sezione from URL param
+  const param = new URLSearchParams(window.location.search).get('sezione');
+  if (param) {
+    currentSezione = param;
+    document.querySelectorAll('.section-tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.s === param);
+    });
+    document.getElementById('c-sezione').value = param;
+    openModal();
+  }
+
+  await loadContenuti();
+
+  document.getElementById('sezione-tabs').querySelectorAll('.section-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.section-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentSezione = btn.dataset.s;
+      renderTable();
+    });
+  });
+});
+
+async function loadContenuti() {
+  try {
+    allContenuti = await dashFetch('/contenuti');
+    renderTable();
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+function renderTable() {
+  const filtered = currentSezione === 'all' ? allContenuti : allContenuti.filter(c => c.sezione === currentSezione);
+  document.getElementById('contenuti-count').textContent = `(${filtered.length})`;
+  const sezioneLabel = { artusi:'Artusi', campanello:'Campanello', storie:'Storie', generale:'Generale' };
+  const tipoIcon = { testo:'', ricetta:'', immagine:'', video:'' };
+  const tbody = document.getElementById('contenuti-tbody');
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2.5rem;color:#aaa;">Nessun contenuto in questa sezione.<br><a href="#" onclick="openModal();return false;" style="color:var(--verde);">Crea il primo contenuto</a></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(c => `
+    <tr>
+      <td style="max-width:260px;"><div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(c.titolo)}</div>
+        ${c.corpo ? `<div style="font-size:.78rem;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px;">${esc(c.corpo.slice(0,60))}…</div>` : ''}
+      </td>
+      <td><span style="font-size:.82rem;">${esc(c.tipo)}</span></td>
+      <td><span class="badge badge-info" style="font-size:.75rem;">${sezioneLabel[c.sezione]||c.sezione}</span></td>
+      <td>${c.pubblicato
+        ? '<span class="badge badge-success">Pubblicato</span>'
+        : '<span class="badge badge-warning">Bozza</span>'}</td>
+      <td style="font-size:.82rem;color:#888;">${formatDate(c.created_at)}</td>
+      <td>
+        <div class="td-actions">
+          <button class="btn btn-ghost btn-sm" onclick="editContenuto(${c.id})">Modifica</button>
+          <button class="btn btn-ghost btn-sm" onclick="togglePubblicato(${c.id}, ${c.pubblicato})" title="${c.pubblicato?'Nasconde':'Pubblica'}">${c.pubblicato?'Nascondi':'Pubblica'}</button>
+          <button class="btn btn-ghost btn-sm" onclick="deleteContenuto(${c.id})" style="color:var(--rosso);">Elimina</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function openModal(id = null) {
+  editingId = id;
+  document.getElementById('modal-title').textContent = id ? 'Modifica Contenuto' : 'Nuovo Contenuto';
+  document.getElementById('modal-alert').innerHTML = '';
+  if (!id) {
+    document.getElementById('contenuto-form').reset();
+    if (currentSezione !== 'all') document.getElementById('c-sezione').value = currentSezione;
+    document.getElementById('upload-preview').style.display = 'none';
+    onTipoChange();
+  }
+  document.getElementById('contenuto-modal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('contenuto-modal').classList.remove('active');
+  editingId = null;
+}
+
+function editContenuto(id) {
+  const c = allContenuti.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('c-id').value = c.id;
+  document.getElementById('c-sezione').value = c.sezione;
+  document.getElementById('c-tipo').value = c.tipo;
+  document.getElementById('c-titolo').value = c.titolo;
+  document.getElementById('c-corpo').value = c.corpo || '';
+  document.getElementById('c-youtube').value = c.youtube_id || '';
+  document.getElementById('c-pubblicato').checked = !!c.pubblicato;
+  onTipoChange();
+  if (c.media_url) {
+    const preview = document.getElementById('upload-preview');
+    preview.src = c.media_url;
+    preview.style.display = 'block';
+  }
+  openModal(id);
+}
+
+function onTipoChange() {
+  const tipo    = document.getElementById('c-tipo').value;
+  const sezione = document.getElementById('c-sezione').value;
+  document.getElementById('g-youtube').style.display   = tipo === 'video' ? 'block' : 'none';
+  document.getElementById('g-media').style.display     = tipo === 'immagine' ? 'block' : 'none';
+  document.getElementById('g-ai-immagine').style.display = sezione === 'storie' ? 'block' : 'none';
+}
+// Aggiorna anche al cambio sezione
+document.getElementById('c-sezione').addEventListener('change', onTipoChange);
+
+function previewImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const preview = document.getElementById('upload-preview');
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+}
+
+// Drag & drop
+document.addEventListener('DOMContentLoaded', () => {
+  const zone = document.getElementById('upload-zone');
+  if (!zone) return;
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const input = document.getElementById('c-media');
+      const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files;
+      previewImage(input);
+    }
+  });
+});
+
+async function saveContenuto() {
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true; btn.textContent = 'Salvataggio…';
+  try {
+    const tipo = document.getElementById('c-tipo').value;
+    const fd = new FormData();
+    fd.append('tipo',      tipo);
+    fd.append('sezione',   document.getElementById('c-sezione').value);
+    fd.append('titolo',    document.getElementById('c-titolo').value.trim());
+    fd.append('corpo',     document.getElementById('c-corpo').value);
+    fd.append('pubblicato', document.getElementById('c-pubblicato').checked ? '1' : '0');
+    if (tipo === 'video') fd.append('youtube_id', document.getElementById('c-youtube').value.trim());
+    if (tipo === 'immagine') {
+      const file = document.getElementById('c-media').files[0];
+      if (file) fd.append('media', file);
+    }
+    const endpoint = editingId ? `/contenuti/${editingId}` : '/contenuti';
+    const method   = editingId ? 'PUT' : 'POST';
+    await dashForm(endpoint, fd, method);
+    closeModal();
+    showAlert('page-alert', editingId ? 'Contenuto aggiornato!' : 'Contenuto creato!', 'success');
+    await loadContenuti();
+  } catch (e) {
+    showAlert('modal-alert', e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Salva';
+  }
+}
+
+async function togglePubblicato(id, current) {
+  try {
+    await dashFetch(`/contenuti/${id}/pubblica`, { method: 'PATCH' });
+    const c = allContenuti.find(x => x.id === id);
+    if (c) c.pubblicato = current ? 0 : 1;
+    renderTable();
+    showAlert('page-alert', current ? 'Contenuto nascosto.' : 'Contenuto pubblicato!', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+async function deleteContenuto(id) {
+  if (!confirm('Eliminare questo contenuto? L\'azione è irreversibile.')) return;
+  try {
+    await dashFetch(`/contenuti/${id}`, { method: 'DELETE' });
+    allContenuti = allContenuti.filter(c => c.id !== id);
+    renderTable();
+    showAlert('page-alert', 'Contenuto eliminato.', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+// ---- AI text generation ----
+async function generaTestoAI() {
+  const titolo  = document.getElementById('c-titolo').value.trim();
+  const sezione = document.getElementById('c-sezione').value;
+  const contesto = document.getElementById('c-corpo').value.trim();
+  const status  = document.getElementById('ai-status');
+  const btn     = document.getElementById('ai-genera-btn');
+
+  if (!titolo) { showAlert('modal-alert', 'Inserisci prima il titolo per generare il testo.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Generazione…';
+  status.textContent = 'Generazione in corso…';
+
+  try {
+    const data = await dashFetch('/ai/genera-testo', {
+      method: 'POST',
+      body: JSON.stringify({ sezione, titolo, contesto: contesto || '' })
+    });
+    document.getElementById('c-corpo').value = data.testo;
+    status.innerHTML = '<span style="color:#2D6A4F;">Testo generato! Puoi modificarlo liberamente.</span>';
+  } catch (e) {
+    if (e.message.includes('non configurata')) {
+      status.innerHTML = '<span style="color:#888;">Funzione AI non attiva. Aggiungi <code>ANTHROPIC_API_KEY</code> nel file <code>.env</code>.</span>';
+    } else {
+      status.innerHTML = `<span style="color:var(--rosso);">${esc(e.message)}</span>`;
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Genera con AI';
+  }
+}
+
+async function analizzaImmagineAI() {
+  const url    = document.getElementById('ai-img-url').value.trim();
+  const titolo = document.getElementById('c-titolo').value.trim();
+  const status = document.getElementById('ai-status');
+  if (!url) { showAlert('modal-alert', 'Inserisci l\'URL dell\'immagine da analizzare.'); return; }
+
+  status.textContent = 'Analisi in corso…';
+  try {
+    const data = await dashFetch('/ai/analizza-immagine', {
+      method: 'POST',
+      body: JSON.stringify({ immagine_url: url, titolo })
+    });
+    document.getElementById('c-corpo').value = data.testo;
+    status.innerHTML = '<span style="color:#2D6A4F;">Testo generato dall\'analisi! Puoi modificarlo.</span>';
+  } catch (e) {
+    status.innerHTML = `<span style="color:var(--rosso);">${esc(e.message)}</span>`;
+  }
+}
+
+window.generaTestoAI = generaTestoAI;
+window.analizzaImmagineAI = analizzaImmagineAI;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.editContenuto = editContenuto;
+window.onTipoChange = onTipoChange;
+window.previewImage = previewImage;
+window.saveContenuto = saveContenuto;
+window.togglePubblicato = togglePubblicato;
+window.deleteContenuto = deleteContenuto;
+</script>
+</body>
+</html>

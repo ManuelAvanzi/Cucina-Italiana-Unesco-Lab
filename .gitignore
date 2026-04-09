@@ -1,0 +1,8 @@
+node_modules/
+db/*.db
+uploads/immagini/*
+uploads/video/*
+!uploads/immagini/.gitkeep
+!uploads/video/.gitkeep
+.env
+*.log

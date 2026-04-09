@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mappa Interattiva — Cucina Italiana UNESCO Lab</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/visual.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232D6A4F'/></svg>">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="navbar-brand"><span>Cucina Italiana<small>UNESCO Lab</small></span></a>
+    <button class="nav-hamburger" aria-label="Menu">&#9776;</button>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/museo.html">Museo</a></li>
+      <li><a href="/mappa.html" class="active">Mappa</a></li>
+      <li><a href="/video-tour.html">Video Tour</a></li>
+      <li><a href="/istituti.html">Istituti</a></li>
+      <li><a href="/dashboard/login.html" class="btn-login">Area Istituti</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div style="background:linear-gradient(135deg,#1B4332,#2D6A4F);padding:3.5rem 1.5rem 2.5rem;text-align:center;">
+  <h1 style="color:#fff;margin-bottom:.75rem;">Mappa degli Istituti</h1>
+  <p style="color:rgba(255,255,255,.75);font-size:1.05rem;max-width:560px;margin:0 auto;">
+    Esplora la mappa dell'Italia e scopri i contenuti di ogni istituto alberghiero sul tuo territorio.
+  </p>
+</div>
+
+<section class="section" style="padding-top:2.5rem;">
+  <div class="container">
+
+    <!-- CONTROLS -->
+    <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:1.5rem;">
+      <input type="text" id="mappa-search" class="search-input" placeholder="Cerca istituto, città, regione…" style="max-width:320px;">
+      <span id="mappa-counter" style="font-size:.85rem;color:#888;font-weight:700;"></span>
+    </div>
+
+    <!-- REGIONI FILTER -->
+    <div id="mappa-filters" class="filters-bar" style="margin-bottom:1.5rem;"></div>
+
+    <!-- MAP -->
+    <div id="map-container">
+      <div id="map"></div>
+    </div>
+
+    <!-- LIST VIEW toggle -->
+    <div style="margin-top:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+      <h3 style="color:#1B4332;">Lista Istituti</h3>
+      <div style="display:flex;gap:.5rem;">
+        <button id="view-grid" class="btn btn-sm btn-verde" onclick="toggleView('grid')">&#9783; Griglia</button>
+        <button id="view-list" class="btn btn-sm btn-ghost" onclick="toggleView('list')">&#9776; Lista</button>
+      </div>
+    </div>
+    <div id="istituti-sotto" class="grid-3" style="margin-top:1.5rem;"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div><div class="footer-brand">Cucina Italiana UNESCO Lab</div><p class="footer-desc">Portale multimediale per la valorizzazione della cucina italiana.</p></div>
+    <div class="footer-links"><h4>Esplora</h4><ul><li><a href="/">Home</a></li><li><a href="/museo.html">Museo</a></li><li><a href="/video-tour.html">Video Tour</a></li><li><a href="/istituti.html">Istituti</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">&copy; 2024 Cucina Italiana UNESCO Lab</div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/mappa.js"></script>
+<script>
+let currentView = 'grid';
+function toggleView(v) {
+  currentView = v;
+  const grid = document.getElementById('istituti-sotto');
+  document.getElementById('view-grid').className = v === 'grid' ? 'btn btn-sm btn-verde' : 'btn btn-sm btn-ghost';
+  document.getElementById('view-list').className = v === 'list' ? 'btn btn-sm btn-verde' : 'btn btn-sm btn-ghost';
+  if (v === 'list') grid.style.display = 'block';
+  else { grid.style.display = ''; grid.className = 'grid-3'; }
+}
+
+// After map loads, also populate list below
+document.addEventListener('DOMContentLoaded', async () => {
+  await new Promise(r => setTimeout(r, 800));
+  try {
+    const list = await apiFetch('/istituti');
+    const grid = document.getElementById('istituti-sotto');
+    grid.innerHTML = list.map(i => `
+      <a href="/istituto.html?id=${i.id}" class="card" style="display:block;text-decoration:none;color:inherit;" data-animate>
+        <div style="height:100px;background:linear-gradient(135deg,#1B4332,#2D6A4F);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">
+          ${i.logo ? `<img src="${i.logo}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.5);">` : ''}
+        </div>
+        <div class="card-body" style="padding:1rem;">
+          <div class="card-tag tag-verde" style="font-size:.7rem;">${sanitizeText(i.regione)}</div>
+          <h3 style="font-size:.95rem;margin:.3rem 0;">${sanitizeText(i.nome)}</h3>
+          <p style="font-size:.8rem;color:#888;">${sanitizeText(i.citta)}</p>
+        </div>
+      </a>`).join('');
+  } catch {}
+});
+</script>
+</body>
+</html>

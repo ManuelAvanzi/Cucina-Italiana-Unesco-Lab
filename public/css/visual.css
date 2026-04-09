@@ -1,0 +1,411 @@
+/* ===================================================
+   CUCINA ITALIANA UNESCO LAB — visual.css
+   Miglioramenti estetici: pattern, immagini, animazioni
+   =================================================== */
+
+/* ---- FOOD PATTERN HERO ---- */
+.hero {
+  background: linear-gradient(145deg, #0d2b1d 0%, #1B4332 35%, #2a1a0e 65%, #3d1f10 100%);
+}
+.hero-bg {
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(82,183,136,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(196,75,47,0.12) 0%, transparent 40%),
+    radial-gradient(circle at 60% 80%, rgba(198,158,114,0.10) 0%, transparent 40%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ---- FOOD IMAGE PLACEHOLDERS (CSS Art) ---- */
+.food-img-pasta {
+  background: linear-gradient(135deg, #d4a574 0%, #c8956c 30%, #b8804e 60%, #8b5e3c 100%);
+  position: relative;
+  overflow: hidden;
+}
+.food-img-pasta::before {
+  content: '🍝';
+  position: absolute;
+  font-size: 5rem;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+.food-img-museo {
+  background: linear-gradient(160deg, #1B4332 0%, #2D6A4F 40%, #8B5E3C 80%, #6b3a1e 100%);
+}
+.food-img-museo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M40 0C17.9 0 0 17.9 0 40s17.9 40 40 40 40-17.9 40-40S62.1 0 40 0zm0 72C22.3 72 8 57.7 8 40S22.3 8 40 8s32 14.3 32 32-14.3 32-32 32z'/%3E%3C/g%3E%3C/svg%3E") center/80px repeat;
+}
+
+/* ---- FOOD CATEGORY CARDS ---- */
+.food-card-artusi    { background: linear-gradient(145deg, #1B4332, #2D6A4F); }
+.food-card-campanello { background: linear-gradient(145deg, #7a4a1e, #a0622a); }
+.food-card-storie    { background: linear-gradient(145deg, #8B1a1a, #C44B2F); }
+.food-card-mappa     { background: linear-gradient(145deg, #1a3a5c, #2563a0); }
+.food-card-video     { background: linear-gradient(145deg, #1a1a1a, #3a3a3a); }
+
+/* ---- INGREDIENT STRIP ---- */
+.ingredients-strip {
+  background: var(--crema);
+  overflow: hidden;
+  padding: 1rem 0;
+  border-top: 3px solid var(--crema-sc);
+  border-bottom: 3px solid var(--crema-sc);
+  position: relative;
+}
+.ingredients-track {
+  display: flex;
+  gap: 3rem;
+  animation: scroll-left 30s linear infinite;
+  white-space: nowrap;
+  width: max-content;
+}
+.ingredients-strip:hover .ingredients-track { animation-play-state: paused; }
+.ingredient-item {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  font-family: var(--font-h);
+  font-size: .95rem;
+  color: var(--terra);
+  font-style: italic;
+}
+.ingredient-item .ing-icon { font-size: 1.4rem; }
+@keyframes scroll-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ---- ENHANCED SECTION: PRODOTTI ---- */
+.prodotti-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.25rem;
+}
+.prodotto-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  border: 2px solid transparent;
+  transition: all .3s ease;
+  cursor: default;
+}
+.prodotto-card:hover {
+  border-color: var(--verde-ch);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(45,106,79,0.15);
+}
+.prodotto-icon { font-size: 2.8rem; margin-bottom: .6rem; }
+.prodotto-nome { font-family: var(--font-h); font-size: .95rem; color: var(--verde-sc); font-weight: 600; }
+.prodotto-reg  { font-size: .75rem; color: var(--grigio); margin-top: .25rem; }
+
+/* ---- SEZIONE REGIONI ---- */
+.regioni-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  justify-content: center;
+}
+.regione-pill {
+  padding: .45rem 1.1rem;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,.85);
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .25s;
+  text-decoration: none;
+}
+.regione-pill:hover {
+  background: var(--verde-ch);
+  border-color: var(--verde-ch);
+  color: #fff;
+}
+
+/* ---- PARALLAX DIVIDER ---- */
+.parallax-divider {
+  height: 280px;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+.parallax-divider .overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(27,67,50,.7), rgba(27,67,50,.85));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+.parallax-divider h2 { color: #fff; }
+.parallax-divider p  { color: rgba(255,255,255,.8); margin-top: .75rem; font-size: 1.05rem; }
+
+/* ---- QUOTE BLOCK ---- */
+.quote-block {
+  background: var(--crema);
+  border-left: 6px solid var(--rosso);
+  border-radius: 0 12px 12px 0;
+  padding: 1.75rem 2rem;
+  position: relative;
+}
+.quote-block::before {
+  content: '"';
+  font-family: var(--font-h);
+  font-size: 5rem;
+  color: var(--rosso);
+  opacity: .2;
+  position: absolute;
+  top: -1rem; left: 1rem;
+  line-height: 1;
+}
+.quote-text { font-family: var(--font-h); font-size: 1.2rem; font-style: italic; color: var(--scuro); line-height: 1.7; }
+.quote-author { margin-top: .75rem; font-size: .85rem; color: var(--grigio); font-weight: 700; }
+
+/* ---- STATS COUNTER ---- */
+.counter-section {
+  background: linear-gradient(135deg, var(--verde-sc), var(--verde));
+  padding: 4rem 1.5rem;
+}
+.counter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+  gap: 2.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.counter-item { text-align: center; }
+.counter-number {
+  font-family: var(--font-h);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  color: var(--crema);
+  display: block;
+  line-height: 1;
+}
+.counter-label {
+  color: rgba(255,255,255,.65);
+  font-size: .82rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: .5rem;
+}
+.counter-icon { font-size: 2rem; margin-bottom: .5rem; display: block; }
+
+/* ---- REGION IMAGE CARDS ---- */
+.regione-card {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 4/3;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.regione-card-bg {
+  position: absolute; inset: 0;
+  transition: transform .5s ease;
+}
+.regione-card:hover .regione-card-bg { transform: scale(1.06); }
+.regione-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 60%);
+}
+.regione-card-label {
+  position: absolute;
+  bottom: 1rem; left: 1rem; right: 1rem;
+  color: #fff;
+}
+.regione-card-label h4 { font-family: var(--font-h); font-size: 1.1rem; margin-bottom: .25rem; }
+.regione-card-label p  { font-size: .78rem; opacity: .8; }
+
+/* Regione backgrounds */
+.bg-toscana    { background: linear-gradient(145deg, #6b8f3e, #8ba45e, #c4a35a); }
+.bg-campania   { background: linear-gradient(145deg, #c44b2f, #d4785a, #e0a87a); }
+.bg-sicilia    { background: linear-gradient(145deg, #d4a020, #e8c060, #f0d890); }
+.bg-lombardia  { background: linear-gradient(145deg, #3a5a8f, #5a7aaf, #8aa4cf); }
+.bg-emilia     { background: linear-gradient(145deg, #8b3a1a, #b4603a, #c88060); }
+.bg-veneto     { background: linear-gradient(145deg, #2d6a4f, #4a8a6f, #70aa90); }
+
+/* ---- TIMELINE (Storie Culinarie) ---- */
+.timeline {
+  position: relative;
+  padding: 2rem 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--verde-ch), var(--rosso));
+  transform: translateX(-50%);
+}
+.timeline-item {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  align-items: start;
+}
+.timeline-item:nth-child(even) .timeline-content { grid-column: 3; grid-row: 1; }
+.timeline-item:nth-child(even) .timeline-empty   { grid-column: 1; grid-row: 1; }
+.timeline-dot {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--verde);
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 3px var(--verde-ch);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  margin: 0 auto;
+  z-index: 1;
+  position: relative;
+}
+.timeline-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+.timeline-year {
+  font-family: var(--font-h);
+  font-size: 1.1rem;
+  color: var(--rosso);
+  margin-bottom: .5rem;
+}
+
+/* ---- ENHANCED ANIMATIONS ---- */
+[data-animate] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+[data-animate].visible {
+  opacity: 1;
+  transform: none;
+}
+[data-animate-left]  { opacity: 0; transform: translateX(-30px); transition: opacity .6s ease, transform .6s ease; }
+[data-animate-right] { opacity: 0; transform: translateX(30px);  transition: opacity .6s ease, transform .6s ease; }
+[data-animate-left].visible, [data-animate-right].visible { opacity: 1; transform: none; }
+
+/* Staggered children */
+[data-stagger] > * { opacity: 0; transform: translateY(15px); transition: opacity .5s ease, transform .5s ease; }
+[data-stagger] > *.visible { opacity: 1; transform: none; }
+[data-stagger] > *:nth-child(1) { transition-delay: 0s; }
+[data-stagger] > *:nth-child(2) { transition-delay: .1s; }
+[data-stagger] > *:nth-child(3) { transition-delay: .2s; }
+[data-stagger] > *:nth-child(4) { transition-delay: .3s; }
+[data-stagger] > *:nth-child(5) { transition-delay: .4s; }
+[data-stagger] > *:nth-child(6) { transition-delay: .5s; }
+
+/* ---- PIATTO CARD (ricette) ---- */
+.piatto-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.piatto-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(0,0,0,0.14); }
+.piatto-img {
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.piatto-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+.piatto-card:hover .piatto-img img { transform: scale(1.06); }
+.piatto-img-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+}
+.piatto-body { padding: 1.25rem; }
+.piatto-region {
+  font-size: .73rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--verde);
+  margin-bottom: .4rem;
+}
+.piatto-title { font-family: var(--font-h); font-size: 1.15rem; margin-bottom: .4rem; color: var(--scuro); }
+.piatto-desc  { font-size: .85rem; color: var(--grigio); line-height: 1.65; }
+.piatto-footer {
+  padding: .75rem 1.25rem;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: .82rem;
+  color: var(--grigio);
+}
+
+/* ---- NEWS / BLOG CARDS ---- */
+.news-card {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.news-card:last-child { border-bottom: none; }
+.news-thumb {
+  width: 80px; height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+.news-body h4 { font-family: var(--font-h); font-size: .95rem; margin-bottom: .25rem; }
+.news-meta { font-size: .76rem; color: var(--grigio); }
+
+/* ---- NAVBAR scroll enhancement ---- */
+.navbar.scrolled {
+  background: rgba(27,67,50,0.97);
+  backdrop-filter: blur(12px);
+}
+
+/* ---- AI BADGE ---- */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  background: linear-gradient(135deg, #6b21a8, #9333ea);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 700;
+  padding: .2rem .6rem;
+  border-radius: 50px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+/* ---- RESPONSIVE EXTRAS ---- */
+@media (max-width: 768px) {
+  .timeline::before { left: 20px; }
+  .timeline-item { grid-template-columns: 40px 1fr; }
+  .timeline-item:nth-child(even) .timeline-content { grid-column: 2; }
+  .timeline-item:nth-child(even) .timeline-empty   { display: none; }
+  .parallax-divider { background-attachment: scroll; }
+  .regioni-list { gap: .4rem; }
+}

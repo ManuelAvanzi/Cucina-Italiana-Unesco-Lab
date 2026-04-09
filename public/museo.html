@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Museo — Cucina Italiana UNESCO Lab</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/visual.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232D6A4F'/></svg>">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="navbar-brand">
+      <span>Cucina Italiana<small>UNESCO Lab</small></span>
+    </a>
+    <button class="nav-hamburger" aria-label="Menu">&#9776;</button>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/museo.html" class="active">Museo</a></li>
+      <li><a href="/mappa.html">Mappa</a></li>
+      <li><a href="/video-tour.html">Video Tour</a></li>
+      <li><a href="/istituti.html">Istituti</a></li>
+      <li><a href="/dashboard/login.html" class="btn-login">Area Istituti</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- MUSEO HERO -->
+<div id="museo-hero-container">
+  <!-- populated via JS -->
+  <section class="museo-hero" style="min-height:85vh;">
+    <div class="museo-bg" style="background-image:url('/assets/museo-hero.jpg');"></div>
+    <div class="museo-overlay"></div>
+    <div class="museo-badge">Mostra Digitale</div>
+    <div class="museo-content">
+      <div style="font-size:.78rem;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:1rem;">Patrimonio Culturale Immateriale</div>
+      <h1>La Cucina Italiana</h1>
+      <p>Un'esperienza immersiva nel cuore della tradizione gastronomica italiana riconosciuta dall'UNESCO come patrimonio dell'umanità.</p>
+      <a id="museo-link" href="https://ich.unesco.org" target="_blank" rel="noopener" class="btn btn-primary btn-lg">Esplora il patrimonio UNESCO</a>
+    </div>
+  </section>
+</div>
+
+<!-- INTRO SECTION -->
+<section class="section section-alt">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;">
+      <div>
+        <div class="section-header" style="text-align:left;margin-bottom:1.5rem;">
+          <h2>La storia della nostra tavola</h2>
+          <div class="section-line" style="margin-left:0;"></div>
+        </div>
+        <p style="color:#555;line-height:1.9;margin-bottom:1.25rem;">
+          La cucina italiana è molto più di un insieme di ricette: è un sistema di valori, conoscenze e pratiche trasmesse di generazione in generazione. Ogni piatto racconta la storia di un territorio, di una famiglia, di una comunità.
+        </p>
+        <p style="color:#555;line-height:1.9;margin-bottom:1.25rem;">
+          Dall'Artusi ai giorni nostri, la nostra tradizione gastronomica ha saputo preservare l'autenticità dei sapori locali pur aprendosi al mondo, diventando una delle espressioni culturali più riconoscibili e amate a livello globale.
+        </p>
+        <p style="color:#555;line-height:1.9;margin-bottom:2rem;">
+          Gli istituti alberghieri italiani sono i custodi di questa eredità, formando le nuove generazioni nel rispetto delle tradizioni e nell'innovazione responsabile.
+        </p>
+        <a href="https://ich.unesco.org" target="_blank" rel="noopener" class="btn btn-verde">Sito UNESCO &#8599;</a>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div style="background:linear-gradient(135deg,#1B4332,#2D6A4F);border-radius:12px;padding:2rem;color:#fff;text-align:center;">
+                    <h3 style="font-size:1rem;color:var(--crema);">Tradizione</h3>
+          <p style="font-size:.82rem;color:rgba(255,255,255,.7);margin-top:.5rem;">Ricette tramandate per secoli nelle famiglie italiane</p>
+        </div>
+        <div style="background:linear-gradient(135deg,#8B5E3C,#C69E72);border-radius:12px;padding:2rem;color:#fff;text-align:center;margin-top:1.5rem;">
+                    <h3 style="font-size:1rem;color:var(--crema);">Territorio</h3>
+          <p style="font-size:.82rem;color:rgba(255,255,255,.7);margin-top:.5rem;">Prodotti tipici legati alla biodiversità italiana</p>
+        </div>
+        <div style="background:linear-gradient(135deg,#C44B2F,#e07060);border-radius:12px;padding:2rem;color:#fff;text-align:center;margin-top:-1rem;">
+                    <h3 style="font-size:1rem;color:var(--crema);">Sapere</h3>
+          <p style="font-size:.82rem;color:rgba(255,255,255,.7);margin-top:.5rem;">Tecniche artigianali trasmesse attraverso la formazione</p>
+        </div>
+        <div style="background:linear-gradient(135deg,#1565C0,#42a5f5);border-radius:12px;padding:2rem;color:#fff;text-align:center;">
+                    <h3 style="font-size:1rem;color:var(--crema);">Comunità</h3>
+          <p style="font-size:.82rem;color:rgba(255,255,255,.7);margin-top:.5rem;">La tavola come momento di condivisione e identità</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERIA TEMATICA -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Le sezioni del museo</h2>
+      <p>Percorsi tematici per scoprire la cucina italiana in tutte le sue sfaccettature</p>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid-3">
+      <div class="card" data-animate>
+        <div style="height:200px;background:linear-gradient(135deg,#1B4332,#52B788);display:flex;align-items:center;justify-content:center;font-size:5rem;"></div>
+        <div class="card-body">
+          <div class="card-tag tag-verde">Artusi</div>
+          <h3>A Scuola da Artusi</h3>
+          <p style="font-size:.88rem;color:#666;margin-top:.5rem;line-height:1.7;">Le ricette del primo trattato della cucina italiana, rivisitate dagli studenti degli istituti alberghieri.</p>
+          <a href="/istituti.html" class="btn btn-verde btn-sm" style="margin-top:1rem;">Esplora &rarr;</a>
+        </div>
+      </div>
+      <div class="card" data-animate>
+        <div style="height:200px;background:linear-gradient(135deg,#8B5E3C,#C69E72);display:flex;align-items:center;justify-content:center;font-size:5rem;"></div>
+        <div class="card-body">
+          <div class="card-tag tag-terra">Tradizioni</div>
+          <h3>La Cucina del Campanello</h3>
+          <p style="font-size:.88rem;color:#666;margin-top:.5rem;line-height:1.7;">Le varianti familiari e regionali delle grandi ricette, con storie e racconti che profumano di casa.</p>
+          <a href="/istituti.html" class="btn btn-verde btn-sm" style="margin-top:1rem;">Esplora &rarr;</a>
+        </div>
+      </div>
+      <div class="card" data-animate>
+        <div style="height:200px;background:linear-gradient(135deg,#C44B2F,#e07060);display:flex;align-items:center;justify-content:center;font-size:5rem;"></div>
+        <div class="card-body">
+          <div class="card-tag tag-rosso">Storia</div>
+          <h3>Storie Culinarie</h3>
+          <p style="font-size:.88rem;color:#666;margin-top:.5rem;line-height:1.7;">La ricostruzione storica della cucina italiana attraverso documenti, immagini e racconti d'archivio.</p>
+          <a href="/istituti.html" class="btn btn-verde btn-sm" style="margin-top:1rem;">Esplora &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- UNESCO CTA -->
+<section class="section section-dark" style="text-align:center;">
+  <div class="container" style="max-width:700px;">
+        <h2>Patrimonio dell'Umanità</h2>
+    <p style="color:rgba(255,255,255,.75);margin:1.5rem auto 2.5rem;font-size:1.05rem;line-height:1.8;">
+      La candidatura della cucina italiana all'UNESCO è un riconoscimento che coinvolge tutta la nazione: ristoratori, agricoltori, artigiani e studenti uniti nella valorizzazione di un'eredità comune.
+    </p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="https://ich.unesco.org" target="_blank" rel="noopener" class="btn btn-primary">Sito UNESCO &#8599;</a>
+      <a href="/mappa.html" class="btn btn-outline">Esplora la mappa &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Cucina Italiana UNESCO Lab</div>
+      <p class="footer-desc">Portale multimediale per la valorizzazione della cucina italiana come patrimonio culturale UNESCO.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Sezioni</h4>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/museo.html">Museo</a></li>
+        <li><a href="/mappa.html">Mappa</a></li>
+        <li><a href="/video-tour.html">Video Tour</a></li>
+        <li><a href="/istituti.html">Istituti</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; 2024 Cucina Italiana UNESCO Lab</div>
+</footer>
+
+<script src="/js/main.js"></script>
+<script src="/js/unsplash.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const items = await apiFetch('/museo');
+    if (items.length > 0) {
+      const item = items[0];
+      const bg = document.querySelector('.museo-bg');
+      if (bg && item.immagine_url) {
+        bg.style.backgroundImage = `url('${item.immagine_url}')`;
+      } else if (bg) {
+        // Fallback Unsplash se non c'è immagine caricata dall'admin
+        loadUnsplashImage('tema', 'museo', bg);
+      }
+      const title = document.querySelector('.museo-content h1');
+      if (title) title.textContent = item.titolo;
+      const desc = document.querySelector('.museo-content p');
+      if (desc && item.descrizione) desc.textContent = item.descrizione;
+      const link = document.getElementById('museo-link');
+      if (link && item.link_esterno) link.href = item.link_esterno;
+    } else {
+      // Nessun item configurato: carica immagine Unsplash hero
+      loadUnsplashImage('tema', 'museo', '.museo-bg');
+    }
+    const hero = document.querySelector('.museo-hero');
+    if (hero) {
+      hero.style.cursor = 'pointer';
+      const link = document.getElementById('museo-link');
+      hero.addEventListener('click', (e) => { if (!e.target.closest('a') && !e.target.closest('button')) link?.click(); });
+    }
+  } catch {}
+});
+</script>
+</body>
+</html>

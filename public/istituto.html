@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Istituto — Cucina Italiana UNESCO Lab</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/visual.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232D6A4F'/></svg>">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="navbar-brand"><span>Cucina Italiana<small>UNESCO Lab</small></span></a>
+    <button class="nav-hamburger" aria-label="Menu">&#9776;</button>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/museo.html">Museo</a></li>
+      <li><a href="/mappa.html">Mappa</a></li>
+      <li><a href="/video-tour.html">Video Tour</a></li>
+      <li><a href="/istituti.html">Istituti</a></li>
+      <li><a href="/dashboard/login.html" class="btn-login">Area Istituti</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO (populated by JS) -->
+<div id="istituto-hero" class="istituto-hero" style="min-height:320px;display:flex;align-items:center;justify-content:center;">
+  <div class="loader-spinner"></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<section class="section" style="padding-top:2.5rem;" id="istituto-main">
+  <div class="container">
+
+    <!-- BREADCRUMB -->
+    <div style="margin-bottom:2rem;font-size:.85rem;color:#888;">
+      <a href="/istituti.html" style="color:var(--verde);">&#8592; Tutti gli istituti</a>
+    </div>
+
+    <!-- SEZIONE TABS -->
+    <div class="sezione-tabs">
+      <button class="tab-btn active" data-tab="artusi">A Scuola da Artusi</button>
+      <button class="tab-btn" data-tab="campanello">Cucina del Campanello</button>
+      <button class="tab-btn" data-tab="storie">Storie Culinarie</button>
+      <button class="tab-btn" data-tab="generale">Generale</button>
+    </div>
+
+    <!-- TAB CONTENTS -->
+    <div id="tab-artusi" class="tab-content active">
+      <div class="empty-state"><div class="loader-spinner"></div></div>
+    </div>
+    <div id="tab-campanello" class="tab-content">
+      <div class="empty-state"><div class="loader-spinner"></div></div>
+    </div>
+    <div id="tab-storie" class="tab-content">
+      <div class="empty-state"><div class="loader-spinner"></div></div>
+    </div>
+    <div id="tab-generale" class="tab-content">
+      <div class="empty-state"><div class="loader-spinner"></div></div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div><div class="footer-brand">Cucina Italiana UNESCO Lab</div><p class="footer-desc">Portale multimediale per la valorizzazione della cucina italiana.</p></div>
+    <div class="footer-links"><h4>Esplora</h4><ul><li><a href="/">Home</a></li><li><a href="/museo.html">Museo</a></li><li><a href="/mappa.html">Mappa</a></li><li><a href="/video-tour.html">Video Tour</a></li><li><a href="/istituti.html">Istituti</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">&copy; 2024 Cucina Italiana UNESCO Lab</div>
+</footer>
+
+<script src="/js/main.js"></script>
+<script src="/js/unsplash.js"></script>
+<script src="/js/istituto.js"></script>
+</body>
+</html>

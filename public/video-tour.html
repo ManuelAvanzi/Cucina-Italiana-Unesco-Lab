@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Tour — Cucina Italiana UNESCO Lab</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/visual.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232D6A4F'/></svg>">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="navbar-brand"><span>Cucina Italiana<small>UNESCO Lab</small></span></a>
+    <button class="nav-hamburger" aria-label="Menu">&#9776;</button>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/museo.html">Museo</a></li>
+      <li><a href="/mappa.html">Mappa</a></li>
+      <li><a href="/video-tour.html" class="active">Video Tour</a></li>
+      <li><a href="/istituti.html">Istituti</a></li>
+      <li><a href="/dashboard/login.html" class="btn-login">Area Istituti</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div style="background:linear-gradient(135deg,#1a1a1a,#2D6A4F);padding:3.5rem 1.5rem 2.5rem;text-align:center;">
+  <h1 style="color:#fff;margin-bottom:.75rem;">Video Tour Enogastronomico</h1>
+  <p style="color:rgba(255,255,255,.75);font-size:1.05rem;max-width:580px;margin:0 auto;">
+    Esplora i sapori d'Italia attraverso i video selezionati dagli istituti alberghieri. Un viaggio multimediale tra ricette, tradizioni e territori.
+  </p>
+</div>
+
+<section class="section" style="padding-top:2.5rem;">
+  <div class="container">
+
+    <!-- SEARCH + COUNTER -->
+    <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:1.75rem;">
+      <input type="text" id="video-search" class="search-input" placeholder="Cerca titolo, descrizione…" style="max-width:340px;">
+      <span id="video-counter" style="font-size:.85rem;color:#888;font-weight:700;"></span>
+    </div>
+
+    <!-- FILTRI TEMA -->
+    <div style="margin-bottom:1rem;">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:.6rem;">Tema</div>
+      <div id="filter-temi" class="filters-bar"></div>
+    </div>
+
+    <!-- FILTRI TERRITORIO -->
+    <div style="margin-bottom:2rem;">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:.6rem;">Territorio</div>
+      <div id="filter-territorio" class="filters-bar"></div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="video-loading" style="display:none;justify-content:center;padding:3rem;">
+      <div class="loader-spinner"></div>
+    </div>
+
+    <!-- GRID -->
+    <div id="video-grid" class="grid-3"></div>
+
+    <!-- PAGINATION -->
+    <div id="video-pagination" class="pagination"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div><div class="footer-brand">Cucina Italiana UNESCO Lab</div><p class="footer-desc">Portale multimediale per la valorizzazione della cucina italiana.</p></div>
+    <div class="footer-links"><h4>Esplora</h4><ul><li><a href="/">Home</a></li><li><a href="/museo.html">Museo</a></li><li><a href="/mappa.html">Mappa</a></li><li><a href="/istituti.html">Istituti</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">&copy; 2024 Cucina Italiana UNESCO Lab</div>
+</footer>
+
+<script src="/js/main.js"></script>
+<script src="/js/video-tour.js"></script>
+</body>
+</html>

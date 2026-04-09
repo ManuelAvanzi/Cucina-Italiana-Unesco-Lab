@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Cucina Italiana UNESCO Lab</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232D6A4F'/></svg>">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<div class="dash-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">UNESCO Lab<small>AREA ISTITUTO</small></div>
+    </div>
+    <div class="sidebar-istituto">
+      <div class="nome" id="sb-nome">…</div>
+      <div class="citta" id="sb-citta">…</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Pannello</div>
+      <a href="/dashboard/index.html" class="active"><span class="nav-icon"></span> Dashboard</a>
+      <div class="nav-section-label">Contenuti</div>
+      <a href="/dashboard/contenuti.html"><span class="nav-icon"></span> Gestisci Contenuti</a>
+      <a href="/dashboard/video.html"><span class="nav-icon"></span> Video Tour</a>
+      <div class="nav-section-label">Istituto</div>
+      <a href="/dashboard/profilo.html"><span class="nav-icon"></span> Profilo Istituto</a>
+      <a href="/istituto.html?id=" id="sb-preview-link"><span class="nav-icon"></span> Anteprima pubblica</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="logout()">Esci</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dash-main">
+    <header class="dash-topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title">Dashboard</span>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-user" id="tb-user"></span>
+        <a href="/" target="_blank" class="btn btn-ghost btn-sm">Sito pubblico</a>
+      </div>
+    </header>
+
+    <div class="dash-content">
+
+      <!-- BENVENUTO -->
+      <div class="panel" style="background:linear-gradient(135deg,#1B4332,#2D6A4F);color:#fff;margin-bottom:1.5rem;">
+        <div class="panel-body" style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+          
+          <div>
+            <h2 style="color:#fff;font-size:1.4rem;margin-bottom:.4rem;">Benvenuto, <span id="welcome-nome"></span>!</h2>
+            <p style="color:rgba(255,255,255,.75);font-size:.9rem;">Gestisci i contenuti del tuo istituto e contribuisci al patrimonio culinario italiano.</p>
+          </div>
+          <div style="margin-left:auto;">
+            <a href="/dashboard/contenuti.html" class="btn btn-outline">+ Nuovo contenuto</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon verde"></div>
+          <div><div class="stat-value" id="stat-tot">—</div><div class="stat-label">Contenuti totali</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon rosso"></div>
+          <div><div class="stat-value" id="stat-pub">—</div><div class="stat-label">Pubblicati</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon terra"></div>
+          <div><div class="stat-value" id="stat-boz">—</div><div class="stat-label">Bozze</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blu"></div>
+          <div><div class="stat-value" id="stat-vid">—</div><div class="stat-label">Video Tour</div></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;flex-wrap:wrap;">
+
+        <!-- ULTIMI CONTENUTI -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Ultimi contenuti</h3>
+            <a href="/dashboard/contenuti.html" class="btn btn-ghost btn-sm">Vedi tutti</a>
+          </div>
+          <div class="panel-body" id="ultimi-contenuti">
+            <div style="text-align:center;padding:2rem;color:#aaa;">Caricamento…</div>
+          </div>
+        </div>
+
+        <!-- AZIONI RAPIDE -->
+        <div class="panel">
+          <div class="panel-header"><h3>Azioni rapide</h3></div>
+          <div class="panel-body">
+            <div style="display:flex;flex-direction:column;gap:.75rem;">
+              <a href="/dashboard/contenuti.html?sezione=artusi" class="btn btn-outline" style="justify-content:flex-start;">
+                <span>Aggiungi ricetta Artusi</span>
+              </a>
+              <a href="/dashboard/contenuti.html?sezione=campanello" class="btn btn-outline" style="justify-content:flex-start;">
+                <span>Aggiungi Cucina del Campanello</span>
+              </a>
+              <a href="/dashboard/contenuti.html?sezione=storie" class="btn btn-outline" style="justify-content:flex-start;">
+                <span>Aggiungi Storia Culinaria</span>
+              </a>
+              <a href="/dashboard/video.html" class="btn btn-outline" style="justify-content:flex-start;">
+                <span>Aggiungi Video Tour</span>
+              </a>
+              <a href="/dashboard/profilo.html" class="btn btn-outline" style="justify-content:flex-start;">
+                <span>Aggiorna profilo istituto</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEZIONI INFO -->
+      <div class="panel" style="margin-top:1.5rem;">
+        <div class="panel-header"><h3>Le sezioni del tuo istituto</h3></div>
+        <div class="panel-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;">
+            <div style="background:#f8f9fa;border-radius:10px;padding:1.25rem;border-left:4px solid #2D6A4F;">
+                            <h4 style="font-size:.95rem;color:#1B4332;margin-bottom:.35rem;">A Scuola da Artusi</h4>
+              <p style="font-size:.82rem;color:#777;line-height:1.6;">Video di ricette dal primo trattato della cucina italiana, prodotti dagli studenti.</p>
+            </div>
+            <div style="background:#f8f9fa;border-radius:10px;padding:1.25rem;border-left:4px solid #8B5E3C;">
+                            <h4 style="font-size:.95rem;color:#1B4332;margin-bottom:.35rem;">Cucina del Campanello</h4>
+              <p style="font-size:.82rem;color:#777;line-height:1.6;">Varianti familiari delle ricette con testi narrativi, immagini e supporto AI.</p>
+            </div>
+            <div style="background:#f8f9fa;border-radius:10px;padding:1.25rem;border-left:4px solid #C44B2F;">
+                            <h4 style="font-size:.95rem;color:#1B4332;margin-bottom:.35rem;">Storie Culinarie</h4>
+              <p style="font-size:.82rem;color:#777;line-height:1.6;">Ricostruzione storica con storytelling e contenuti elaborati da immagini d'archivio.</p>
+            </div>
+            <div style="background:#f8f9fa;border-radius:10px;padding:1.25rem;border-left:4px solid #1565C0;">
+                            <h4 style="font-size:.95rem;color:#1B4332;margin-bottom:.35rem;">Video Tour</h4>
+              <p style="font-size:.82rem;color:#777;line-height:1.6;">Video YouTube sul turismo enogastronomico del tuo territorio.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="/dashboard/js/dashboard.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const istituto = await requireAuth();
+  if (!istituto) return;
+
+  // Sidebar info
+  document.getElementById('sb-nome').textContent = istituto.nome;
+  document.getElementById('sb-citta').textContent = istituto.citta + ', ' + istituto.regione;
+  document.getElementById('tb-user').textContent = istituto.nome;
+  document.getElementById('welcome-nome').textContent = istituto.nome;
+  document.getElementById('sb-preview-link').href = '/istituto.html?id=' + istituto.id;
+
+  // Load stats
+  try {
+    const contenuti = await dashFetch('/contenuti');
+    const videos = await dashFetch('/video/me');
+    const pub = contenuti.filter(c => c.pubblicato).length;
+    document.getElementById('stat-tot').textContent = contenuti.length;
+    document.getElementById('stat-pub').textContent = pub;
+    document.getElementById('stat-boz').textContent = contenuti.length - pub;
+    document.getElementById('stat-vid').textContent = videos.length;
+
+    // Ultimi contenuti
+    const ul = document.getElementById('ultimi-contenuti');
+    const last5 = contenuti.slice(0, 5);
+    if (!last5.length) {
+      ul.innerHTML = `<div style="text-align:center;color:#aaa;padding:1.5rem;">Nessun contenuto ancora. <a href="/dashboard/contenuti.html">Crea il primo!</a></div>`;
+    } else {
+      const sezioneLabel = { artusi:'Artusi', campanello:'Campanello', storie:'Storie', generale:'Generale' };
+      ul.innerHTML = last5.map(c => `
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.65rem 0;border-bottom:1px solid #f0f0f0;">
+          <div style="width:36px;height:36px;border-radius:8px;background:#f0f2f5;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">
+            ${ '' }
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:.88rem;font-weight:700;color:#1B4332;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ esc(c.titolo) }</div>
+            <div style="font-size:.75rem;color:#999;">${ sezioneLabel[c.sezione]||c.sezione } · ${ c.pubblicato ? '<span style="color:#2D6A4F;">Pubblicato</span>' : '<span style="color:#888;">Bozza</span>' }</div>
+          </div>
+          <a href="/dashboard/contenuti.html" class="btn btn-ghost btn-sm">Modifica</a>
+        </div>`).join('');
+    }
+  } catch (e) {
+    console.error(e);
+  }
+});
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+</script>
+</body>
+</html>

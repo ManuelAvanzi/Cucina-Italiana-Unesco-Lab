@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestione Museo — Admin</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><div class="sidebar-brand">Admin Panel<small>UNESCO LAB</small></div></div>
+    <div class="sidebar-istituto"><div class="nome" id="sb-user">Amministratore</div><div class="citta">Accesso globale</div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Pannello</div>
+      <a href="/admin/index.html"><span class="nav-icon"></span> Dashboard Admin</a>
+      <div class="nav-section-label">Gestione</div>
+      <a href="/admin/istituti.html"><span class="nav-icon"></span> Istituti</a>
+      <a href="/admin/contenuti.html"><span class="nav-icon"></span> Contenuti</a>
+      <a href="/admin/museo.html" class="active"><span class="nav-icon"></span> Museo</a>
+      <div class="nav-section-label">Sito</div>
+      <a href="/" target="_blank"><span class="nav-icon"></span> Vedi sito pubblico</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn-logout" onclick="adminLogout()">Esci</button></div>
+  </aside>
+
+  <main class="dash-main">
+    <header class="dash-topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title">Gestione Museo</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-primary btn-sm" onclick="openModal()">+ Nuovo item</button>
+      </div>
+    </header>
+
+    <div class="dash-content">
+      <div id="page-alert"></div>
+
+      <div class="panel" style="margin-bottom:1.5rem;">
+        <div class="panel-body" style="padding:1rem 1.5rem;">
+          <p style="color:#666;font-size:.9rem;">Configura le immagini e i link della sezione Museo. Il primo item attivo verrà mostrato come hero principale della pagina museo.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-body" style="padding:0;">
+          <div class="table-responsive">
+            <table>
+              <thead><tr><th>Titolo</th><th>Link esterno</th><th>Ordine</th><th>Stato</th><th>Azioni</th></tr></thead>
+              <tbody id="museo-tbody">
+                <tr><td colspan="5" style="text-align:center;padding:2rem;color:#aaa;">Caricamento…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="museo-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Nuovo Item Museo</h3>
+      <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-alert"></div>
+      <input type="hidden" id="m-id">
+      <div class="form-group">
+        <label>Titolo *</label>
+        <input type="text" id="m-titolo" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label>Descrizione</label>
+        <textarea id="m-desc" class="form-control" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>URL immagine hero</label>
+        <input type="text" id="m-img" class="form-control" placeholder="/assets/museo-hero.jpg">
+      </div>
+      <div class="form-group">
+        <label>Link esterno (cliccabile)</label>
+        <input type="url" id="m-link" class="form-control" placeholder="https://ich.unesco.org">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group">
+          <label>Ordine</label>
+          <input type="number" id="m-ordine" class="form-control" value="1" min="0">
+        </div>
+        <div class="form-group">
+          <label>Stato</label>
+          <select id="m-attivo" class="form-control">
+            <option value="1">Attivo</option>
+            <option value="0">Nascosto</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Annulla</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveItem()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<script src="/admin/js/admin.js"></script>
+<script>
+let allItems = [], editingId = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const admin = await requireAdmin();
+  if (!admin) return;
+  document.getElementById('sb-user').textContent = admin.username;
+  await loadItems();
+});
+
+async function loadItems() {
+  try {
+    allItems = await adminFetch('/museo');
+    renderTable();
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+function renderTable() {
+  const tbody = document.getElementById('museo-tbody');
+  if (!allItems.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#aaa;">Nessun item. <a href="#" onclick="openModal();return false;" style="color:var(--verde);">Crea il primo!</a></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allItems.map(item => `
+    <tr>
+      <td><div style="font-weight:700;font-size:.88rem;">${esc(item.titolo)}</div>
+        ${item.descrizione ? `<div style="font-size:.75rem;color:#999;">${esc(item.descrizione.slice(0,60))}…</div>` : ''}
+      </td>
+      <td style="font-size:.82rem;">${item.link_esterno ? `<a href="${esc(item.link_esterno)}" target="_blank" style="color:var(--verde);">Link</a>` : '—'}</td>
+      <td style="font-size:.85rem;">${item.ordine}</td>
+      <td>${item.attivo ? '<span class="badge badge-success">Attivo</span>' : '<span class="badge badge-warning">Nascosto</span>'}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-ghost btn-sm" onclick="editItem(${item.id})">Modifica</button>
+        <button class="btn btn-ghost btn-sm" onclick="deleteItem(${item.id})" style="color:var(--rosso);">Elimina</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+function openModal(id = null) {
+  editingId = id;
+  document.getElementById('modal-title').textContent = id ? 'Modifica Item' : 'Nuovo Item Museo';
+  document.getElementById('modal-alert').innerHTML = '';
+  if (!id) {
+    document.getElementById('m-id').value = '';
+    document.getElementById('m-titolo').value = '';
+    document.getElementById('m-desc').value = '';
+    document.getElementById('m-img').value = '';
+    document.getElementById('m-link').value = '';
+    document.getElementById('m-ordine').value = '1';
+    document.getElementById('m-attivo').value = '1';
+  }
+  document.getElementById('museo-modal').classList.add('active');
+}
+function closeModal() { document.getElementById('museo-modal').classList.remove('active'); editingId = null; }
+
+function editItem(id) {
+  const item = allItems.find(x => x.id === id);
+  if (!item) return;
+  document.getElementById('m-id').value      = item.id;
+  document.getElementById('m-titolo').value  = item.titolo;
+  document.getElementById('m-desc').value    = item.descrizione || '';
+  document.getElementById('m-img').value     = item.immagine_url || '';
+  document.getElementById('m-link').value    = item.link_esterno || '';
+  document.getElementById('m-ordine').value  = item.ordine;
+  document.getElementById('m-attivo').value  = item.attivo;
+  openModal(id);
+}
+
+async function saveItem() {
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true; btn.textContent = 'Salvataggio…';
+  const body = {
+    titolo:       document.getElementById('m-titolo').value.trim(),
+    descrizione:  document.getElementById('m-desc').value,
+    immagine_url: document.getElementById('m-img').value.trim(),
+    link_esterno: document.getElementById('m-link').value.trim(),
+    ordine:       parseInt(document.getElementById('m-ordine').value) || 0,
+    attivo:       parseInt(document.getElementById('m-attivo').value)
+  };
+  if (!body.titolo) { showAlert('modal-alert', 'Il titolo è obbligatorio.'); btn.disabled = false; btn.textContent = 'Salva'; return; }
+  try {
+    if (editingId) {
+      await adminFetch(`/museo/${editingId}`, { method: 'PUT', body: JSON.stringify(body) });
+    } else {
+      await adminFetch('/museo', { method: 'POST', body: JSON.stringify(body) });
+    }
+    closeModal();
+    showAlert('page-alert', 'Salvato!', 'success');
+    await loadItems();
+  } catch (e) { showAlert('modal-alert', e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Salva'; }
+}
+
+async function deleteItem(id) {
+  if (!confirm('Eliminare questo item?')) return;
+  try {
+    await adminFetch(`/museo/${id}`, { method: 'DELETE' });
+    allItems = allItems.filter(i => i.id !== id);
+    renderTable();
+    showAlert('page-alert', 'Eliminato.', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.editItem = editItem;
+window.saveItem = saveItem;
+window.deleteItem = deleteItem;
+</script>
+</body>
+</html>

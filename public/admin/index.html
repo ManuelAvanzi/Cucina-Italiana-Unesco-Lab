@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Cucina Italiana UNESCO Lab</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="dash-layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><div class="sidebar-brand">Admin Panel<small>UNESCO LAB</small></div></div>
+    <div class="sidebar-istituto"><div class="nome" id="sb-user">Amministratore</div><div class="citta">Accesso globale</div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Pannello</div>
+      <a href="/admin/index.html" class="active"><span class="nav-icon"></span> Dashboard Admin</a>
+      <div class="nav-section-label">Gestione</div>
+      <a href="/admin/istituti.html"><span class="nav-icon"></span> Istituti</a>
+      <a href="/admin/contenuti.html"><span class="nav-icon"></span> Contenuti</a>
+      <a href="/admin/museo.html"><span class="nav-icon"></span> Museo</a>
+      <div class="nav-section-label">Sito</div>
+      <a href="/" target="_blank"><span class="nav-icon"></span> Vedi sito pubblico</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn-logout" onclick="adminLogout()">Esci</button></div>
+  </aside>
+
+  <main class="dash-main">
+    <header class="dash-topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title">Dashboard Amministratore</span>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-user" id="tb-user"></span>
+      </div>
+    </header>
+
+    <div class="dash-content">
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon verde"></div><div><div class="stat-value" id="s-istituti">—</div><div class="stat-label">Istituti totali</div></div></div>
+        <div class="stat-card"><div class="stat-icon rosso"></div><div><div class="stat-value" id="s-attivi">—</div><div class="stat-label">Istituti attivi</div></div></div>
+        <div class="stat-card"><div class="stat-icon terra"></div><div><div class="stat-value" id="s-contenuti">—</div><div class="stat-label">Contenuti totali</div></div></div>
+        <div class="stat-card"><div class="stat-icon blu"></div><div><div class="stat-value" id="s-video">—</div><div class="stat-label">Video Tour</div></div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem;">
+
+        <!-- ULTIMI ISTITUTI -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Ultimi istituti registrati</h3>
+            <a href="/admin/istituti.html" class="btn btn-ghost btn-sm">Gestisci tutti</a>
+          </div>
+          <div class="panel-body" style="padding:0;">
+            <table>
+              <thead><tr><th>Nome</th><th>Regione</th><th>Stato</th></tr></thead>
+              <tbody id="last-istituti"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- AZIONI RAPIDE -->
+        <div class="panel">
+          <div class="panel-header"><h3>Azioni rapide</h3></div>
+          <div class="panel-body">
+            <div style="display:flex;flex-direction:column;gap:.75rem;">
+              <a href="/admin/istituti.html" class="btn btn-primary" style="justify-content:flex-start;">Gestisci istituti (crea / modifica / disabilita)</a>
+              <a href="/admin/contenuti.html" class="btn btn-outline" style="justify-content:flex-start;">Modera contenuti pubblicati</a>
+              <a href="/admin/museo.html" class="btn btn-outline" style="justify-content:flex-start;">Configura sezione Museo</a>
+              <a href="/" target="_blank" class="btn btn-ghost" style="justify-content:flex-start;">Visualizza sito pubblico</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAPACITÀ -->
+      <div class="panel" style="margin-top:1.5rem;">
+        <div class="panel-header"><h3>Capacità piattaforma</h3></div>
+        <div class="panel-body">
+          <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+            <div style="flex:1;min-width:200px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:.5rem;font-size:.85rem;">
+                <span>Istituti registrati</span>
+                <span id="cap-label" style="font-weight:700;color:#1B4332;">— / 300</span>
+              </div>
+              <div style="background:#e8e8e8;border-radius:50px;height:10px;overflow:hidden;">
+                <div id="cap-bar" style="height:100%;background:linear-gradient(90deg,#2D6A4F,#52B788);border-radius:50px;width:0%;transition:width .8s ease;"></div>
+              </div>
+              <div style="font-size:.78rem;color:#aaa;margin-top:.4rem;">Capacità massima: 300 istituti</div>
+            </div>
+            <div style="text-align:center;padding:1rem 2rem;background:#f8f9fa;border-radius:10px;">
+              <div style="font-size:2rem;font-weight:700;color:#1B4332;" id="cap-num">—</div>
+              <div style="font-size:.78rem;color:#888;text-transform:uppercase;letter-spacing:.5px;">posti disponibili</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="/admin/js/admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const admin = await requireAdmin();
+  if (!admin) return;
+  document.getElementById('sb-user').textContent = admin.username;
+  document.getElementById('tb-user').textContent = admin.username;
+
+  try {
+    const [istituti, contenuti] = await Promise.all([
+      adminFetch('/istituti/admin/all'),
+      adminFetch('/contenuti/admin/all')
+    ]);
+    const videos = await adminFetch('/video?limit=1000').catch(() => []);
+
+    const attivi = istituti.filter(i => i.active).length;
+    document.getElementById('s-istituti').textContent  = istituti.length;
+    document.getElementById('s-attivi').textContent    = attivi;
+    document.getElementById('s-contenuti').textContent = contenuti.length;
+    document.getElementById('s-video').textContent     = videos.length;
+
+    // Capacity bar
+    const pct = Math.round((istituti.length / 300) * 100);
+    document.getElementById('cap-bar').style.width = pct + '%';
+    document.getElementById('cap-label').textContent = `${istituti.length} / 300`;
+    document.getElementById('cap-num').textContent = 300 - istituti.length;
+
+    // Last 5 istituti
+    const tbody = document.getElementById('last-istituti');
+    const last5 = [...istituti].reverse().slice(0, 5);
+    tbody.innerHTML = last5.map(i => `
+      <tr>
+        <td><div style="font-weight:700;font-size:.88rem;">${esc(i.nome)}</div><div style="font-size:.75rem;color:#999;">${esc(i.email)}</div></td>
+        <td style="font-size:.85rem;">${esc(i.regione)}</td>
+        <td>${i.active ? '<span class="badge badge-success">Attivo</span>' : '<span class="badge badge-danger">Disabilitato</span>'}</td>
+      </tr>`).join('');
+  } catch (e) { console.error(e); }
+});
+</script>
+</body>
+</html>
