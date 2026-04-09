@@ -5,6 +5,45 @@ const { getDb } = require('../db/database');
 
 const router = express.Router();
 
+// POST /api/auth/register - Registrazione nuovo istituto
+router.post('/register', (req, res) => {
+  const { nome, username, password, email, citta, regione, provincia } = req.body;
+  if (!nome || !username || !password || !email || !citta || !regione) {
+    return res.status(400).json({ error: 'Compila tutti i campi obbligatori' });
+  }
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'La password deve essere di almeno 8 caratteri' });
+  }
+
+  const db = getDb();
+  const count = db.prepare('SELECT COUNT(*) as n FROM istituti').get().n;
+  if (count >= 300) {
+    return res.status(400).json({ error: 'Limite massimo di 300 istituti raggiunto' });
+  }
+  if (db.prepare('SELECT id FROM istituti WHERE username = ?').get(username)) {
+    return res.status(400).json({ error: 'Username già in uso' });
+  }
+  if (db.prepare('SELECT id FROM istituti WHERE email = ?').get(email)) {
+    return res.status(400).json({ error: 'Email già registrata' });
+  }
+
+  const hash = bcrypt.hashSync(password, 10);
+  const result = db.prepare(
+    'INSERT INTO istituti (nome, username, password, email, citta, regione, provincia, active) VALUES (?,?,?,?,?,?,?,1)'
+  ).run(nome, username, hash, email, citta, regione, provincia || null);
+
+  const token = jwt.sign(
+    { id: result.lastInsertRowid, username, nome, role: 'istituto' },
+    process.env.JWT_SECRET,
+    { expiresIn: '8h' }
+  );
+
+  res.status(201).json({
+    token,
+    istituto: { id: result.lastInsertRowid, nome, citta, regione, username, email, logo: null }
+  });
+});
+
 // POST /api/auth/login - Login istituto
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
