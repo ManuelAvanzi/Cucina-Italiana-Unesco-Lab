@@ -56,7 +56,11 @@ router.get('/:id', (req, res) => {
     'SELECT id, tipo, sezione, titolo, corpo, media_url, youtube_id, ordine FROM contenuti WHERE istituto_id = ? AND pubblicato = 1 ORDER BY sezione, ordine, created_at'
   ).all(req.params.id);
 
-  res.json({ ...istituto, contenuti });
+  const video_tour = db.prepare(
+    'SELECT id, youtube_id, titolo, descrizione, territorio, tema FROM video_tour WHERE istituto_id = ? AND pubblicato = 1 ORDER BY created_at DESC'
+  ).all(req.params.id);
+
+  res.json({ ...istituto, contenuti, video_tour });
 });
 
 // GET /api/istituti/:id/mappa - Dati per marker mappa
@@ -73,8 +77,11 @@ router.get('/:id/mappa', (req, res) => {
   const video = db.prepare(
     "SELECT youtube_id, titolo FROM contenuti WHERE istituto_id=? AND tipo='video' AND pubblicato=1 LIMIT 2"
   ).all(req.params.id);
+  const contentCount = db.prepare(
+    "SELECT COUNT(*) as n FROM contenuti WHERE istituto_id=? AND pubblicato=1"
+  ).get(req.params.id).n;
 
-  res.json({ ...istituto, immagini: imgs.map(i => i.media_url), video });
+  res.json({ ...istituto, immagini: imgs.map(i => i.media_url), video, contentCount });
 });
 
 // --- AREA RISERVATA ISTITUTO ---

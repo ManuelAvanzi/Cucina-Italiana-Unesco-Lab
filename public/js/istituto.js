@@ -121,17 +121,22 @@ function renderIstituto(data) {
   const sezioni = { artusi: [], campanello: [], storie: [], generale: [] };
   (data.contenuti || []).forEach(c => { if (sezioni[c.sezione]) sezioni[c.sezione].push(c); });
 
-  // Render tabs
+  // Render content tabs
   renderSezione('artusi', sezioni.artusi, isOwner);
   renderSezione('campanello', sezioni.campanello, isOwner);
   renderSezione('storie', sezioni.storie, isOwner);
   renderSezione('generale', sezioni.generale, isOwner);
 
-  // Show tab if has content, else hide tab button
+  // Render video tab
+  const videos = data.video_tour || [];
+  renderVideoTab(videos);
+
+  // Show/hide tab buttons based on content
   ['artusi','campanello','storie','generale'].forEach(s => {
     const btn = document.querySelector(`[data-tab="${s}"]`);
     if (btn && !sezioni[s].length) btn.style.display = 'none';
   });
+  // Video tab is always visible (even if no videos yet)
 
   // Activate first visible tab
   const firstVisible = document.querySelector('.tab-btn:not([style*="none"])');
@@ -148,6 +153,42 @@ function renderIstituto(data) {
   });
 }
 
+function renderVideoTab(videos) {
+  const container = document.getElementById('tab-video');
+  if (!container) return;
+  if (!videos.length) {
+    container.innerHTML = `<div class="empty-state"><p>Nessun video disponibile.</p></div>`;
+    return;
+  }
+  container.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+      <div>
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:.35rem;">Video Tour</div>
+        <h2 style="font-size:1.4rem;color:#1B4332;margin:0;">I video dell'istituto</h2>
+      </div>
+      <span style="font-size:.82rem;color:#999;font-weight:600;">${videos.length} video</span>
+    </div>
+    <div class="grid-2" style="gap:1.5rem;">
+      ${videos.map(v => `
+        <div class="video-card" style="display:flex;flex-direction:column;">
+          <div class="video-thumb" onclick="openVideoModal('${sanitizeText(v.youtube_id)}')" style="cursor:pointer;">
+            <img src="${ytThumb(v.youtube_id, 'hqdefault')}" alt="${sanitizeText(v.titolo)}" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;">
+            <div class="video-play-btn"><div class="play-icon">&#9654;</div></div>
+            ${v.tema ? `<div style="position:absolute;top:.6rem;left:.6rem;background:#1B4332;color:#fff;font-size:.68rem;font-weight:700;padding:.2rem .55rem;border-radius:4px;text-transform:uppercase;letter-spacing:.3px;">${sanitizeText(v.tema)}</div>` : ''}
+          </div>
+          <div class="video-info" style="padding:1rem 1.2rem 1.2rem;">
+            <h4 style="font-size:1.05rem;margin-bottom:.35rem;line-height:1.35;">${sanitizeText(v.titolo)}</h4>
+            ${v.descrizione ? `<p style="font-size:.88rem;color:#666;line-height:1.6;margin:.3rem 0 .5rem;">${sanitizeText(v.descrizione)}</p>` : ''}
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;">
+              ${v.territorio ? `<div style="font-size:.78rem;color:#2D6A4F;font-weight:600;">${sanitizeText(v.territorio)}</div>` : '<span></span>'}
+              <a href="https://youtube.com/watch?v=${sanitizeText(v.youtube_id)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:.72rem;color:#aaa;text-decoration:none;" title="Apri su YouTube">YouTube ↗</a>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
 function renderSezione(sezione, contenuti, isOwner = false) {
   const container = document.getElementById(`tab-${sezione}`);
   if (!container) return;
@@ -157,18 +198,45 @@ function renderSezione(sezione, contenuti, isOwner = false) {
       : `<div class="empty-state"><p>Nessun contenuto disponibile.</p></div>`;
     return;
   }
-  container.innerHTML = contenuti.map(c => renderContenuto(c, isOwner)).join('');
+  container.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+      <span style="font-size:.82rem;color:#999;font-weight:600;">${contenuti.length} contenut${contenuti.length === 1 ? 'o' : 'i'}</span>
+    </div>
+    ${contenuti.map(c => renderContenuto(c, isOwner)).join('')}`;
 }
 
 function renderContenuto(c, isOwner = false) {
-  const typeIcons = { testo: '', immagine: '', video: '', ricetta: '' };
-  let mediaHtml = '';
+  const uid = `contenuto-${c.id}`;
 
+  // Compact thumbnail
+  let thumbHtml = '';
   if (c.media_url && c.tipo !== 'video') {
-    mediaHtml = `<img src="${c.media_url}" alt="${sanitizeText(c.titolo)}" style="width:100%;border-radius:10px;max-height:380px;object-fit:cover;margin-bottom:1rem;" loading="lazy">`;
+    thumbHtml = `<img src="${c.media_url}" alt="" style="width:72px;height:72px;border-radius:8px;object-fit:cover;flex-shrink:0;" loading="lazy">`;
   } else if (c.tipo === 'video' && c.youtube_id) {
-    mediaHtml = `
-      <div class="video-thumb" onclick="openVideoModal('${sanitizeText(c.youtube_id)}')" style="border-radius:10px;overflow:hidden;margin-bottom:1rem;cursor:pointer;">
+    thumbHtml = `<div style="width:72px;height:72px;border-radius:8px;overflow:hidden;flex-shrink:0;position:relative;cursor:pointer;" onclick="event.stopPropagation();openVideoModal('${sanitizeText(c.youtube_id)}')">
+      <img src="${ytThumb(c.youtube_id)}" alt="" style="width:100%;height:100%;object-fit:cover;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);"><span style="color:#fff;font-size:1.2rem;">&#9654;</span></div>
+    </div>`;
+  } else {
+    thumbHtml = `<div style="width:72px;height:72px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,#e8f5e9,#c8e6c9);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#2D6A4F;">&#9998;</div>`;
+  }
+
+  // Truncated body for preview
+  const bodyText = c.corpo || '';
+  const truncated = bodyText.length > 120 ? bodyText.slice(0, 120) + '…' : bodyText;
+
+  // Type badge
+  const typeLabels = { testo: 'Testo', immagine: 'Immagine', video: 'Video', ricetta: 'Ricetta' };
+  const typeColors = { testo: '#1565C0', immagine: '#2D6A4F', video: '#C44B2F', ricetta: '#7a4a1e' };
+  const badge = `<span style="font-size:.65rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:${typeColors[c.tipo]||'#888'};background:${typeColors[c.tipo]||'#888'}15;padding:.1rem .45rem;border-radius:3px;">${typeLabels[c.tipo]||c.tipo}</span>`;
+
+  // Expanded content
+  let fullMediaHtml = '';
+  if (c.media_url && c.tipo !== 'video') {
+    fullMediaHtml = `<img src="${c.media_url}" alt="${sanitizeText(c.titolo)}" style="width:100%;border-radius:10px;max-height:450px;object-fit:cover;margin-bottom:1rem;" loading="lazy">`;
+  } else if (c.tipo === 'video' && c.youtube_id) {
+    fullMediaHtml = `
+      <div class="video-thumb" onclick="openVideoModal('${sanitizeText(c.youtube_id)}')" style="border-radius:10px;overflow:hidden;margin-bottom:1rem;cursor:pointer;position:relative;">
         <img src="${ytThumb(c.youtube_id, 'hqdefault')}" alt="${sanitizeText(c.titolo)}" style="width:100%;aspect-ratio:16/9;object-fit:cover;" loading="lazy">
         <div class="video-play-btn"><div class="play-icon">&#9654;</div></div>
       </div>`;
@@ -176,22 +244,47 @@ function renderContenuto(c, isOwner = false) {
 
   const ownerActions = isOwner ? `
     <div style="display:flex;gap:.5rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid #f0f0f0;">
-      <a href="/dashboard/contenuti.html" onclick="sessionStorage.setItem('preview_edit_id','${c.id}');return true;" style="font-size:.78rem;padding:.3rem .75rem;border:1px solid #2D6A4F;border-radius:6px;color:#2D6A4F;text-decoration:none;font-weight:600;">Modifica</a>
-      <button onclick="previewDeleteContenuto(${c.id},this)" style="font-size:.78rem;padding:.3rem .75rem;border:1px solid #C44B2F;border-radius:6px;color:#C44B2F;background:none;cursor:pointer;font-weight:600;">Elimina</button>
+      <a href="/dashboard/contenuti.html" onclick="event.stopPropagation();sessionStorage.setItem('preview_edit_id','${c.id}');" style="font-size:.78rem;padding:.3rem .75rem;border:1px solid #2D6A4F;border-radius:6px;color:#2D6A4F;text-decoration:none;font-weight:600;">Modifica</a>
+      <button onclick="event.stopPropagation();previewDeleteContenuto(${c.id},this)" style="font-size:.78rem;padding:.3rem .75rem;border:1px solid #C44B2F;border-radius:6px;color:#C44B2F;background:none;cursor:pointer;font-weight:600;">Elimina</button>
     </div>` : '';
 
   return `
-    <div class="card" style="margin-bottom:1.75rem;">
-      <div class="card-body">
-        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;">
-          <h3 style="font-size:1.15rem;color:#1B4332;">${sanitizeText(c.titolo)}</h3>
+    <div class="contenuto-card" id="${uid}" onclick="toggleContenuto('${uid}')" style="background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:.85rem;cursor:pointer;transition:all .3s ease;overflow:hidden;">
+      <!-- Compact preview -->
+      <div class="contenuto-preview" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;">
+        ${thumbHtml}
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;">
+            ${badge}
+          </div>
+          <h4 style="font-size:.95rem;color:#1B4332;margin:0 0 .25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sanitizeText(c.titolo)}</h4>
+          <p style="font-size:.82rem;color:#888;margin:0;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${sanitizeText(truncated)}</p>
         </div>
-        ${mediaHtml}
-        ${c.corpo ? `<div style="font-size:.95rem;line-height:1.7;color:#333;white-space:pre-wrap;">${sanitizeText(c.corpo)}</div>` : ''}
-        ${ownerActions}
+        <div class="contenuto-chevron" style="font-size:1.1rem;color:#bbb;transition:transform .3s;flex-shrink:0;">&#9660;</div>
+      </div>
+      <!-- Expanded full content (hidden by default) -->
+      <div class="contenuto-full" style="display:none;padding:0 1.2rem 1.2rem;">
+        <div style="border-top:1px solid #f0f0f0;padding-top:1rem;">
+          ${fullMediaHtml}
+          ${bodyText ? `<div style="font-size:.93rem;line-height:1.7;color:#333;white-space:pre-wrap;">${sanitizeText(bodyText)}</div>` : ''}
+          ${ownerActions}
+        </div>
       </div>
     </div>`;
 }
+
+function toggleContenuto(uid) {
+  const card = document.getElementById(uid);
+  if (!card) return;
+  const full = card.querySelector('.contenuto-full');
+  const chevron = card.querySelector('.contenuto-chevron');
+  const isOpen = full.style.display !== 'none';
+  full.style.display = isOpen ? 'none' : 'block';
+  chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  card.style.boxShadow = isOpen ? '0 2px 12px rgba(0,0,0,.07)' : '0 4px 24px rgba(0,0,0,.12)';
+}
+
+window.toggleContenuto = toggleContenuto;
 
 // ---- Lista istituti ----
 async function initIstitutiList() {

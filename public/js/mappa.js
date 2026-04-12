@@ -76,18 +76,23 @@ async function initMappa() {
   }
 
   function buildPopup(ist) {
-    const desc = (ist.descrizione || 'Istituto alberghiero e di ristorazione').slice(0, 100);
-    const tail = ist.descrizione && ist.descrizione.length > 100 ? '…' : '';
+    const desc = (ist.descrizione || 'Istituto alberghiero e di ristorazione').slice(0, 85);
+    const tail = ist.descrizione && ist.descrizione.length > 85 ? '…' : '';
     return `
-      <div class="popup-header">
-        <h4>${sanitizeText(ist.nome)}</h4>
-        <div class="popup-loc">${sanitizeText(ist.citta)}, ${sanitizeText(ist.regione)}</div>
+      <div style="padding:0;background:#fff;border-radius:8px;overflow:hidden;min-width:280px;">
+        <div style="background:linear-gradient(135deg,#1B4332,#2D6A4F);padding:1.2rem;text-align:center;position:relative;">
+          ${ist.logo ? `<img src="${ist.logo}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.6);margin-bottom:.5rem;">` : ''}
+          <h4 style="color:#fff;margin:.3rem 0;font-size:1rem;">${sanitizeText(ist.nome)}</h4>
+          <div style="font-size:.8rem;color:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;gap:.3rem;">
+            <span style="color:#81b99a;">●</span> ${sanitizeText(ist.citta)}, ${sanitizeText(ist.regione)}
+          </div>
+        </div>
+        <div style="padding:1rem;">
+          <p style="font-size:.83rem;color:#555;line-height:1.5;margin:.3rem 0;">${sanitizeText(desc)}${tail}</p>
+          <div id="popup-detail-${ist.id}" style="margin-top:.8rem;"></div>
+        </div>
+        <a href="/istituto.html?id=${ist.id}" style="display:block;background:#C44B2F;color:#fff;text-align:center;padding:.65rem;text-decoration:none;font-weight:600;font-size:.85rem;transition:background .3s;" onmouseover="this.style.background='#a33b22'" onmouseout="this.style.background='#C44B2F'">Scopri l'istituto →</a>
       </div>
-      <div class="popup-body">
-        <p class="popup-desc">${sanitizeText(desc)}${tail}</p>
-        <div id="popup-detail-${ist.id}" style="min-height:10px;"></div>
-      </div>
-      <a href="/istituto.html?id=${ist.id}" class="popup-btn">Scopri l'istituto &rarr;</a>
     `;
   }
 
@@ -97,21 +102,30 @@ async function initMappa() {
       const el = document.getElementById(`popup-detail-${id}`);
       if (!el) return;
       let html = '';
-      if (data.immagini && data.immagini.length > 0) {
-        html += `<div class="popup-imgs">`;
-        data.immagini.forEach(url => { html += `<img src="${url}" alt="" loading="lazy">`; });
+      const hasImgs = data.immagini && data.immagini.length > 0;
+      const hasVideo = data.video && data.video.length > 0;
+      const contentCount = (data.contentCount || 0) + (hasImgs ? data.immagini.length : 0) + (hasVideo ? data.video.length : 0);
+
+      if (hasImgs) {
+        html += `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:.8rem;">`;
+        data.immagini.forEach(url => { html += `<img src="${url}" alt="" style="width:100%;aspect-ratio:1;border-radius:6px;object-fit:cover;" loading="lazy">`; });
         html += `</div>`;
       }
-      if (data.video && data.video.length > 0) {
-        html += `<div style="display:flex;gap:6px;flex-wrap:wrap;">`;
+      if (hasVideo) {
+        html += `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.8rem;">`;
         data.video.forEach(v => {
-          html += `<button onclick="openVideoModal('${sanitizeText(v.youtube_id)}')" style="background:none;border:none;cursor:pointer;padding:0;">
-            <img src="${ytThumb(v.youtube_id)}" style="width:90px;border-radius:6px;" alt="${sanitizeText(v.titolo)}">
+          html += `<button onclick="openVideoModal('${sanitizeText(v.youtube_id)}')" style="background:none;border:none;cursor:pointer;padding:0;position:relative;">
+            <img src="${ytThumb(v.youtube_id)}" style="width:80px;height:45px;border-radius:5px;object-fit:cover;">
+            <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;">▶</span>
           </button>`;
         });
         html += `</div>`;
       }
-      if (!html) html = `<p class="popup-no-content">Nessun contenuto ancora disponibile.</p>`;
+      if (!html) {
+        html = `<div style="padding:.8rem;background:#f5f5f5;border-radius:6px;text-align:center;font-size:.8rem;color:#999;">📝 In preparazione</div>`;
+      } else {
+        html += `<div style="font-size:.75rem;color:#999;padding-top:.6rem;border-top:1px solid #eee;">Vai alla pagina per tutti i contenuti ↓</div>`;
+      }
       el.innerHTML = html;
       marker.update && marker.update();
     } catch {}
