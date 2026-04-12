@@ -104,7 +104,7 @@ async function initMappa() {
       let html = '';
       const hasImgs = data.immagini && data.immagini.length > 0;
       const hasVideo = data.video && data.video.length > 0;
-      const contentCount = (data.contentCount || 0) + (hasImgs ? data.immagini.length : 0) + (hasVideo ? data.video.length : 0);
+      const totalContent = data.contentCount || 0;
 
       if (hasImgs) {
         html += `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:.8rem;">`;
@@ -121,10 +121,10 @@ async function initMappa() {
         });
         html += `</div>`;
       }
-      if (!html) {
-        html = `<div style="padding:.8rem;background:#f5f5f5;border-radius:6px;text-align:center;font-size:.8rem;color:#999;">📝 In preparazione</div>`;
-      } else {
-        html += `<div style="font-size:.75rem;color:#999;padding-top:.6rem;border-top:1px solid #eee;">Vai alla pagina per tutti i contenuti ↓</div>`;
+      if (html) {
+        html += `<div style="font-size:.75rem;color:#999;padding-top:.6rem;border-top:1px solid #eee;text-align:center;">Vai alla pagina per tutti i ${totalContent} contenut${totalContent===1?'o':'i'} ↓</div>`;
+      } else if (totalContent > 0) {
+        html = `<div style="font-size:.8rem;color:#666;padding:.6rem;text-align:center;">📝 <strong>${totalContent} contenut${totalContent===1?'o':'i'}</strong> caricato${totalContent===1?'':'i'}<br><span style="font-size:.75rem;color:#999;">(testi, ricette e altro)</span></div>`;
       }
       el.innerHTML = html;
       marker.update && marker.update();
