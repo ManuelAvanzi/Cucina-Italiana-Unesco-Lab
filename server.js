@@ -47,7 +47,11 @@ app.use(express.static(path.join(__dirname, 'public'), {
     }
   }
 }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Uploads: in produzione su Render usa il disco persistente
+const UPLOADS_DIR = process.env.DATA_DIR
+  ? path.join(process.env.DATA_DIR, 'uploads')
+  : path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(UPLOADS_DIR));
 
 // API Routes
 app.use('/api/auth', require('./routes/auth'));

@@ -7,11 +7,19 @@ const { authIstituto, authAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 
+const BASE_UPLOADS = process.env.DATA_DIR
+  ? path.join(process.env.DATA_DIR, 'uploads')
+  : path.join(__dirname, '../uploads');
+
+// Assicura che le directory esistano
+fs.mkdirSync(path.join(BASE_UPLOADS, 'immagini'), { recursive: true });
+fs.mkdirSync(path.join(BASE_UPLOADS, 'video'), { recursive: true });
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = file.mimetype.startsWith('image/') ?
-      path.join(__dirname, '../uploads/immagini') :
-      path.join(__dirname, '../uploads/video');
+    const dir = file.mimetype.startsWith('image/')
+      ? path.join(BASE_UPLOADS, 'immagini')
+      : path.join(BASE_UPLOADS, 'video');
     cb(null, dir);
   },
   filename: (req, file, cb) => {
