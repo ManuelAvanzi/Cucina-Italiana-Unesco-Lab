@@ -40,7 +40,7 @@ router.get('/pubblico', (req, res) => {
   const params = [];
   if (sezione) { sql += ' AND c.sezione=?'; params.push(sezione); }
   if (tipo) { sql += ' AND c.tipo=?'; params.push(tipo); }
-  sql += ' ORDER BY c.created_at DESC LIMIT ?';
+  sql += ' ORDER BY CASE WHEN c.media_url IS NOT NULL OR c.youtube_id IS NOT NULL THEN 0 ELSE 1 END, c.created_at DESC LIMIT ?';
   params.push(parseInt(limit));
   res.json(db.prepare(sql).all(...params));
 });
@@ -152,6 +152,15 @@ router.patch('/admin/:id/pubblica', authAdmin, (req, res) => {
   const c = db.prepare('SELECT pubblicato FROM contenuti WHERE id=?').get(req.params.id);
   if (!c) return res.status(404).json({ error: 'Non trovato' });
   db.prepare('UPDATE contenuti SET pubblicato=? WHERE id=?').run(c.pubblicato ? 0 : 1, req.params.id);
+  res.json({ success: true });
+});
+
+// Admin: DELETE contenuto
+router.delete('/admin/:id', authAdmin, (req, res) => {
+  const db = getDb();
+  const c = db.prepare('SELECT id FROM contenuti WHERE id=?').get(req.params.id);
+  if (!c) return res.status(404).json({ error: 'Non trovato' });
+  db.prepare('DELETE FROM contenuti WHERE id=?').run(req.params.id);
   res.json({ success: true });
 });
 

@@ -82,7 +82,8 @@ function ytThumb(id, quality = 'mqdefault') {
 }
 
 function ytEmbed(id) {
-  return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+  const origin = encodeURIComponent(window.location.origin);
+  return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&origin=${origin}&enablejsapi=1`;
 }
 
 function sanitizeText(str) {
@@ -138,7 +139,68 @@ function initScrollAnimations() {
 document.addEventListener('DOMContentLoaded', () => {
   initLazyImages();
   initScrollAnimations();
+  injectUserBanner();
 });
+
+// ---- Barra utente loggato (persistente su tutte le pagine pubbliche) ----
+function injectUserBanner() {
+  // Non mostrare nelle pagine admin o dashboard (hanno già la propria UI)
+  const path = window.location.pathname;
+  if (path.startsWith('/admin') || path.startsWith('/dashboard')) return;
+
+  let name = null, link = null, isAdmin = false;
+
+  const adminToken = localStorage.getItem('admin_token');
+  if (adminToken) {
+    name = 'Admin';
+    link = '/admin/index.html';
+    isAdmin = true;
+  } else {
+    try {
+      const ist = JSON.parse(localStorage.getItem('istituto') || 'null');
+      if (ist && ist.nome) {
+        name = ist.nome;
+        link = '/dashboard/profilo.html';
+      }
+    } catch {}
+  }
+
+  if (!name) return;
+
+  const bar = document.createElement('div');
+  bar.id = 'user-banner';
+  const bg = isAdmin ? '#5c1a0a' : '#1B4332';
+  bar.style.cssText = `background:${bg};color:rgba(255,255,255,.9);font-size:.78rem;font-family:Lato,sans-serif;padding:0 1.25rem;height:30px;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:10000;letter-spacing:.2px;`;
+
+  const greeting = isAdmin
+    ? `<span>Pannello Admin — sei loggato come <strong>Admin</strong></span>`
+    : `<span>Bentornato, <strong>${sanitizeText(name)}</strong></span>`;
+
+  bar.innerHTML = `
+    ${greeting}
+    <div style="display:flex;align-items:center;gap:1.2rem;">
+      <a href="${link}" style="color:rgba(255,255,255,.75);text-decoration:none;font-weight:600;">${isAdmin ? '← Pannello' : 'Dashboard →'}</a>
+      <button onclick="userBannerLogout()" style="background:none;border:1px solid rgba(255,255,255,.35);color:rgba(255,255,255,.75);border-radius:4px;padding:.1rem .55rem;font-size:.72rem;cursor:pointer;font-family:inherit;">Esci</button>
+    </div>`;
+  document.body.prepend(bar);
+
+  // Abbassa la navbar per fare spazio alla barra
+  const navbar = document.querySelector('.navbar');
+  if (navbar) {
+    const currentTop = parseInt(getComputedStyle(navbar).top) || 0;
+    navbar.style.top = (currentTop + 30) + 'px';
+  }
+}
+
+function userBannerLogout() {
+  localStorage.removeItem('admin_token');
+  localStorage.removeItem('token');
+  localStorage.removeItem('istituto');
+  const bar = document.getElementById('user-banner');
+  if (bar) bar.remove();
+  const navbar = document.querySelector('.navbar');
+  if (navbar) navbar.style.top = '';
+}
 
 // ---- Global video modal ----
 function openVideoModal(youtubeId) {
@@ -150,7 +212,7 @@ function openVideoModal(youtubeId) {
     modal.innerHTML = `
       <div class="video-modal-inner">
         <button class="video-modal-close" onclick="closeVideoModal()">&#x2715;</button>
-        <iframe id="video-modal-iframe" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        <iframe id="video-modal-iframe" allowfullscreen allow="autoplay; accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" frameborder="0"></iframe>
         <div style="text-align:center;margin-top:.6rem;">
           <a id="video-yt-link" href="#" target="_blank" rel="noopener"
             style="color:rgba(255,255,255,.6);font-size:.8rem;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.3);">

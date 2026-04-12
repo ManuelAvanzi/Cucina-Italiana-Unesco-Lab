@@ -25,32 +25,54 @@
   </div>
 </nav>
 
-<div style="background:linear-gradient(135deg,#1a1a1a,#2D6A4F);padding:3.5rem 1.5rem 2.5rem;text-align:center;">
-  <h1 style="color:#fff;margin-bottom:.75rem;">Video Tour Enogastronomico</h1>
-  <p style="color:rgba(255,255,255,.75);font-size:1.05rem;max-width:580px;margin:0 auto;">
-    Esplora i sapori d'Italia attraverso i video selezionati dagli istituti alberghieri. Un viaggio multimediale tra ricette, tradizioni e territori.
-  </p>
+<!-- HERO -->
+<div style="background:linear-gradient(135deg,#1a1a1a 0%,#1B4332 60%,#2D6A4F 100%);padding:4rem 1.5rem 3rem;text-align:center;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22none%22 stroke=%22rgba(255,255,255,.04)%22 stroke-width=%2220%22/></svg>') repeat;opacity:.4;"></div>
+  <div style="position:relative;z-index:1;">
+    <div style="display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:.35rem 1.1rem;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:1.25rem;">▶ Raccolta Video</div>
+    <h1 style="color:#fff;margin-bottom:.75rem;font-size:clamp(1.8rem,4vw,2.8rem);">Video Tour Enogastronomico</h1>
+    <p style="color:rgba(255,255,255,.75);font-size:1.05rem;max-width:580px;margin:0 auto 2rem;">
+      Esplora i sapori d'Italia attraverso i video degli istituti alberghieri. Un viaggio multimediale tra ricette, tradizioni e territori.
+    </p>
+    <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div id="hero-count" style="font-size:2rem;font-weight:700;color:#fff;">—</div>
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.55);">Video disponibili</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,.2);"></div>
+      <div style="text-align:center;">
+        <div id="hero-regioni" style="font-size:2rem;font-weight:700;color:#fff;">—</div>
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.55);">Regioni rappresentate</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,.2);"></div>
+      <div style="text-align:center;">
+        <div id="hero-temi" style="font-size:2rem;font-weight:700;color:#fff;">—</div>
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.55);">Temi trattati</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <section class="section" style="padding-top:2.5rem;">
   <div class="container">
 
-    <!-- SEARCH + COUNTER -->
-    <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:1.75rem;">
-      <input type="text" id="video-search" class="search-input" placeholder="Cerca titolo, descrizione…" style="max-width:340px;">
-      <span id="video-counter" style="font-size:.85rem;color:#888;font-weight:700;"></span>
-    </div>
+    <!-- FILTRI + CERCA -->
+    <div style="background:#fff;border-radius:14px;box-shadow:0 2px 16px rgba(0,0,0,.07);padding:1.25rem 1.5rem;margin-bottom:2rem;">
 
-    <!-- FILTRI TEMA -->
-    <div style="margin-bottom:1rem;">
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:.6rem;">Tema</div>
-      <div id="filter-temi" class="filters-bar"></div>
-    </div>
+      <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:1.25rem;">
+        <input type="text" id="video-search" class="search-input" placeholder="Cerca titolo, descrizione, istituto…" style="flex:1;min-width:220px;max-width:400px;">
+        <span id="video-counter" style="font-size:.85rem;color:#888;font-weight:700;margin-left:auto;"></span>
+      </div>
 
-    <!-- FILTRI TERRITORIO -->
-    <div style="margin-bottom:2rem;">
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:.6rem;">Territorio</div>
-      <div id="filter-territorio" class="filters-bar"></div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin-bottom:.5rem;">Tema</div>
+        <div id="filter-temi" class="filters-bar"></div>
+      </div>
+
+      <div>
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin-bottom:.5rem;">Territorio</div>
+        <div id="filter-territorio" class="filters-bar"></div>
+      </div>
     </div>
 
     <!-- LOADING -->
@@ -63,6 +85,7 @@
 
     <!-- PAGINATION -->
     <div id="video-pagination" class="pagination"></div>
+
   </div>
 </section>
 
@@ -72,18 +95,18 @@
     <div class="footer-links"><h4>Esplora</h4><ul><li><a href="/">Home</a></li><li><a href="/museo.html">Museo</a></li><li><a href="/mappa.html">Mappa</a></li><li><a href="/istituti.html">Istituti</a></li></ul></div>
   </div>
   <div class="footer-bottom">
-  <div class="footer-loghi">
-    <div class="footer-logo-item">
-      <span class="footer-logo-label">Progetto realizzato da</span>
-      <img src="/assets/logo-carrarolab.png" alt="CarraroLAB" class="logo-carrarolab">
+    <div class="footer-loghi">
+      <div class="footer-logo-item">
+        <span class="footer-logo-label">Progetto realizzato da</span>
+        <img src="/assets/logo-carrarolab.png" alt="CarraroLAB" class="logo-carrarolab">
+      </div>
+      <div class="footer-logo-item">
+        <span class="footer-logo-label">In collaborazione con</span>
+        <img src="/assets/logo-renaia.jpg" alt="RE·NA·I·A" class="logo-renaia">
+      </div>
     </div>
-    <div class="footer-logo-item">
-      <span class="footer-logo-label">In collaborazione con</span>
-      <img src="/assets/logo-renaia.jpg" alt="RE·NA·I·A" class="logo-renaia">
-    </div>
+    <p>&copy; 2024 Cucina Italiana UNESCO Lab</p>
   </div>
-  <p>&copy; 2024 Cucina Italiana UNESCO Lab</p>
-</div>
 </footer>
 
 <script src="/js/main.js"></script>

@@ -28,10 +28,33 @@ function checkIsOwner(istitutiId) {
   } catch { return false; }
 }
 
+function checkIsAdmin() {
+  try {
+    return !!localStorage.getItem('admin_token');
+  } catch { return false; }
+}
+
 function addPreviewBar(istitutiId) {
   const bar = document.createElement('div');
   bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#1B4332;color:#fff;padding:.55rem 1.25rem;display:flex;align-items:center;justify-content:space-between;font-size:.83rem;box-shadow:0 2px 8px rgba(0,0,0,.3);';
   bar.innerHTML = `<span style="opacity:.85;">Stai visualizzando l'anteprima pubblica del tuo istituto</span><div style="display:flex;gap:1rem;"><a href="/dashboard/profilo.html" style="color:#81b99a;text-decoration:none;">Modifica profilo</a><a href="/dashboard/contenuti.html" style="color:#81b99a;text-decoration:none;font-weight:600;">Gestisci contenuti →</a></div>`;
+  document.body.prepend(bar);
+  document.body.style.paddingTop = (parseInt(getComputedStyle(document.body).paddingTop) || 0) + 42 + 'px';
+}
+
+function addAdminBar(istitutiId) {
+  const bar = document.createElement('div');
+  bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#C44B2F;color:#fff;padding:.55rem 1.25rem;display:flex;align-items:center;justify-content:space-between;font-size:.83rem;box-shadow:0 2px 8px rgba(0,0,0,.3);';
+  bar.innerHTML = `
+    <div style="display:flex;align-items:center;gap:.75rem;">
+      <span style="background:rgba(255,255,255,.2);padding:.15rem .5rem;border-radius:4px;font-weight:700;font-size:.75rem;letter-spacing:.5px;">ADMIN</span>
+      <span style="opacity:.9;">Stai visualizzando la pagina pubblica come amministratore</span>
+    </div>
+    <div style="display:flex;gap:1rem;">
+      <a href="/admin/contenuti.html" style="color:#ffd4cc;text-decoration:none;">Contenuti</a>
+      <a href="/admin/istituti.html" style="color:#ffd4cc;text-decoration:none;">Istituti</a>
+      <a href="/admin/index.html" style="color:#fff;text-decoration:none;font-weight:600;">← Torna al pannello</a>
+    </div>`;
   document.body.prepend(bar);
   document.body.style.paddingTop = (parseInt(getComputedStyle(document.body).paddingTop) || 0) + 42 + 'px';
 }
@@ -50,7 +73,13 @@ async function previewDeleteContenuto(id, btn) {
 function renderIstituto(data) {
   document.title = `${data.nome} — Cucina Italiana UNESCO Lab`;
   const isOwner = checkIsOwner(data.id);
-  if (isOwner) {
+  const isAdmin = checkIsAdmin();
+
+  if (isAdmin) {
+    addAdminBar(data.id);
+    const crumb = document.getElementById('breadcrumb-back');
+    if (crumb) { crumb.href = '/admin/istituti.html'; crumb.textContent = '← Torna al pannello admin'; }
+  } else if (isOwner) {
     addPreviewBar(data.id);
     const crumb = document.getElementById('breadcrumb-back');
     if (crumb) { crumb.href = '/dashboard/profilo.html'; crumb.textContent = '← Torna alla dashboard'; }
@@ -78,7 +107,6 @@ function renderIstituto(data) {
       </div>`;
     hero.style.position = 'relative';
     hero.style.overflow = 'hidden';
-    // Cover personalizzata o Unsplash di default
     const heroBg = hero.querySelector('.istituto-hero-bg');
     if (data.cover_url) {
       heroBg.style.backgroundImage = `url('${data.cover_url}')`;
@@ -136,16 +164,14 @@ function renderContenuto(c, isOwner = false) {
   const typeIcons = { testo: '', immagine: '', video: '', ricetta: '' };
   let mediaHtml = '';
 
-  if (c.tipo === 'immagine' && c.media_url) {
-    mediaHtml = `<img src="${c.media_url}" alt="${sanitizeText(c.titolo)}" style="width:100%;border-radius:10px;max-height:400px;object-fit:cover;margin-bottom:1rem;" loading="lazy">`;
+  if (c.media_url && c.tipo !== 'video') {
+    mediaHtml = `<img src="${c.media_url}" alt="${sanitizeText(c.titolo)}" style="width:100%;border-radius:10px;max-height:380px;object-fit:cover;margin-bottom:1rem;" loading="lazy">`;
   } else if (c.tipo === 'video' && c.youtube_id) {
     mediaHtml = `
       <div class="video-thumb" onclick="openVideoModal('${sanitizeText(c.youtube_id)}')" style="border-radius:10px;overflow:hidden;margin-bottom:1rem;cursor:pointer;">
         <img src="${ytThumb(c.youtube_id, 'hqdefault')}" alt="${sanitizeText(c.titolo)}" style="width:100%;aspect-ratio:16/9;object-fit:cover;" loading="lazy">
         <div class="video-play-btn"><div class="play-icon">&#9654;</div></div>
       </div>`;
-  } else if (c.media_url) {
-    mediaHtml = `<video controls style="width:100%;border-radius:10px;margin-bottom:1rem;"><source src="${c.media_url}"></video>`;
   }
 
   const ownerActions = isOwner ? `
@@ -172,41 +198,103 @@ async function initIstitutiList() {
   const grid = document.getElementById('istituti-grid');
   if (!grid) return;
 
-  try {
-    const list = await apiFetch('/istituti');
-    const regioni = await apiFetch('/istituti/regioni');
-    buildRegioniFilter(regioni, list);
-    renderIstitutiGrid(list);
+  const urlParams = new URLSearchParams(window.location.search);
+  const sezioneParam = urlParams.get('sezione') || '';
 
-    document.getElementById('istituti-count').textContent = list.length;
+  const sezioneLabels = {
+    artusi: 'A Scuola da Artusi',
+    campanello: 'La Cucina del Campanello',
+    storie: 'Storie Culinarie'
+  };
+  const sezioneDescs = {
+    artusi: 'Istituti con ricette e video ispirati al trattato di Pellegrino Artusi.',
+    campanello: 'Istituti con racconti e varianti familiari della cucina locale.',
+    storie: 'Istituti che documentano la storia e le tradizioni culinarie del territorio.'
+  };
 
-    const searchInput = document.getElementById('istituti-search');
-    if (searchInput) {
-      let t;
-      searchInput.addEventListener('input', () => {
-        clearTimeout(t);
-        t = setTimeout(() => {
-          const q = searchInput.value.toLowerCase();
-          const filtered = list.filter(i => i.nome.toLowerCase().includes(q) || i.citta.toLowerCase().includes(q));
-          renderIstitutiGrid(filtered);
-        }, 300);
-      });
+  // Aggiorna titolo e descrizione hero se sezione attiva
+  if (sezioneParam && sezioneLabels[sezioneParam]) {
+    const titleEl = document.getElementById('istituti-page-title');
+    const descEl  = document.getElementById('istituti-page-desc');
+    if (titleEl) titleEl.textContent = sezioneLabels[sezioneParam];
+    if (descEl)  descEl.innerHTML = sezioneDescs[sezioneParam] + ' <span id="istituti-count" style="color:var(--crema);font-weight:700;"></span>';
+  }
+
+  let activeSezione = sezioneParam;
+  let activeRegione = '';
+  let searchQ = '';
+  let allList = [];
+
+  async function loadList() {
+    let url = '/istituti';
+    const p = new URLSearchParams();
+    if (activeSezione) p.set('sezione', activeSezione);
+    if (activeRegione) p.set('regione', activeRegione);
+    if (p.toString()) url += '?' + p.toString();
+    return apiFetch(url);
+  }
+
+  function applySearch(list) {
+    if (!searchQ) return list;
+    const q = searchQ.toLowerCase();
+    return list.filter(i => i.nome.toLowerCase().includes(q) || i.citta.toLowerCase().includes(q));
+  }
+
+  async function refresh() {
+    try {
+      allList = await loadList();
+      renderIstitutiGrid(applySearch(allList));
+      const countEl = document.getElementById('istituti-count');
+      if (countEl) countEl.textContent = allList.length ? `— ${allList.length} iscritti` : '';
+    } catch (e) {
+      grid.innerHTML = `<p style="color:#666;text-align:center;">Errore nel caricamento degli istituti.</p>`;
     }
+  }
+
+  try {
+    const regioni = await apiFetch('/istituti/regioni');
+    buildRegioniFilter(regioni);
+    buildSezioniFilter();
+    await refresh();
   } catch (e) {
     grid.innerHTML = `<p style="color:#666;text-align:center;">Errore nel caricamento degli istituti.</p>`;
   }
 
-  function buildRegioniFilter(regioni, allList) {
+  const searchInput = document.getElementById('istituti-search');
+  if (searchInput) {
+    let t;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(t);
+      t = setTimeout(() => { searchQ = searchInput.value; renderIstitutiGrid(applySearch(allList)); }, 300);
+    });
+  }
+
+  function buildSezioniFilter() {
+    const container = document.getElementById('filter-sezioni');
+    if (!container) return;
+    container.querySelectorAll('.filter-btn').forEach(btn => {
+      if (btn.dataset.s === activeSezione) btn.classList.add('active');
+      else btn.classList.remove('active');
+      btn.addEventListener('click', async () => {
+        container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeSezione = btn.dataset.s;
+        await refresh();
+      });
+    });
+  }
+
+  function buildRegioniFilter(regioni) {
     const container = document.getElementById('filter-regioni');
     if (!container) return;
     container.innerHTML = `<button class="filter-btn active" data-r="">Tutte</button>` +
       regioni.map(r => `<button class="filter-btn" data-r="${r}">${r}</button>`).join('');
     container.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const r = btn.dataset.r;
-        renderIstitutiGrid(r ? allList.filter(i => i.regione === r) : allList);
+        activeRegione = btn.dataset.r;
+        await refresh();
       });
     });
   }
@@ -233,7 +321,6 @@ async function initIstitutiList() {
       </a>`;
     }).join('');
 
-    // Load Unsplash region images if available
     if (window.loadUnsplashImage) {
       grid.querySelectorAll('[data-regione]').forEach(card => {
         const bgEl = card.querySelector('.ist-card-bg');

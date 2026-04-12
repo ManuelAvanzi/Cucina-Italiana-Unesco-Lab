@@ -89,4 +89,34 @@ router.delete('/me/:id', authIstituto, (req, res) => {
   res.json({ success: true });
 });
 
+// --- ADMIN ---
+
+// GET /api/video/admin/all
+router.get('/admin/all', authAdmin, (req, res) => {
+  const db = getDb();
+  res.json(db.prepare(
+    `SELECT v.*, i.nome as istituto_nome, i.regione
+     FROM video_tour v LEFT JOIN istituti i ON v.istituto_id=i.id
+     ORDER BY v.created_at DESC`
+  ).all());
+});
+
+// PATCH /api/video/admin/:id/pubblica
+router.patch('/admin/:id/pubblica', authAdmin, (req, res) => {
+  const db = getDb();
+  const v = db.prepare('SELECT pubblicato FROM video_tour WHERE id=?').get(req.params.id);
+  if (!v) return res.status(404).json({ error: 'Non trovato' });
+  db.prepare('UPDATE video_tour SET pubblicato=? WHERE id=?').run(v.pubblicato ? 0 : 1, req.params.id);
+  res.json({ success: true, pubblicato: !v.pubblicato });
+});
+
+// DELETE /api/video/admin/:id
+router.delete('/admin/:id', authAdmin, (req, res) => {
+  const db = getDb();
+  const v = db.prepare('SELECT id FROM video_tour WHERE id=?').get(req.params.id);
+  if (!v) return res.status(404).json({ error: 'Non trovato' });
+  db.prepare('DELETE FROM video_tour WHERE id=?').run(req.params.id);
+  res.json({ success: true });
+});
+
 module.exports = router;

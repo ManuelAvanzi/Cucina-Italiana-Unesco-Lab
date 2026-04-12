@@ -26,8 +26,8 @@
 </nav>
 
 <div style="background:linear-gradient(135deg,#1B4332,#2D6A4F);padding:3.5rem 1.5rem 2.5rem;text-align:center;">
-  <h1 style="color:#fff;margin-bottom:.75rem;">Gli Istituti Alberghieri</h1>
-  <p style="color:rgba(255,255,255,.75);font-size:1.05rem;max-width:580px;margin:0 auto 1.5rem;">
+  <h1 style="color:#fff;margin-bottom:.75rem;" id="istituti-page-title">Gli Istituti Alberghieri</h1>
+  <p style="color:rgba(255,255,255,.75);font-size:1.05rem;max-width:580px;margin:0 auto 1.5rem;" id="istituti-page-desc">
     Scopri gli istituti alberghieri italiani che partecipano al progetto Cucina Italiana UNESCO Lab.
     <span id="istituti-count" style="color:var(--crema);font-weight:700;"></span>
   </p>
@@ -37,8 +37,18 @@
 <section class="section" style="padding-top:2.5rem;">
   <div class="container">
 
-    <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:1.75rem;">
+    <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:1.25rem;">
       <input type="text" id="istituti-search" class="search-input" placeholder="Cerca istituto o città…" style="max-width:340px;">
+    </div>
+
+    <div style="margin-bottom:.75rem;">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:.6rem;">Filtra per sezione</div>
+      <div id="filter-sezioni" class="filters-bar" style="margin-bottom:1rem;">
+        <button class="filter-btn active" data-s="">Tutte le sezioni</button>
+        <button class="filter-btn" data-s="artusi">A Scuola da Artusi</button>
+        <button class="filter-btn" data-s="campanello">Cucina del Campanello</button>
+        <button class="filter-btn" data-s="storie">Storie Culinarie</button>
+      </div>
     </div>
 
     <div style="margin-bottom:1.75rem;">

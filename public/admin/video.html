@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moderazione Video — Admin</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <style>
+    .yt-thumb { width:96px;height:54px;object-fit:cover;border-radius:6px;vertical-align:middle; }
+    .yt-thumb-placeholder { width:96px;height:54px;border-radius:6px;background:#1B4332;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:1.4rem;vertical-align:middle; }
+    .td-actions { display:flex;gap:.4rem;flex-wrap:wrap; }
+    .btn-pub  { background:#e8f5e9;color:#2D6A4F;border:1px solid #2D6A4F;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-weight:700; }
+    .btn-hide { background:#fff8e1;color:#856404;border:1px solid #f0c030;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-weight:700; }
+    .btn-del  { background:#fdecea;color:#C44B2F;border:1px solid #C44B2F;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-weight:700; }
+    .btn-play { background:#f0f4ff;color:#1565C0;border:1px solid #1565C0;border-radius:6px;padding:.2rem .6rem;font-size:.75rem;cursor:pointer;font-weight:700;text-decoration:none; }
+    .desc-preview { font-size:.78rem;color:#888;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+  </style>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><div class="sidebar-brand">Admin Panel<small>UNESCO LAB</small></div></div>
+    <div class="sidebar-istituto"><div class="nome" id="sb-user">Amministratore</div><div class="citta">Accesso globale</div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Pannello</div>
+      <a href="/admin/index.html"><span class="nav-icon">🏠</span> Dashboard Admin</a>
+      <div class="nav-section-label">Gestione</div>
+      <a href="/admin/istituti.html"><span class="nav-icon">🏫</span> Istituti</a>
+      <a href="/admin/contenuti.html"><span class="nav-icon">📝</span> Contenuti</a>
+      <a href="/admin/video.html" class="active"><span class="nav-icon">🎬</span> Video Tour</a>
+      <a href="/admin/museo.html"><span class="nav-icon">🏛️</span> Museo</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn-logout" onclick="adminLogout()">Esci</button></div>
+  </aside>
+
+  <main class="dash-main">
+    <header class="dash-topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title">Moderazione Video Tour</span>
+      </div>
+    </header>
+
+    <div class="dash-content">
+      <div id="page-alert"></div>
+
+      <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;">
+        <input type="text" id="search-input" class="form-control" placeholder="Cerca titolo o istituto…" style="max-width:280px;" oninput="filterTable()">
+        <select id="filter-pub" class="form-control" style="max-width:160px;" onchange="filterTable()">
+          <option value="">Tutti gli stati</option>
+          <option value="1">Solo pubblicati</option>
+          <option value="0">Solo bozze</option>
+        </select>
+        <span id="count-label" style="font-size:.85rem;color:#888;font-weight:700;"></span>
+      </div>
+
+      <div class="panel">
+        <div class="panel-body" style="padding:0;">
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr><th style="width:96px;">Anteprima</th><th>Titolo / Descrizione</th><th>Istituto</th><th>Territorio</th><th>Stato</th><th>Data</th><th>Azioni</th></tr>
+              </thead>
+              <tbody id="video-tbody">
+                <tr><td colspan="7" style="text-align:center;padding:2rem;color:#aaa;">Caricamento…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/admin/js/admin.js"></script>
+<script>
+let allVideo = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const admin = await requireAdmin();
+  if (!admin) return;
+  document.getElementById('sb-user').textContent = admin.username;
+  try {
+    allVideo = await adminFetch('/video/admin/all');
+    renderTable(allVideo);
+  } catch (e) { showAlert('page-alert', e.message); }
+});
+
+function filterTable() {
+  const q   = document.getElementById('search-input').value.toLowerCase();
+  const pub = document.getElementById('filter-pub').value;
+  renderTable(allVideo.filter(v => {
+    const okQ   = !q   || v.titolo.toLowerCase().includes(q) || (v.istituto_nome||'').toLowerCase().includes(q);
+    const okPub = pub === '' || String(v.pubblicato) === pub;
+    return okQ && okPub;
+  }));
+}
+
+function renderTable(list) {
+  document.getElementById('count-label').textContent = `${list.length} video`;
+  const tbody = document.getElementById('video-tbody');
+  if (!list.length) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#aaa;">Nessun risultato.</td></tr>`; return; }
+  tbody.innerHTML = list.map(v => {
+    const thumb = v.youtube_id
+      ? `<img class="yt-thumb" src="https://img.youtube.com/vi/${esc(v.youtube_id)}/mqdefault.jpg" alt="" onerror="this.style.display='none'">`
+      : `<div class="yt-thumb-placeholder">🎬</div>`;
+    return `
+    <tr>
+      <td>${thumb}</td>
+      <td style="max-width:260px;">
+        <div style="font-weight:700;font-size:.88rem;">${esc(v.titolo)}</div>
+        <div class="desc-preview">${esc(v.descrizione||'')}</div>
+        ${v.youtube_id ? `<a href="https://youtube.com/watch?v=${esc(v.youtube_id)}" target="_blank" rel="noopener" style="font-size:.75rem;color:#1565C0;">▶ Guarda su YouTube</a>` : ''}
+      </td>
+      <td style="font-size:.82rem;">
+        <a href="/istituto.html?id=${v.istituto_id}&admin=1" target="_blank" style="color:#1B4332;font-weight:600;">${esc(v.istituto_nome||'—')}</a>
+        <div style="font-size:.75rem;color:#aaa;">${esc(v.regione||'')}</div>
+      </td>
+      <td style="font-size:.82rem;">${esc(v.territorio||'—')}</td>
+      <td>${v.pubblicato ? '<span class="badge badge-success">Pubblicato</span>' : '<span class="badge badge-warning">Bozza</span>'}</td>
+      <td style="font-size:.78rem;color:#aaa;white-space:nowrap;">${formatDate(v.created_at)}</td>
+      <td>
+        <div class="td-actions">
+          <button class="${v.pubblicato ? 'btn-hide' : 'btn-pub'}" onclick="toggleVideo(${v.id}, ${v.pubblicato})">${v.pubblicato ? 'Nascondi' : 'Pubblica'}</button>
+          <button class="btn-del" onclick="deleteVideo(${v.id}, '${esc(v.titolo).replace(/'/g,"\\'")}')">Elimina</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function toggleVideo(id, current) {
+  try {
+    await adminFetch(`/video/admin/${id}/pubblica`, { method: 'PATCH' });
+    const v = allVideo.find(x => x.id === id);
+    if (v) v.pubblicato = current ? 0 : 1;
+    filterTable();
+    showAlert('page-alert', current ? 'Video nascosto.' : 'Video pubblicato!', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+async function deleteVideo(id, titolo) {
+  if (!confirm(`Eliminare "${titolo}"? L'azione è irreversibile.`)) return;
+  try {
+    await adminFetch(`/video/admin/${id}`, { method: 'DELETE' });
+    allVideo = allVideo.filter(x => x.id !== id);
+    filterTable();
+    showAlert('page-alert', 'Video eliminato.', 'success');
+  } catch (e) { showAlert('page-alert', e.message); }
+}
+
+window.filterTable = filterTable;
+window.toggleVideo = toggleVideo;
+window.deleteVideo = deleteVideo;
+</script>
+</body>
+</html>

@@ -31,7 +31,9 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
+  <div id="hero-slideshow">
+    <div class="hero-slide hero-slide-gradient active" id="hero-slide-0"></div>
+  </div>
   <div class="hero-content">
     <div class="hero-badge">Patrimonio Culturale UNESCO</div>
     <h1>La <em>Cucina Italiana</em><br>come eredità culturale</h1>
@@ -47,258 +49,144 @@
   </div>
 </section>
 
-<!-- STRIP INGREDIENTI -->
-<div class="ingredients-strip">
-  <div class="ingredients-track">
-    <span class="ingredient-item">Pomodoro San Marzano</span>
-    <span class="ingredient-item">Olio extravergine d'oliva</span>
-    <span class="ingredient-item">Parmigiano Reggiano DOP</span>
-    <span class="ingredient-item">Grano duro di Altamura</span>
-    <span class="ingredient-item">Limone di Amalfi IGP</span>
-    <span class="ingredient-item">Aglio di Voghiera DOP</span>
-    <span class="ingredient-item">Acciughe di Cetara</span>
-    <span class="ingredient-item">Prosecco di Conegliano DOCG</span>
-    <span class="ingredient-item">Prosciutto di Parma DOP</span>
-    <span class="ingredient-item">Tartufo Nero di Norcia</span>
-    <span class="ingredient-item">Cannolo Siciliano</span>
-    <span class="ingredient-item">Tiramisù Trevigiano</span>
-    <!-- duplicati per scroll continuo -->
-    <span class="ingredient-item">Pomodoro San Marzano</span>
-    <span class="ingredient-item">Olio extravergine d'oliva</span>
-    <span class="ingredient-item">Parmigiano Reggiano DOP</span>
-    <span class="ingredient-item">Grano duro di Altamura</span>
-    <span class="ingredient-item">Limone di Amalfi IGP</span>
-    <span class="ingredient-item">Aglio di Voghiera DOP</span>
-    <span class="ingredient-item">Acciughe di Cetara</span>
-    <span class="ingredient-item">Prosecco di Conegliano DOCG</span>
-    <span class="ingredient-item">Prosciutto di Parma DOP</span>
-    <span class="ingredient-item">Tartufo Nero di Norcia</span>
-    <span class="ingredient-item">Cannolo Siciliano</span>
-    <span class="ingredient-item">Tiramisù Trevigiano</span>
-  </div>
-</div>
 
-<!-- SEZIONI PRINCIPALI -->
-<section class="section section-dark">
-  <div class="container">
-    <div class="section-header">
-      <h2>Esplora il patrimonio</h2>
-      <p>Quattro percorsi per scoprire la cucina italiana in tutte le sue dimensioni culturali</p>
-    </div>
-    <div class="features-grid" data-stagger>
-      <a href="/museo.html" class="feature-box" style="text-decoration:none;">
-                <h3>Museo</h3>
-        <p>Un'esperienza immersiva nel patrimonio culinario italiano</p>
-      </a>
-      <a href="/mappa.html" class="feature-box" style="text-decoration:none;">
-                <h3>Mappa Interattiva</h3>
-        <p>Scopri i sapori d'Italia regione per regione</p>
-      </a>
-      <a href="/video-tour.html" class="feature-box" style="text-decoration:none;">
-                <h3>Video Tour</h3>
-        <p>Turismo enogastronomico in video dai territori</p>
-      </a>
-      <a href="/istituti.html" class="feature-box" style="text-decoration:none;">
-                <h3>Istituti</h3>
-        <p>Gli istituti alberghieri custodi delle tradizioni</p>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- REGIONI D'ITALIA -->
-<section class="section section-alt">
+<!-- ═══════════════════════════════════════════════════════
+     SEZIONE 1 — GLI ISTITUTI
+     ═══════════════════════════════════════════════════════ -->
+<section class="section section-alt" id="sezione-istituti">
   <div class="container">
     <div class="section-header" data-animate>
-      <h2>I sapori delle Regioni</h2>
-      <p>Ogni territorio racconta una storia unica di sapori, prodotti e tradizioni culinarie</p>
-      <div class="section-line"></div>
-    </div>
-    <div class="grid-3" data-stagger style="margin-bottom:2.5rem;">
-      <a href="/mappa.html" class="regione-card" data-regione="toscana" style="text-decoration:none;">
-        <div class="regione-card-bg bg-toscana" style="position:absolute;inset:0;"></div>
-        <div class="regione-card-overlay"></div>
-        <div class="regione-card-label">
-                    <h4>Toscana</h4>
-          <p>Bistecca Fiorentina · Ribollita · Pici all'Aglione</p>
-        </div>
-      </a>
-      <a href="/mappa.html" class="regione-card" data-regione="campania" style="text-decoration:none;">
-        <div class="regione-card-bg bg-campania" style="position:absolute;inset:0;"></div>
-        <div class="regione-card-overlay"></div>
-        <div class="regione-card-label">
-                    <h4>Campania</h4>
-          <p>Pizza Napoletana · Ragù · Sfogliatella</p>
-        </div>
-      </a>
-      <a href="/mappa.html" class="regione-card" data-regione="sicilia" style="text-decoration:none;">
-        <div class="regione-card-bg bg-sicilia" style="position:absolute;inset:0;"></div>
-        <div class="regione-card-overlay"></div>
-        <div class="regione-card-label">
-                    <h4>Sicilia</h4>
-          <p>Cannolo · Arancini · Caponata · Granita</p>
-        </div>
-      </a>
-      <a href="/mappa.html" class="regione-card" data-regione="emilia-romagna" style="text-decoration:none;">
-        <div class="regione-card-bg bg-emilia" style="position:absolute;inset:0;"></div>
-        <div class="regione-card-overlay"></div>
-        <div class="regione-card-label">
-                    <h4>Emilia-Romagna</h4>
-          <p>Tortellini · Parmigiano · Prosciutto di Parma</p>
-        </div>
-      </a>
-      <a href="/mappa.html" class="regione-card" data-regione="lombardia" style="text-decoration:none;">
-        <div class="regione-card-bg bg-lombardia" style="position:absolute;inset:0;"></div>
-        <div class="regione-card-overlay"></div>
-        <div class="regione-card-label">
-                    <h4>Lombardia</h4>
-          <p>Risotto alla Milanese · Ossobuco · Bresaola</p>
-        </div>
-      </a>
-      <a href="/mappa.html" class="regione-card" data-regione="veneto" style="text-decoration:none;">
-        <div class="regione-card-bg bg-veneto" style="position:absolute;inset:0;"></div>
-        <div class="regione-card-overlay"></div>
-        <div class="regione-card-label">
-                    <h4>Veneto</h4>
-          <p>Tiramisù · Baccalà alla Vicentina · Risi e Bisi</p>
-        </div>
-      </a>
-    </div>
-    <div style="text-align:center;">
-      <a href="/mappa.html" class="btn btn-verde">Esplora tutte le 20 regioni &rarr;</a>
-    </div>
-  </div>
-</section>
-
-<!-- PRODOTTI TIPICI -->
-<section class="section">
-  <div class="container">
-    <div class="section-header" data-animate>
-      <h2>Prodotti Tipici DOP & IGP</h2>
-      <p>Le eccellenze italiane riconosciute dall'Unione Europea come patrimonio di qualità</p>
-      <div class="section-line"></div>
-    </div>
-    <div class="prodotti-grid" data-stagger>
-      <div class="prodotto-card">
-                <div class="prodotto-nome">Parmigiano Reggiano</div>
-        <div class="prodotto-reg">Emilia-Romagna · DOP</div>
-      </div>
-      <div class="prodotto-card">
-                <div class="prodotto-nome">Prosciutto di Parma</div>
-        <div class="prodotto-reg">Emilia-Romagna · DOP</div>
-      </div>
-      <div class="prodotto-card">
-                <div class="prodotto-nome">Olio di Lucca</div>
-        <div class="prodotto-reg">Toscana · DOP</div>
-      </div>
-      <div class="prodotto-card">
-                <div class="prodotto-nome">Limone di Amalfi</div>
-        <div class="prodotto-reg">Campania · IGP</div>
-      </div>
-      <div class="prodotto-card">
-                <div class="prodotto-nome">Prosecco</div>
-        <div class="prodotto-reg">Veneto · DOCG</div>
-      </div>
-      <div class="prodotto-card">
-                <div class="prodotto-nome">Tartufo di Norcia</div>
-        <div class="prodotto-reg">Umbria · IGP</div>
-      </div>
-      <div class="prodotto-card">
-                <div class="prodotto-nome">Pane di Altamura</div>
-        <div class="prodotto-reg">Puglia · DOP</div>
-      </div>
-      <div class="prodotto-card">
-                <div class="prodotto-nome">Acciughe di Cetara</div>
-        <div class="prodotto-reg">Campania · IGP</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- DIVISORE PARALLAX con citazione -->
-<div class="parallax-divider" style="background-image:linear-gradient(145deg,#1B4332,#2D6A4F,#8B5E3C);">
-  <div class="overlay">
-    <div style="max-width:700px;">
-            <h2 style="font-size:clamp(1.4rem,3vw,2.2rem);margin-bottom:1rem;">"La cucina è un'arte come la pittura e la scultura; anzi, a differenza di questa, non è immortale."</h2>
-      <p>— Pellegrino Artusi, <em>La Scienza in cucina e l'Arte di mangiar bene</em>, 1891</p>
-    </div>
-  </div>
-</div>
-
-<!-- SEZIONI ISTITUTO -->
-<section class="section section-alt">
-  <div class="container">
-    <div class="section-header" data-animate>
+      <div style="display:inline-block;background:var(--verde);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.3rem .85rem;border-radius:20px;margin-bottom:.9rem;">Gli Istituti Alberghieri</div>
       <h2>I percorsi degli Istituti</h2>
       <p>Ogni istituto alberghiero contribuisce con contenuti originali in tre sezioni tematiche</p>
       <div class="section-line"></div>
     </div>
     <div class="grid-3" data-stagger>
-      <div class="piatto-card">
-        <div class="piatto-img food-card-artusi piatto-img-placeholder"></div>
+      <a href="/istituti.html?sezione=artusi" class="piatto-card" style="text-decoration:none;color:inherit;">
+        <div class="piatto-img food-card-artusi piatto-img-placeholder" id="pcard-artusi" data-bg style="position:relative;overflow:hidden;">
+          <div class="piatto-img-overlay">
+            <div class="piatto-img-tag">Progetto didattico</div>
+            <h3 class="piatto-img-title">A Scuola da Artusi</h3>
+            <span class="piatto-img-cta">Scopri le ricette &rarr;</span>
+          </div>
+        </div>
         <div class="piatto-body">
-          <div class="piatto-region">Progetto didattico</div>
-          <h3 class="piatto-title">A Scuola da Artusi</h3>
           <p class="piatto-desc">Video di ricette tratte dal primo trattato della cucina italiana, realizzati dagli studenti con tecniche tradizionali e moderne.</p>
         </div>
         <div class="piatto-footer">
           <span>Video ricette</span>
-          <a href="/istituti.html" class="btn btn-verde btn-sm">Esplora</a>
+          <span class="btn btn-verde btn-sm">Esplora &rarr;</span>
         </div>
-      </div>
-      <div class="piatto-card">
-        <div class="piatto-img food-card-campanello piatto-img-placeholder"></div>
+      </a>
+      <a href="/istituti.html?sezione=campanello" class="piatto-card" style="text-decoration:none;color:inherit;">
+        <div class="piatto-img food-card-campanello piatto-img-placeholder" id="pcard-campanello" data-bg style="position:relative;overflow:hidden;">
+          <div class="piatto-img-overlay">
+            <div class="piatto-img-tag">Tradizioni familiari</div>
+            <h3 class="piatto-img-title">La Cucina del Campanello</h3>
+            <span class="piatto-img-cta">Scopri le storie &rarr;</span>
+          </div>
+        </div>
         <div class="piatto-body">
-          <div class="piatto-region">Tradizioni familiari</div>
-          <h3 class="piatto-title">La Cucina del Campanello</h3>
           <p class="piatto-desc">Varianti familiari e regionali delle ricette, con testi narrativi e immagini. Supporto AI per la generazione di contenuti testuali.</p>
         </div>
         <div class="piatto-footer">
           <span><span class="ai-badge">AI</span> Testi narrativi</span>
-          <a href="/istituti.html" class="btn btn-verde btn-sm">Esplora</a>
+          <span class="btn btn-verde btn-sm">Esplora &rarr;</span>
         </div>
-      </div>
-      <div class="piatto-card">
-        <div class="piatto-img food-card-storie piatto-img-placeholder"></div>
+      </a>
+      <a href="/istituti.html?sezione=storie" class="piatto-card" style="text-decoration:none;color:inherit;">
+        <div class="piatto-img food-card-storie piatto-img-placeholder" id="pcard-storie" data-bg style="position:relative;overflow:hidden;">
+          <div class="piatto-img-overlay">
+            <div class="piatto-img-tag">Storia &amp; Cultura</div>
+            <h3 class="piatto-img-title">Storie Culinarie</h3>
+            <span class="piatto-img-cta">Scopri la storia &rarr;</span>
+          </div>
+        </div>
         <div class="piatto-body">
-          <div class="piatto-region">Storia & Cultura</div>
-          <h3 class="piatto-title">Storie Culinarie</h3>
           <p class="piatto-desc">Ricostruzione storica della cucina italiana attraverso un approccio storytelling. AI per elaborare contenuti da immagini storiche.</p>
         </div>
         <div class="piatto-footer">
           <span><span class="ai-badge">AI</span> Analisi immagini</span>
-          <a href="/istituti.html" class="btn btn-verde btn-sm">Esplora</a>
+          <span class="btn btn-verde btn-sm">Esplora &rarr;</span>
         </div>
+      </a>
+    </div>
+
+    <!-- Contenuti in evidenza -->
+    <div style="margin-top:3.5rem;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:.75rem;">
+        <h3 style="font-family:var(--font-h);font-size:1.4rem;color:#1B4332;margin:0;">Contenuti in evidenza</h3>
+        <a href="/istituti.html" style="font-size:.85rem;color:var(--verde);font-weight:600;text-decoration:none;">Tutti gli istituti &rarr;</a>
+      </div>
+      <div class="grid-3" id="contenuti-evidenza">
+        <div class="piatto-card"><div class="piatto-img skeleton"></div><div class="piatto-body"><div class="skeleton" style="height:14px;margin-bottom:.5rem;border-radius:4px;"></div><div class="skeleton" style="height:20px;margin-bottom:.5rem;border-radius:4px;"></div><div class="skeleton" style="height:50px;border-radius:4px;"></div></div></div>
+        <div class="piatto-card"><div class="piatto-img skeleton"></div><div class="piatto-body"><div class="skeleton" style="height:14px;margin-bottom:.5rem;border-radius:4px;"></div><div class="skeleton" style="height:20px;margin-bottom:.5rem;border-radius:4px;"></div><div class="skeleton" style="height:50px;border-radius:4px;"></div></div></div>
+        <div class="piatto-card"><div class="piatto-img skeleton"></div><div class="piatto-body"><div class="skeleton" style="height:14px;margin-bottom:.5rem;border-radius:4px;"></div><div class="skeleton" style="height:20px;margin-bottom:.5rem;border-radius:4px;"></div><div class="skeleton" style="height:50px;border-radius:4px;"></div></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CONTENUTI IN EVIDENZA -->
-<section class="section">
+
+<!-- DIVISORE — Citazione Artusi -->
+<div class="parallax-divider" style="background-image:linear-gradient(145deg,#1B4332,#2D6A4F,#8B5E3C);">
+  <div class="overlay">
+    <div style="max-width:700px;">
+      <h2 style="font-size:clamp(1.4rem,3vw,2.2rem);margin-bottom:1rem;">"La cucina è un'arte come la pittura e la scultura; anzi, a differenza di questa, non è immortale."</h2>
+      <p>— Pellegrino Artusi, <em>La Scienza in cucina e l'Arte di mangiar bene</em>, 1891</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     SEZIONE 2 — IL MUSEO
+     ═══════════════════════════════════════════════════════ -->
+<section class="section" id="sezione-museo">
   <div class="container">
-    <div class="section-header" data-animate>
-      <h2>Contenuti in evidenza</h2>
-      <p>Gli ultimi contributi pubblicati dagli istituti alberghieri</p>
-      <div class="section-line"></div>
-    </div>
-    <div class="grid-3" id="contenuti-evidenza">
-      <div class="piatto-card"><div class="piatto-img skeleton"></div><div class="piatto-body"><div class="skeleton" style="height:14px;margin-bottom:.5rem;border-radius:4px;"></div><div class="skeleton" style="height:20px;margin-bottom:.5rem;border-radius:4px;"></div><div class="skeleton" style="height:50px;border-radius:4px;"></div></div></div>
-      <div class="piatto-card"><div class="piatto-img skeleton"></div><div class="piatto-body"><div class="skeleton" style="height:14px;margin-bottom:.5rem;border-radius:4px;"></div><div class="skeleton" style="height:20px;margin-bottom:.5rem;border-radius:4px;"></div><div class="skeleton" style="height:50px;border-radius:4px;"></div></div></div>
-      <div class="piatto-card"><div class="piatto-img skeleton"></div><div class="piatto-body"><div class="skeleton" style="height:14px;margin-bottom:.5rem;border-radius:4px;"></div><div class="skeleton" style="height:20px;margin-bottom:.5rem;border-radius:4px;"></div><div class="skeleton" style="height:50px;border-radius:4px;"></div></div></div>
-    </div>
-    <div style="text-align:center;margin-top:2.5rem;">
-      <a href="/istituti.html" class="btn btn-verde">Vedi tutti gli istituti &rarr;</a>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;">
+      <div data-animate-left>
+        <div class="section-header" style="text-align:left;margin-bottom:1.75rem;">
+          <div style="display:inline-block;background:#8B5E3C;color:#fff;font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.3rem .85rem;border-radius:20px;margin-bottom:.9rem;">Il Museo Digitale</div>
+          <h2 style="margin-top:.5rem;">Un'esperienza immersiva nel patrimonio culinario italiano</h2>
+          <div class="section-line" style="margin-left:0;"></div>
+        </div>
+        <p style="color:#555;line-height:1.9;margin-bottom:1.25rem;">
+          Il Museo Digitale raccoglie le tradizioni culinarie delle 20 regioni italiane in un percorso interattivo: dai profumi della Sicilia alle valli alpine del Trentino, ogni territorio porta con sé una storia unica.
+        </p>
+        <p style="color:#555;line-height:1.9;margin-bottom:2rem;">
+          Immagini, video, testi e ricette originali, curati dagli istituti alberghieri come atto di trasmissione culturale alle nuove generazioni.
+        </p>
+        <a href="/museo.html" class="btn btn-verde" style="font-size:.95rem;">Entra nel Museo &rarr;</a>
+      </div>
+      <div data-animate-right>
+        <div style="border-radius:16px;overflow:hidden;aspect-ratio:4/3;background:url('/assets/immaginiMuseoSfondo/mostra unesco grande.png') center/cover no-repeat;"></div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- VIDEO IN EVIDENZA -->
-<section class="section section-dark">
+
+<!-- DIVISORE 2 — UNESCO -->
+<div class="parallax-divider" style="background-image:linear-gradient(145deg,#6b2f0e,#8B5E3C,#1B4332);">
+  <div class="overlay">
+    <div style="max-width:660px;">
+      <h2 style="font-size:clamp(1.3rem,2.8vw,2rem);margin-bottom:1rem;">"La cucina italiana non è solo cibo: è identità collettiva, memoria storica e trasmissione di valori tra generazioni."</h2>
+      <p>— Dossier di candidatura UNESCO, 2023</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     SEZIONE 4 — VIDEO TOUR
+     ═══════════════════════════════════════════════════════ -->
+<section class="section section-dark" id="sezione-video">
   <div class="container">
     <div class="section-header" data-animate>
-      <h2>Video Tour in evidenza</h2>
-      <p>Un assaggio del turismo enogastronomico italiano</p>
+      <div style="display:inline-block;background:rgba(196,75,47,.85);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.3rem .85rem;border-radius:20px;margin-bottom:.9rem;">Video Tour</div>
+      <h2>Il turismo enogastronomico in video</h2>
+      <p>Percorsi tra tradizioni, prodotti e paesaggi — raccontati dagli istituti alberghieri d'Italia</p>
     </div>
     <div class="grid-3" id="video-evidenza">
       <div class="video-card" style="background:rgba(255,255,255,.05);"><div class="skeleton" style="aspect-ratio:16/9;"></div><div style="padding:1rem;"><div class="skeleton" style="height:16px;margin-bottom:.4rem;border-radius:4px;background:rgba(255,255,255,.1);"></div><div class="skeleton" style="height:12px;border-radius:4px;background:rgba(255,255,255,.07);"></div></div></div>
@@ -310,6 +198,7 @@
     </div>
   </div>
 </section>
+
 
 <!-- COUNTER STATS -->
 <div class="counter-section">
@@ -335,6 +224,7 @@
   </div>
 </div>
 
+
 <!-- UNESCO INFO -->
 <section class="section">
   <div class="container">
@@ -344,10 +234,6 @@
           <h2>La cucina italiana, patrimonio dell'umanità</h2>
           <div class="section-line" style="margin-left:0;"></div>
         </div>
-        <div class="quote-block" style="margin-bottom:1.5rem;">
-          <p class="quote-text">La cucina italiana non è solo cibo: è identità collettiva, memoria storica, coesione sociale e trasmissione di valori tra generazioni.</p>
-          <p class="quote-author">— Dossier di candidatura UNESCO, 2023</p>
-        </div>
         <p style="color:#555;line-height:1.9;margin-bottom:2rem;">
           Gli istituti alberghieri italiani sono in prima linea nel preservare e trasmettere questa conoscenza alle nuove generazioni, attraverso la formazione e la valorizzazione dei prodotti tipici locali.
         </p>
@@ -356,19 +242,19 @@
       <div data-animate-right>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
           <div style="background:linear-gradient(145deg,#1B4332,#2D6A4F);border-radius:14px;padding:2rem;text-align:center;color:#fff;">
-                        <h4 style="font-family:var(--font-h);color:var(--crema);margin-bottom:.4rem;">Tradizione</h4>
+            <h4 style="font-family:var(--font-h);color:var(--crema);margin-bottom:.4rem;">Tradizione</h4>
             <p style="font-size:.82rem;opacity:.75;">Ricette tramandate per secoli</p>
           </div>
           <div style="background:linear-gradient(145deg,#8B5E3C,#C69E72);border-radius:14px;padding:2rem;text-align:center;color:#fff;margin-top:1.5rem;">
-                        <h4 style="font-family:var(--font-h);color:var(--crema);margin-bottom:.4rem;">Territorio</h4>
+            <h4 style="font-family:var(--font-h);color:var(--crema);margin-bottom:.4rem;">Territorio</h4>
             <p style="font-size:.82rem;opacity:.75;">Biodiversità e prodotti tipici</p>
           </div>
           <div style="background:linear-gradient(145deg,#C44B2F,#e07060);border-radius:14px;padding:2rem;text-align:center;color:#fff;margin-top:-1rem;">
-                        <h4 style="font-family:var(--font-h);color:var(--crema);margin-bottom:.4rem;">Sapere</h4>
+            <h4 style="font-family:var(--font-h);color:var(--crema);margin-bottom:.4rem;">Sapere</h4>
             <p style="font-size:.82rem;opacity:.75;">Tecniche artigianali trasmesse</p>
           </div>
           <div style="background:linear-gradient(145deg,#1565C0,#42a5f5);border-radius:14px;padding:2rem;text-align:center;color:#fff;">
-                        <h4 style="font-family:var(--font-h);color:var(--crema);margin-bottom:.4rem;">Comunità</h4>
+            <h4 style="font-family:var(--font-h);color:var(--crema);margin-bottom:.4rem;">Comunità</h4>
             <p style="font-size:.82rem;opacity:.75;">La tavola come identità</p>
           </div>
         </div>
@@ -377,10 +263,11 @@
   </div>
 </section>
 
+
 <!-- CTA PER ISTITUTI -->
 <section class="section section-dark" style="padding:3.5rem 1.5rem;">
   <div class="container" style="max-width:800px;text-align:center;">
-        <h2>Sei un istituto alberghiero?</h2>
+    <h2>Sei un istituto alberghiero?</h2>
     <p style="color:rgba(255,255,255,.75);margin:1.25rem auto 2rem;font-size:1.05rem;max-width:560px;">
       Partecipa al progetto Cucina Italiana UNESCO Lab. Pubblica ricette, storie e video del tuo territorio e contribuisci al patrimonio culinario italiano.
     </p>
@@ -390,6 +277,7 @@
     </div>
   </div>
 </section>
+
 
 <!-- FOOTER -->
 <footer>
@@ -442,24 +330,68 @@
 <script src="/js/main.js"></script>
 <script src="/js/unsplash.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', async () => {
-  // Carica immagini Unsplash (funziona solo se UNSPLASH_ACCESS_KEY è configurata)
-  loadHeroImage('.hero-bg');
-  loadAllRegioneCards();
+async function initHeroSlideshow() {
+  const container = document.getElementById('hero-slideshow');
+  if (!container) return;
 
-  // Load contenuti in evidenza
+  let photos = [];
+  try {
+    const queries = ['italian pasta homemade rustic', 'italian kitchen chef cooking', 'italian food table rustic'];
+    const results = await Promise.all(queries.map(q =>
+      fetch(`/api/immagini/cerca?q=${encodeURIComponent(q)}&count=1`).then(r => r.json())
+    ));
+    photos = results.map(r => r[0]?.url_regular).filter(Boolean);
+  } catch {}
+
+  if (!photos.length) return;
+
+  const slides = [document.getElementById('hero-slide-0')];
+  photos.forEach((url) => {
+    const s = document.createElement('div');
+    s.className = 'hero-slide';
+    s.style.backgroundImage = `url('${url}')`;
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:absolute;inset:0;background:rgba(10,28,18,0.55);';
+    s.appendChild(overlay);
+    container.appendChild(s);
+    slides.push(s);
+  });
+
+  let current = 0;
+  const DURATION = 5000;
+
+  function goTo(idx) {
+    slides[current].classList.remove('active', 'zooming');
+    current = idx % slides.length;
+    slides[current].classList.add('active');
+    if (current !== 0) {
+      requestAnimationFrame(() => slides[current].classList.add('zooming'));
+    }
+  }
+
+  setInterval(() => goTo(current + 1), DURATION);
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  initHeroSlideshow();
+
+  // Card percorsi istituti
+  loadUnsplashImage('tema', 'artusi',     document.getElementById('pcard-artusi'));
+  loadUnsplashImage('tema', 'campanello', document.getElementById('pcard-campanello'));
+  loadUnsplashImage('tema', 'storie',     document.getElementById('pcard-storie'));
+
+  // Contenuti in evidenza
   try {
     const contenuti = await apiFetch('/contenuti/pubblico?limit=6');
     const grid = document.getElementById('contenuti-evidenza');
-    const icons = { testo:'', immagine:'', video:'', ricetta:'' };
     const sezLabel = { artusi:'A Scuola da Artusi', campanello:'Cucina del Campanello', storie:'Storie Culinarie', generale:'Generale' };
     const gradients = { artusi:'linear-gradient(145deg,#1B4332,#2D6A4F)', campanello:'linear-gradient(145deg,#7a4a1e,#a0622a)', storie:'linear-gradient(145deg,#8B1a1a,#C44B2F)', generale:'linear-gradient(145deg,#1565C0,#42a5f5)' };
     if (!contenuti.length) {
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><p>I contenuti saranno disponibili a breve.</p></div>`;
     } else {
       grid.innerHTML = contenuti.slice(0,6).map(c => `
-        <a href="/istituto.html?id=${c.istituto_id}" class="piatto-card" style="display:block;text-decoration:none;color:inherit;" data-animate>
-          <div class="piatto-img piatto-img-placeholder" style="background:${gradients[c.sezione]||gradients.generale};">
+        <a href="/istituto.html?id=${c.istituto_id}" class="piatto-card" style="display:block;text-decoration:none;color:inherit;">
+          <div class="piatto-img" style="background:${gradients[c.sezione]||gradients.generale};overflow:hidden;position:relative;">
             ${c.media_url ? `<img src="${c.media_url}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">` :
               c.youtube_id ? `<img src="${ytThumb(c.youtube_id)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">` :
               ''}
@@ -477,7 +409,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   } catch {}
 
-  // Load video in evidenza
+  // Video in evidenza
   try {
     const videos = await apiFetch('/video?limit=3');
     const grid = document.getElementById('video-evidenza');
@@ -485,7 +417,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;color:rgba(255,255,255,.5);"><p>I video saranno disponibili a breve.</p></div>`;
     } else {
       grid.innerHTML = videos.map(v => `
-        <div class="video-card" data-animate>
+        <div class="video-card">
           <div class="video-thumb" onclick="openVideoModal('${sanitizeText(v.youtube_id)}')">
             <img src="${ytThumb(v.youtube_id, 'mqdefault')}" alt="${sanitizeText(v.titolo)}" loading="lazy">
             <div class="video-play-btn"><div class="play-icon">&#9654;</div></div>

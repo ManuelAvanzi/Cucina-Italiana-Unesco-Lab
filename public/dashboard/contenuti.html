@@ -146,13 +146,17 @@
           <input type="text" id="c-youtube" class="form-control" placeholder="es. dQw4w9WgXcQ o https://youtube.com/watch?v=…">
           <div style="font-size:.78rem;color:#888;margin-top:.3rem;">Incolla l'URL completo o solo l'ID del video.</div>
         </div>
-        <div class="form-group" id="g-media" style="display:none;">
-          <label>Immagine</label>
+        <div class="form-group" id="g-media">
+          <label>Immagine allegata <span style="font-weight:400;color:#aaa;">(opzionale)</span></label>
           <div class="upload-zone" id="upload-zone" onclick="document.getElementById('c-media').click()">
             <div class="upload-icon"></div>
             <div>Clicca o trascina un'immagine qui</div>
             <div style="font-size:.78rem;margin-top:.3rem;">JPG, PNG, WEBP — max 5MB</div>
-            <img id="upload-preview" class="upload-preview" style="display:none;">
+            <img id="upload-preview" class="upload-preview" style="display:none;margin-top:.75rem;max-height:140px;border-radius:8px;object-fit:cover;">
+          </div>
+          <div id="media-current" style="display:none;margin-top:.5rem;font-size:.8rem;color:#666;display:flex;align-items:center;gap:.5rem;">
+            <img id="media-current-thumb" style="width:48px;height:36px;object-fit:cover;border-radius:5px;" alt="">
+            <span>Immagine attuale — carica una nuova per sostituirla</span>
           </div>
           <input type="file" id="c-media" accept="image/*" style="display:none;" onchange="previewImage(this)">
         </div>
@@ -223,8 +227,14 @@ function renderTable() {
   }
   tbody.innerHTML = filtered.map(c => `
     <tr>
-      <td style="max-width:260px;"><div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(c.titolo)}</div>
-        ${c.corpo ? `<div style="font-size:.78rem;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px;">${esc(c.corpo.slice(0,60))}…</div>` : ''}
+      <td style="max-width:280px;">
+        <div style="display:flex;align-items:center;gap:.6rem;">
+          ${c.media_url ? `<img src="${esc(c.media_url)}" style="width:44px;height:34px;object-fit:cover;border-radius:5px;flex-shrink:0;">` : ''}
+          <div style="min-width:0;">
+            <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(c.titolo)}</div>
+            ${c.corpo ? `<div style="font-size:.78rem;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(c.corpo.slice(0,55))}…</div>` : ''}
+          </div>
+        </div>
       </td>
       <td><span style="font-size:.82rem;">${esc(c.tipo)}</span></td>
       <td><span class="badge badge-info" style="font-size:.75rem;">${sezioneLabel[c.sezione]||c.sezione}</span></td>
@@ -250,6 +260,7 @@ function openModal(id = null) {
     document.getElementById('contenuto-form').reset();
     if (currentSezione !== 'all') document.getElementById('c-sezione').value = currentSezione;
     document.getElementById('upload-preview').style.display = 'none';
+    document.getElementById('media-current').style.display = 'none';
     onTipoChange();
   }
   document.getElementById('contenuto-modal').classList.add('active');
@@ -271,20 +282,25 @@ function editContenuto(id) {
   document.getElementById('c-youtube').value = c.youtube_id || '';
   document.getElementById('c-pubblicato').checked = !!c.pubblicato;
   onTipoChange();
+  const currentDiv = document.getElementById('media-current');
+  const currentThumb = document.getElementById('media-current-thumb');
   if (c.media_url) {
-    const preview = document.getElementById('upload-preview');
-    preview.src = c.media_url;
-    preview.style.display = 'block';
+    currentThumb.src = c.media_url;
+    currentDiv.style.display = 'flex';
+  } else {
+    currentDiv.style.display = 'none';
   }
+  document.getElementById('upload-preview').style.display = 'none';
+  document.getElementById('c-media').value = '';
   openModal(id);
 }
 
 function onTipoChange() {
   const tipo    = document.getElementById('c-tipo').value;
   const sezione = document.getElementById('c-sezione').value;
-  document.getElementById('g-youtube').style.display   = tipo === 'video' ? 'block' : 'none';
-  document.getElementById('g-media').style.display     = tipo === 'immagine' ? 'block' : 'none';
-  document.getElementById('g-ai-immagine').style.display = sezione === 'storie' ? 'block' : 'none';
+  document.getElementById('g-youtube').style.display      = tipo === 'video' ? 'block' : 'none';
+  document.getElementById('g-media').style.display        = tipo === 'video' ? 'none' : 'block';
+  document.getElementById('g-ai-immagine').style.display  = sezione === 'storie' ? 'block' : 'none';
 }
 // Aggiorna anche al cambio sezione
 document.getElementById('c-sezione').addEventListener('change', onTipoChange);
@@ -326,10 +342,8 @@ async function saveContenuto() {
     fd.append('corpo',     document.getElementById('c-corpo').value);
     fd.append('pubblicato', document.getElementById('c-pubblicato').checked ? '1' : '0');
     if (tipo === 'video') fd.append('youtube_id', document.getElementById('c-youtube').value.trim());
-    if (tipo === 'immagine') {
-      const file = document.getElementById('c-media').files[0];
-      if (file) fd.append('media', file);
-    }
+    const file = document.getElementById('c-media').files[0];
+    if (file) fd.append('media', file);
     const endpoint = editingId ? `/contenuti/${editingId}` : '/contenuti';
     const method   = editingId ? 'PUT' : 'POST';
     await dashForm(endpoint, fd, method);

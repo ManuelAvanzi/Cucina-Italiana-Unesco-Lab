@@ -26,12 +26,13 @@ const upload = multer({
 // GET /api/istituti - Lista pubblica istituti (con contenuti pubblicati)
 router.get('/', (req, res) => {
   const db = getDb();
-  const { regione, search } = req.query;
+  const { regione, search, sezione } = req.query;
   let sql = `SELECT id, nome, citta, regione, provincia, indirizzo, lat, lng, logo, cover_url, descrizione, sito_web, telefono
              FROM istituti WHERE active = 1`;
   const params = [];
   if (regione) { sql += ' AND regione = ?'; params.push(regione); }
   if (search) { sql += ' AND (nome LIKE ? OR citta LIKE ?)'; params.push(`%${search}%`, `%${search}%`); }
+  if (sezione) { sql += ' AND id IN (SELECT DISTINCT istituto_id FROM contenuti WHERE sezione = ? AND pubblicato = 1)'; params.push(sezione); }
   sql += ' ORDER BY regione, nome';
   res.json(db.prepare(sql).all(...params));
 });
