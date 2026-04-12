@@ -220,19 +220,42 @@ function editVideo(id) {
   document.getElementById('video-modal').classList.add('active');
 }
 
+async function verifyYoutubeId(id) {
+  try {
+    const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);
+    return res.ok;
+  } catch { return false; }
+}
+
 async function saveVideo() {
   const btn = document.getElementById('save-btn');
+  const alertEl = document.getElementById('modal-alert');
   btn.disabled = true; btn.textContent = 'Salvataggio…';
   try {
+    const rawYt = document.getElementById('v-youtube').value.trim();
+    const m = rawYt.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+    const youtubeId = m ? m[1] : (rawYt.length === 11 ? rawYt : null);
+
+    if (!youtubeId) throw new Error('URL o ID YouTube non valido');
+    if (!document.getElementById('v-titolo').value.trim()) throw new Error('Il titolo è obbligatorio');
+
+    // Verifica che il video esista e sia incorporabile
+    btn.textContent = 'Verifica video…';
+    alertEl.innerHTML = '<div class="alert" style="background:#f0f9ff;color:#1565C0;border:1px solid #bbdefb;">⏳ Verifico che il video sia valido su YouTube…</div>';
+    const valid = await verifyYoutubeId(youtubeId);
+    if (!valid) throw new Error('Video non trovato o non incorporabile su YouTube. Controlla che il video sia pubblico e l\'URL sia corretto.');
+
+    alertEl.innerHTML = '';
+    btn.textContent = 'Salvataggio…';
+
     const body = {
-      youtube_id:  document.getElementById('v-youtube').value.trim(),
+      youtube_id:  youtubeId,
       titolo:      document.getElementById('v-titolo').value.trim(),
       descrizione: document.getElementById('v-desc').value,
       territorio:  document.getElementById('v-territorio').value.trim(),
       tema:        document.getElementById('v-tema').value,
       pubblicato:  editingId ? (document.getElementById('v-pubblicato').checked ? 1 : 0) : 0
     };
-    if (!body.youtube_id || !body.titolo) throw new Error('Compila tutti i campi obbligatori');
     if (editingId) {
       await dashFetch(`/video/me/${editingId}`, { method: 'PUT', body: JSON.stringify(body) });
     } else {
@@ -241,7 +264,7 @@ async function saveVideo() {
     closeModal();
     showAlert('page-alert', editingId ? 'Video aggiornato!' : 'Video aggiunto!', 'success');
     await loadVideos();
-  } catch (e) { showAlert('modal-alert', e.message); }
+  } catch (e) { alertEl.innerHTML = `<div class="alert alert-error">${e.message}</div>`; }
   finally { btn.disabled = false; btn.textContent = 'Salva'; }
 }
 

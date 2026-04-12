@@ -151,7 +151,7 @@ router.put('/me/password', authIstituto, (req, res) => {
 // GET /api/istituti/admin/all
 router.get('/admin/all', authAdmin, (req, res) => {
   const db = getDb();
-  const list = db.prepare('SELECT id, nome, citta, regione, email, username, active, created_at FROM istituti ORDER BY regione, nome').all();
+  const list = db.prepare('SELECT id, nome, citta, regione, provincia, indirizzo, lat, lng, email, username, active, descrizione, sito_web, telefono, created_at FROM istituti ORDER BY regione, nome').all();
   res.json(list);
 });
 
@@ -173,6 +173,26 @@ router.post('/admin/create', authAdmin, (req, res) => {
     res.json({ id: result.lastInsertRowid, success: true });
   } catch (e) {
     if (e.message.includes('UNIQUE')) return res.status(409).json({ error: 'Username o email già esistenti' });
+    throw e;
+  }
+});
+
+// PUT /api/istituti/admin/:id - Modifica dati istituto
+router.put('/admin/:id', authAdmin, (req, res) => {
+  const { nome, citta, regione, provincia, indirizzo, lat, lng, email, descrizione, sito_web, telefono } = req.body;
+  if (!nome || !citta || !regione || !email) {
+    return res.status(400).json({ error: 'Nome, città, regione ed email sono obbligatori' });
+  }
+  const db = getDb();
+  const existing = db.prepare('SELECT id FROM istituti WHERE id = ?').get(req.params.id);
+  if (!existing) return res.status(404).json({ error: 'Istituto non trovato' });
+  try {
+    db.prepare(
+      'UPDATE istituti SET nome=?, citta=?, regione=?, provincia=?, indirizzo=?, lat=?, lng=?, email=?, descrizione=?, sito_web=?, telefono=? WHERE id=?'
+    ).run(nome, citta, regione, provincia || null, indirizzo || null, lat || null, lng || null, email, descrizione || null, sito_web || null, telefono || null, req.params.id);
+    res.json({ success: true });
+  } catch (e) {
+    if (e.message.includes('UNIQUE')) return res.status(409).json({ error: 'Email già in uso da un altro istituto' });
     throw e;
   }
 });

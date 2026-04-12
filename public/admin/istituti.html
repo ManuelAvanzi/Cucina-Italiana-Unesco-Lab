@@ -131,6 +131,79 @@
   </div>
 </div>
 
+<!-- MODAL MODIFICA ISTITUTO -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header">
+      <h3>Modifica Istituto</h3>
+      <button class="modal-close" onclick="closeEditModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div id="edit-alert"></div>
+      <input type="hidden" id="e-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Nome istituto *</label>
+          <input type="text" id="e-nome" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Città *</label>
+          <input type="text" id="e-citta" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Regione *</label>
+          <select id="e-regione" class="form-control" required>
+            <option value="">— Seleziona —</option>
+            <option>Abruzzo</option><option>Basilicata</option><option>Calabria</option>
+            <option>Campania</option><option>Emilia-Romagna</option><option>Friuli-Venezia Giulia</option>
+            <option>Lazio</option><option>Liguria</option><option>Lombardia</option>
+            <option>Marche</option><option>Molise</option><option>Piemonte</option>
+            <option>Puglia</option><option>Sardegna</option><option>Sicilia</option>
+            <option>Toscana</option><option>Trentino-Alto Adige</option><option>Umbria</option>
+            <option>Valle d'Aosta</option><option>Veneto</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Provincia</label>
+          <input type="text" id="e-prov" class="form-control" placeholder="Sigla es. RM">
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Indirizzo</label>
+          <input type="text" id="e-indirizzo" class="form-control" placeholder="Via Roma 1">
+        </div>
+        <div class="form-group">
+          <label>Latitudine</label>
+          <input type="number" id="e-lat" class="form-control" step="any">
+        </div>
+        <div class="form-group">
+          <label>Longitudine</label>
+          <input type="number" id="e-lng" class="form-control" step="any">
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Email *</label>
+          <input type="email" id="e-email" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Sito web</label>
+          <input type="url" id="e-sito" class="form-control" placeholder="https://…">
+        </div>
+        <div class="form-group">
+          <label>Telefono</label>
+          <input type="text" id="e-telefono" class="form-control" placeholder="02 1234567">
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Descrizione</label>
+          <textarea id="e-desc" class="form-control" rows="3"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEditModal()">Annulla</button>
+      <button class="btn btn-primary" id="edit-save-btn" onclick="saveEditIstituto()">Salva modifiche</button>
+    </div>
+  </div>
+</div>
+
 <script src="/admin/js/admin.js"></script>
 <script>
 let allIstituti = [];
@@ -167,6 +240,7 @@ function renderTable(list) {
       <td>${i.active ? '<span class="badge badge-success">Attivo</span>' : '<span class="badge badge-danger">Disabilitato</span>'}</td>
       <td style="font-size:.78rem;color:#aaa;">${formatDate(i.created_at)}</td>
       <td><div class="td-actions">
+        <button class="btn btn-ghost btn-sm" onclick="editIstituto(${i.id})" title="Modifica">Modifica</button>
         <button class="btn btn-ghost btn-sm" onclick="toggleIstituto(${i.id}, ${i.active})" title="${i.active?'Disabilita':'Abilita'}">${i.active?'Disabilita':'Abilita'}</button>
         <a href="/istituto.html?id=${i.id}" target="_blank" class="btn btn-ghost btn-sm" title="Visualizza">Vedi</a>
         <button class="btn btn-ghost btn-sm" onclick="deleteIstituto(${i.id})" style="color:var(--rosso);" title="Elimina">Elimina</button>
@@ -227,9 +301,61 @@ async function deleteIstituto(id) {
   } catch (e) { showAlert('page-alert', e.message); }
 }
 
+function editIstituto(id) {
+  const i = allIstituti.find(x => x.id === id);
+  if (!i) return;
+  document.getElementById('e-id').value = i.id;
+  document.getElementById('e-nome').value = i.nome || '';
+  document.getElementById('e-citta').value = i.citta || '';
+  document.getElementById('e-regione').value = i.regione || '';
+  document.getElementById('e-prov').value = i.provincia || '';
+  document.getElementById('e-indirizzo').value = i.indirizzo || '';
+  document.getElementById('e-lat').value = i.lat || '';
+  document.getElementById('e-lng').value = i.lng || '';
+  document.getElementById('e-email').value = i.email || '';
+  document.getElementById('e-sito').value = i.sito_web || '';
+  document.getElementById('e-telefono').value = i.telefono || '';
+  document.getElementById('e-desc').value = i.descrizione || '';
+  document.getElementById('edit-alert').innerHTML = '';
+  document.getElementById('edit-modal').classList.add('active');
+}
+
+function closeEditModal() { document.getElementById('edit-modal').classList.remove('active'); }
+
+async function saveEditIstituto() {
+  const btn = document.getElementById('edit-save-btn');
+  btn.disabled = true; btn.textContent = 'Salvataggio…';
+  try {
+    const id = document.getElementById('e-id').value;
+    await adminFetch(`/istituti/admin/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        nome:       document.getElementById('e-nome').value.trim(),
+        citta:      document.getElementById('e-citta').value.trim(),
+        regione:    document.getElementById('e-regione').value,
+        provincia:  document.getElementById('e-prov').value.trim(),
+        indirizzo:  document.getElementById('e-indirizzo').value.trim(),
+        lat:        parseFloat(document.getElementById('e-lat').value) || null,
+        lng:        parseFloat(document.getElementById('e-lng').value) || null,
+        email:      document.getElementById('e-email').value.trim(),
+        sito_web:   document.getElementById('e-sito').value.trim(),
+        telefono:   document.getElementById('e-telefono').value.trim(),
+        descrizione: document.getElementById('e-desc').value
+      })
+    });
+    closeEditModal();
+    showAlert('page-alert', 'Istituto aggiornato con successo!', 'success');
+    await loadIstituti();
+  } catch (e) { showAlert('edit-alert', e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Salva modifiche'; }
+}
+
 window.openModal = openModal;
 window.closeModal = closeModal;
 window.createIstituto = createIstituto;
+window.editIstituto = editIstituto;
+window.closeEditModal = closeEditModal;
+window.saveEditIstituto = saveEditIstituto;
 window.toggleIstituto = toggleIstituto;
 window.deleteIstituto = deleteIstituto;
 window.filterTable = filterTable;
