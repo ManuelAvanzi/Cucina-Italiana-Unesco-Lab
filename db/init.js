@@ -26,6 +26,7 @@ function initDatabase() {
       username TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       logo TEXT,
+      cover_url TEXT,
       descrizione TEXT,
       sito_web TEXT,
       telefono TEXT,
@@ -82,6 +83,13 @@ function initDatabase() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
+
+  // ── MIGRATIONS ─────────────────────────────────────────────────────────────
+  // Aggiunge colonne mancanti su DB già esistenti (idempotente)
+  const existingCols = db.prepare("PRAGMA table_info(istituti)").all().map(c => c.name);
+  if (!existingCols.includes('cover_url')) {
+    db.prepare("ALTER TABLE istituti ADD COLUMN cover_url TEXT").run();
+  }
 
   // Seed admin account
   const adminExists = db.prepare('SELECT id FROM admin WHERE username = ?').get('admin');
