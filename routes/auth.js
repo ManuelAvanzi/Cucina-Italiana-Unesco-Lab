@@ -27,7 +27,7 @@ router.post('/register', (req, res) => {
     return res.status(400).json({ error: 'Email già registrata' });
   }
 
-  const hash = bcrypt.hashSync(password, 10);
+  const hash = bcrypt.hashSync(password, 12);
   const result = db.prepare(
     'INSERT INTO istituti (nome, username, password, email, citta, regione, provincia, active) VALUES (?,?,?,?,?,?,?,1)'
   ).run(nome, username, hash, email, citta, regione, provincia || null);
@@ -96,7 +96,35 @@ router.post('/admin/login', (req, res) => {
     { expiresIn: '8h' }
   );
 
-  res.json({ token, admin: { id: admin.id, username: admin.username, email: admin.email } });
+  res.json({ token, admin: { id: admin.id, username: admin.username, email: admin.email, must_change_password: !!admin.must_change_password } });
+});
+
+// PUT /api/auth/admin/password - Cambio password admin
+router.put('/admin/password', (req, res) => {
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith('Bearer ')) return res.status(401).json({ error: 'Non autenticato' });
+  let payload;
+  try {
+    payload = jwt.verify(header.slice(7), process.env.JWT_SECRET);
+    if (payload.role !== 'admin') return res.status(403).json({ error: 'Accesso negato' });
+  } catch {
+    return res.status(401).json({ error: 'Token non valido' });
+  }
+
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword || newPassword.length < 8) {
+    return res.status(400).json({ error: 'La nuova password deve essere di almeno 8 caratteri' });
+  }
+
+  const db = getDb();
+  const admin = db.prepare('SELECT * FROM admin WHERE id = ?').get(payload.id);
+  if (!admin || !bcrypt.compareSync(currentPassword, admin.password)) {
+    return res.status(401).json({ error: 'Password attuale non corretta' });
+  }
+
+  const hash = bcrypt.hashSync(newPassword, 12);
+  db.prepare('UPDATE admin SET password = ?, must_change_password = 0 WHERE id = ?').run(hash, payload.id);
+  res.json({ success: true });
 });
 
 // GET /api/auth/verify - Verifica token

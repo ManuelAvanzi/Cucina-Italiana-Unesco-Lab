@@ -57,7 +57,11 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     if (!res.ok) throw new Error(data.error || 'Errore di accesso');
     localStorage.setItem('admin_token', data.token);
     localStorage.setItem('admin', JSON.stringify(data.admin));
-    window.location = '/admin/index.html';
+    if (data.admin.must_change_password) {
+      window.location = '/admin/cambio-password.html';
+    } else {
+      window.location = '/admin/index.html';
+    }
   } catch (err) {
     alertEl.innerHTML = `<div class="alert alert-error">${err.message}</div>`;
     btn.disabled = false; label.textContent = 'Accedi come Admin';

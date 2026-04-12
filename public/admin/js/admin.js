@@ -11,6 +11,14 @@ async function requireAdmin() {
     const res = await fetch(API + '/auth/verify', { headers: { Authorization: 'Bearer ' + token } });
     const data = await res.json();
     if (!data.valid || data.payload.role !== 'admin') throw new Error();
+    // Controlla se deve cambiare password
+    try {
+      const admin = JSON.parse(localStorage.getItem('admin') || '{}');
+      if (admin.must_change_password && !window.location.pathname.includes('cambio-password')) {
+        window.location = '/admin/cambio-password.html';
+        return null;
+      }
+    } catch {}
     return data.payload;
   } catch {
     localStorage.removeItem('admin_token');

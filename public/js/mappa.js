@@ -58,9 +58,11 @@ async function initMappa() {
       if (!ist.lat || !ist.lng) return;
       const m = L.marker([ist.lat, ist.lng], { icon: createMarkerIcon(ist.regione) });
       m.bindPopup(buildPopup(ist), {
-        maxWidth: 310,
-        autoPanPaddingTopLeft: L.point(10, 60),
-        autoPanPaddingBottomRight: L.point(10, 20)
+        maxWidth: 300,
+        minWidth: 260,
+        autoPan: true,
+        autoPanPaddingTopLeft: L.point(20, 80),
+        autoPanPaddingBottomRight: L.point(20, 40)
       });
       m.on('click', () => {
         map.panTo(m.getLatLng(), { animate: true, duration: 0.5 });
@@ -79,19 +81,19 @@ async function initMappa() {
     const desc = (ist.descrizione || 'Istituto alberghiero e di ristorazione').slice(0, 85);
     const tail = ist.descrizione && ist.descrizione.length > 85 ? '…' : '';
     return `
-      <div style="padding:0;background:#fff;border-radius:8px;overflow:hidden;min-width:280px;">
-        <div style="background:linear-gradient(135deg,#1B4332,#2D6A4F);padding:1.2rem;text-align:center;position:relative;">
-          ${ist.logo ? `<img src="${ist.logo}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.6);margin-bottom:.5rem;">` : ''}
-          <h4 style="color:#fff;margin:.3rem 0;font-size:1rem;">${sanitizeText(ist.nome)}</h4>
-          <div style="font-size:.8rem;color:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;gap:.3rem;">
+      <div style="padding:0;background:#fff;border-radius:8px;overflow:hidden;min-width:240px;max-width:280px;">
+        <div style="background:linear-gradient(135deg,#1B4332,#2D6A4F);padding:.9rem;text-align:center;">
+          ${ist.logo ? `<img src="${ist.logo}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.5);margin-bottom:.4rem;">` : ''}
+          <h4 style="color:#fff;margin:.2rem 0;font-size:.92rem;line-height:1.3;">${sanitizeText(ist.nome)}</h4>
+          <div style="font-size:.75rem;color:rgba(255,255,255,.8);">
             <span style="color:#81b99a;">●</span> ${sanitizeText(ist.citta)}, ${sanitizeText(ist.regione)}
           </div>
         </div>
-        <div style="padding:1rem;">
-          <p style="font-size:.83rem;color:#555;line-height:1.5;margin:.3rem 0;">${sanitizeText(desc)}${tail}</p>
-          <div id="popup-detail-${ist.id}" style="margin-top:.8rem;"></div>
+        <div style="padding:.8rem;">
+          <p style="font-size:.8rem;color:#555;line-height:1.45;margin:.2rem 0;">${sanitizeText(desc)}${tail}</p>
+          <div id="popup-detail-${ist.id}" style="margin-top:.6rem;"></div>
         </div>
-        <a href="/istituto.html?id=${ist.id}" style="display:block;background:#C44B2F;color:#fff;text-align:center;padding:.65rem;text-decoration:none;font-weight:600;font-size:.85rem;transition:background .3s;" onmouseover="this.style.background='#a33b22'" onmouseout="this.style.background='#C44B2F'">Scopri l'istituto →</a>
+        <a href="/istituto.html?id=${ist.id}" style="display:block;background:#C44B2F;color:#fff;text-align:center;padding:.55rem;text-decoration:none;font-weight:600;font-size:.82rem;" onmouseover="this.style.background='#a33b22'" onmouseout="this.style.background='#C44B2F'">Scopri l'istituto →</a>
       </div>
     `;
   }

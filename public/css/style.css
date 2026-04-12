@@ -294,10 +294,9 @@ a:hover { color: var(--rosso); }
 #map-container {
   position: relative;
   border-radius: var(--radius);
-  overflow: hidden;
   box-shadow: var(--shadow);
 }
-#map { height: 600px; width: 100%; }
+#map { height: 600px; width: 100%; border-radius: var(--radius); }
 .leaflet-popup-content-wrapper {
   border-radius: 14px !important;
   box-shadow: 0 10px 40px rgba(0,0,0,0.25) !important;

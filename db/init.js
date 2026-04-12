@@ -36,6 +36,7 @@ function initDatabase() {
       username TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       email TEXT,
+      must_change_password INTEGER DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -85,7 +86,7 @@ function initDatabase() {
   if (!adminExists) {
     const hash = bcrypt.hashSync('Admin2024!', 12);
     db.prepare('INSERT INTO admin (username, password, email) VALUES (?, ?, ?)').run('admin', hash, 'admin@cucinaitaliana.edu.it');
-    console.log('Admin creato: username=admin, password=Admin2024!');
+    console.log('Admin creato con credenziali di default.');
   }
 
   // Seed demo istituto
@@ -108,7 +109,7 @@ function initDatabase() {
       hash,
       'Istituto dimostrativo per la piattaforma Cucina Italiana UNESCO Lab.'
     );
-    console.log('Istituto demo creato: username=demo_istituto, password=Demo2024!');
+    console.log('Istituto demo creato con credenziali di default.');
   }
 
   // Seed museo item
