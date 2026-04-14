@@ -88,25 +88,17 @@
 <script src="/js/mappa.js"></script>
 <script>
 let currentView = 'grid';
-function toggleView(v) {
-  currentView = v;
-  const grid = document.getElementById('istituti-sotto');
-  document.getElementById('view-grid').className = v === 'grid' ? 'btn btn-sm btn-verde' : 'btn btn-sm btn-ghost';
-  document.getElementById('view-list').className = v === 'list' ? 'btn btn-sm btn-verde' : 'btn btn-sm btn-ghost';
-  if (v === 'list') grid.style.display = 'block';
-  else { grid.style.display = ''; grid.className = 'grid-3'; }
-}
+let mappaIstituti = [];
 
-// After map loads, also populate list below
-document.addEventListener('DOMContentLoaded', async () => {
-  await new Promise(r => setTimeout(r, 800));
-  try {
-    const list = await apiFetch('/istituti');
-    const grid = document.getElementById('istituti-sotto');
-    grid.innerHTML = list.map(i => `
-      <a href="/istituto.html?id=${i.id}" class="card" style="display:block;text-decoration:none;color:inherit;" data-animate>
-        <div style="height:100px;background:linear-gradient(135deg,#1B4332,#2D6A4F);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">
-          ${i.logo ? `<img src="${i.logo}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.5);">` : ''}
+function renderListaIstituti() {
+  const container = document.getElementById('istituti-sotto');
+  if (!mappaIstituti.length) return;
+  if (currentView === 'grid') {
+    container.className = 'grid-3';
+    container.innerHTML = mappaIstituti.map(i => `
+      <a href="/istituto.html?id=${i.id}" class="card" style="display:block;text-decoration:none;color:inherit;">
+        <div style="height:100px;background:linear-gradient(135deg,#1B4332,#2D6A4F);display:flex;align-items:center;justify-content:center;">
+          ${i.logo ? `<img src="${i.logo}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.4);">` : `<span style="font-size:2.2rem;">🏫</span>`}
         </div>
         <div class="card-body" style="padding:1rem;">
           <div class="card-tag tag-verde" style="font-size:.7rem;">${sanitizeText(i.regione)}</div>
@@ -114,6 +106,37 @@ document.addEventListener('DOMContentLoaded', async () => {
           <p style="font-size:.8rem;color:#888;">${sanitizeText(i.citta)}</p>
         </div>
       </a>`).join('');
+  } else {
+    container.className = '';
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.gap = '.75rem';
+    container.innerHTML = mappaIstituti.map(i => `
+      <a href="/istituto.html?id=${i.id}" style="display:flex;align-items:center;gap:1rem;background:#fff;border-radius:10px;padding:.85rem 1rem;text-decoration:none;color:inherit;box-shadow:0 2px 8px rgba(0,0,0,.07);transition:box-shadow .2s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,.13)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,.07)'">
+        <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1B4332,#2D6A4F);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          ${i.logo ? `<img src="${i.logo}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">` : `<span style="font-size:1.4rem;">🏫</span>`}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:.95rem;color:#1B4332;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sanitizeText(i.nome)}</div>
+          <div style="font-size:.82rem;color:#888;margin-top:.15rem;">${sanitizeText(i.citta)} · <span style="color:#2D6A4F;font-weight:600;">${sanitizeText(i.regione)}</span></div>
+        </div>
+        <span style="font-size:.8rem;color:#C44B2F;font-weight:600;flex-shrink:0;">Scopri →</span>
+      </a>`).join('');
+  }
+}
+
+function toggleView(v) {
+  currentView = v;
+  document.getElementById('view-grid').className = v === 'grid' ? 'btn btn-sm btn-verde' : 'btn btn-sm btn-ghost';
+  document.getElementById('view-list').className = v === 'list' ? 'btn btn-sm btn-verde' : 'btn btn-sm btn-ghost';
+  renderListaIstituti();
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await new Promise(r => setTimeout(r, 600));
+  try {
+    mappaIstituti = await apiFetch('/istituti');
+    renderListaIstituti();
   } catch {}
 });
 </script>
