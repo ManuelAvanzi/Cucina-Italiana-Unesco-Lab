@@ -116,6 +116,11 @@ a:hover { color: var(--rosso); }
   cursor: pointer;
   color: var(--crema);
   font-size: 1.5rem;
+  padding: 0.5rem;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ---- HERO ---- */
@@ -271,9 +276,13 @@ a:hover { color: var(--rosso); }
 .tag-terra { background: #f5e6d4; color: var(--terra); }
 
 /* ---- GRID ---- */
-.grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 2rem; }
-.grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
-.grid-4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
+/* Griglia 2 colonne responsive (testo+immagine, collapsa su mobile) */
+.grid-split { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; align-items: center; }
+/* Griglia 2x2 box colorati */
+.grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
 /* ---- FEATURE BOXES (homepage) ---- */
 .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; max-width: 1000px; margin: 0 auto; }
@@ -401,7 +410,7 @@ a:hover { color: var(--rosso); }
   align-items: center;
 }
 .filter-btn {
-  padding: 0.4rem 1rem;
+  padding: 0.5rem 1.1rem;
   border-radius: 50px;
   border: 2px solid var(--verde);
   background: transparent;
@@ -410,6 +419,7 @@ a:hover { color: var(--rosso); }
   font-weight: 700;
   cursor: pointer;
   transition: all var(--trans);
+  min-height: 40px;
 }
 .filter-btn:hover, .filter-btn.active {
   background: var(--verde);
@@ -417,8 +427,9 @@ a:hover { color: var(--rosso); }
 }
 .search-input {
   flex: 1;
-  min-width: 220px;
-  padding: 0.5rem 1rem;
+  min-width: 0;
+  width: 100%;
+  padding: 0.65rem 1rem;
   border: 2px solid #ddd;
   border-radius: 8px;
   font-size: 0.9rem;
@@ -652,15 +663,23 @@ footer {
 
 /* ---- RESPONSIVE ---- */
 @media (max-width: 768px) {
-  .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: var(--verde-sc); padding: 1rem; }
+  .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: var(--verde-sc); padding: 1rem; z-index: 999; }
   .nav-links.open { display: flex; }
-  .nav-hamburger { display: block; }
+  .nav-hamburger { display: flex; }
   .navbar { position: relative; }
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-  #map { height: 420px; }
+  .grid-split { grid-template-columns: 1fr; gap: 2rem; }
+  #map { height: 400px; }
   .features-grid { grid-template-columns: 1fr 1fr; }
+  .search-input { max-width: 100% !important; }
+  .filters-bar { gap: .4rem; }
 }
 @media (max-width: 480px) {
   .features-grid { grid-template-columns: 1fr; }
   .hero { min-height: 75vh; }
+  #map { height: 320px; }
+  .grid-2x2 { grid-template-columns: 1fr 1fr; gap: .6rem; }
+  .section { padding: 3rem 0; }
+  .container { padding: 0 1rem; }
+  .btn-lg { padding: .75rem 1.5rem; font-size: .95rem; }
 }
