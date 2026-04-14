@@ -99,6 +99,13 @@ function initDatabase() {
     console.log('Admin creato con credenziali di default.');
   }
 
+  // Reset password admin se RESET_ADMIN_PW=1 (rimuovere la variabile dopo il login)
+  if (process.env.RESET_ADMIN_PW === '1') {
+    const hash = bcrypt.hashSync('Admin2024!', 12);
+    db.prepare('UPDATE admin SET password = ?, must_change_password = 1 WHERE username = ?').run(hash, 'admin');
+    console.log('Password admin resettata a default (Admin2024!).');
+  }
+
   // Seed demo istituto
   const demoExists = db.prepare('SELECT id FROM istituti WHERE username = ?').get('demo_istituto');
   if (!demoExists) {
