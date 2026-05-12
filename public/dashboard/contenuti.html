@@ -116,30 +116,8 @@
           <input type="text" id="c-titolo" class="form-control" placeholder="Titolo del contenuto" required>
         </div>
         <div class="form-group">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;">
-            <label style="margin-bottom:0;">Testo / Descrizione</label>
-            <button type="button" id="ai-genera-btn" onclick="generaTestoAI()"
-              style="background:linear-gradient(135deg,#6b21a8,#9333ea);color:#fff;border:none;border-radius:8px;padding:.3rem .85rem;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:opacity .2s;">
-              Genera con AI
-            </button>
-          </div>
-          <textarea id="c-corpo" class="form-control" rows="5" placeholder="Scrivi il contenuto… oppure usa 'Genera con AI' per creare un testo narrativo automatico."></textarea>
-          <div id="ai-status" style="font-size:.76rem;color:#888;margin-top:.3rem;min-height:1rem;"></div>
-        </div>
-        <!-- AI: analisi immagine (solo sezione storie) -->
-        <div class="form-group" id="g-ai-immagine" style="display:none;">
-          <label style="display:flex;align-items:center;gap:.5rem;">
-            <span>Analisi immagine storica con AI</span>
-            <span style="background:linear-gradient(135deg,#6b21a8,#9333ea);color:#fff;font-size:.68rem;font-weight:700;padding:.15rem .5rem;border-radius:50px;">BETA</span>
-          </label>
-          <div style="display:flex;gap:.5rem;">
-            <input type="url" id="ai-img-url" class="form-control" placeholder="URL immagine storica da analizzare…" style="flex:1;">
-            <button type="button" onclick="analizzaImmagineAI()"
-              style="background:linear-gradient(135deg,#6b21a8,#9333ea);color:#fff;border:none;border-radius:8px;padding:.5rem 1rem;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;">
-              Analizza
-            </button>
-          </div>
-          <div style="font-size:.74rem;color:#aaa;margin-top:.3rem;">Incolla l'URL di un'immagine storica: l'AI genererà un testo narrativo basato su di essa.</div>
+          <label>Testo / Descrizione</label>
+          <textarea id="c-corpo" class="form-control" rows="5" placeholder="Scrivi il contenuto…"></textarea>
         </div>
         <div class="form-group" id="g-youtube" style="display:none;">
           <label>ID o URL YouTube *</label>
@@ -300,7 +278,6 @@ function onTipoChange() {
   const sezione = document.getElementById('c-sezione').value;
   document.getElementById('g-youtube').style.display      = tipo === 'video' ? 'block' : 'none';
   document.getElementById('g-media').style.display        = tipo === 'video' ? 'none' : 'block';
-  document.getElementById('g-ai-immagine').style.display  = sezione === 'storie' ? 'block' : 'none';
 }
 // Aggiorna anche al cambio sezione
 document.getElementById('c-sezione').addEventListener('change', onTipoChange);
@@ -377,60 +354,6 @@ async function deleteContenuto(id) {
   } catch (e) { showAlert('page-alert', e.message); }
 }
 
-// ---- AI text generation ----
-async function generaTestoAI() {
-  const titolo  = document.getElementById('c-titolo').value.trim();
-  const sezione = document.getElementById('c-sezione').value;
-  const contesto = document.getElementById('c-corpo').value.trim();
-  const status  = document.getElementById('ai-status');
-  const btn     = document.getElementById('ai-genera-btn');
-
-  if (!titolo) { showAlert('modal-alert', 'Inserisci prima il titolo per generare il testo.'); return; }
-
-  btn.disabled = true;
-  btn.textContent = 'Generazione…';
-  status.textContent = 'Generazione in corso…';
-
-  try {
-    const data = await dashFetch('/ai/genera-testo', {
-      method: 'POST',
-      body: JSON.stringify({ sezione, titolo, contesto: contesto || '' })
-    });
-    document.getElementById('c-corpo').value = data.testo;
-    status.innerHTML = '<span style="color:#2D6A4F;">Testo generato! Puoi modificarlo liberamente.</span>';
-  } catch (e) {
-    if (e.message.includes('non configurata')) {
-      status.innerHTML = '<span style="color:#888;">Funzione AI non attiva. Aggiungi <code>ANTHROPIC_API_KEY</code> nel file <code>.env</code>.</span>';
-    } else {
-      status.innerHTML = `<span style="color:var(--rosso);">${esc(e.message)}</span>`;
-    }
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Genera con AI';
-  }
-}
-
-async function analizzaImmagineAI() {
-  const url    = document.getElementById('ai-img-url').value.trim();
-  const titolo = document.getElementById('c-titolo').value.trim();
-  const status = document.getElementById('ai-status');
-  if (!url) { showAlert('modal-alert', 'Inserisci l\'URL dell\'immagine da analizzare.'); return; }
-
-  status.textContent = 'Analisi in corso…';
-  try {
-    const data = await dashFetch('/ai/analizza-immagine', {
-      method: 'POST',
-      body: JSON.stringify({ immagine_url: url, titolo })
-    });
-    document.getElementById('c-corpo').value = data.testo;
-    status.innerHTML = '<span style="color:#2D6A4F;">Testo generato dall\'analisi! Puoi modificarlo.</span>';
-  } catch (e) {
-    status.innerHTML = `<span style="color:var(--rosso);">${esc(e.message)}</span>`;
-  }
-}
-
-window.generaTestoAI = generaTestoAI;
-window.analizzaImmagineAI = analizzaImmagineAI;
 window.openModal = openModal;
 window.closeModal = closeModal;
 window.editContenuto = editContenuto;
