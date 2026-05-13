@@ -58,7 +58,7 @@
     <div class="section-header" data-animate>
       <div style="display:inline-block;background:var(--verde);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.3rem .85rem;border-radius:20px;margin-bottom:.9rem;">Gli Istituti Alberghieri</div>
       <h2>I percorsi degli Istituti</h2>
-      <p>Ogni istituto alberghiero contribuisce con contenuti originali in cinque sezioni tematiche</p>
+      <p>Ogni istituto alberghiero contribuisce con contenuti originali in sei sezioni tematiche</p>
       <div class="section-line"></div>
     </div>
     <div class="grid-3" data-stagger>
@@ -139,6 +139,22 @@
         </div>
         <div class="piatto-footer">
           <span>Calendario interattivo</span>
+          <span class="btn btn-verde btn-sm">Esplora &rarr;</span>
+        </div>
+      </a>
+      <a href="/istituti.html?sezione=leggende" class="piatto-card" style="text-decoration:none;color:inherit;">
+        <div class="piatto-img food-card-leggende piatto-img-placeholder" id="pcard-leggende" data-bg style="position:relative;overflow:hidden;">
+          <div class="piatto-img-overlay">
+            <div class="piatto-img-tag">Storie &amp; Leggende</div>
+            <h3 class="piatto-img-title">Storie e leggende della cucina italiana</h3>
+            <span class="piatto-img-cta">Scopri le leggende &rarr;</span>
+          </div>
+        </div>
+        <div class="piatto-body">
+          <p class="piatto-desc">Ricerca incrociata con AI delle leggende di un piatto, interviste etnografiche sul campo e narrazione tramite immagini, testi e video.</p>
+        </div>
+        <div class="piatto-footer">
+          <span>Ricerca etnografica + AI</span>
           <span class="btn btn-verde btn-sm">Esplora &rarr;</span>
         </div>
       </a>
@@ -335,6 +351,7 @@
         <li><a href="/istituti.html?sezione=storie">Storie Culinarie</a></li>
         <li><a href="/istituti.html?sezione=arte">Arte &amp; Cucina</a></li>
         <li><a href="/istituti.html?sezione=stagionalita">AI &amp; Stagionalità</a></li>
+        <li><a href="/istituti.html?sezione=leggende">Storie &amp; Leggende</a></li>
       </ul>
     </div>
     <div class="footer-links">
@@ -415,13 +432,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadUnsplashImage('tema', 'storie',     document.getElementById('pcard-storie'));
   loadUnsplashImage('tema', 'arte',         document.getElementById('pcard-arte'));
   loadUnsplashImage('tema', 'stagionalita', document.getElementById('pcard-stagionalita'));
+  loadUnsplashImage('tema', 'leggende',     document.getElementById('pcard-leggende'));
 
   // Contenuti in evidenza
   try {
     const contenuti = await apiFetch('/contenuti/pubblico?limit=6');
     const grid = document.getElementById('contenuti-evidenza');
-    const sezLabel = { artusi:'A Scuola da Artusi', campanello:'Cucina del Campanello', storie:'Storie Culinarie', arte:'Arte & Cucina', stagionalita:'AI & Stagionalità', generale:'Generale' };
-    const gradients = { artusi:'linear-gradient(145deg,#1B4332,#2D6A4F)', campanello:'linear-gradient(145deg,#7a4a1e,#a0622a)', storie:'linear-gradient(145deg,#8B1a1a,#C44B2F)', arte:'linear-gradient(145deg,#4a1a6b,#8B3a9E)', stagionalita:'linear-gradient(145deg,#0d5c63,#12a4b0)', generale:'linear-gradient(145deg,#1565C0,#42a5f5)' };
+    const sezLabel = { artusi:'A Scuola da Artusi', campanello:'Cucina del Campanello', storie:'Storie Culinarie', arte:'Arte & Cucina', stagionalita:'AI & Stagionalità', leggende:'Storie & Leggende', generale:'Generale' };
+    const gradients = { artusi:'linear-gradient(145deg,#1B4332,#2D6A4F)', campanello:'linear-gradient(145deg,#7a4a1e,#a0622a)', storie:'linear-gradient(145deg,#8B1a1a,#C44B2F)', arte:'linear-gradient(145deg,#4a1a6b,#8B3a9E)', stagionalita:'linear-gradient(145deg,#0d5c63,#12a4b0)', leggende:'linear-gradient(145deg,#5c3d0a,#a0722a)', generale:'linear-gradient(145deg,#1565C0,#42a5f5)' };
     if (!contenuti.length) {
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><p>I contenuti saranno disponibili a breve.</p></div>`;
     } else {

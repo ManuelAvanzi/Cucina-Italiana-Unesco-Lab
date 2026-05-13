@@ -47,7 +47,7 @@ function initDatabase() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       istituto_id INTEGER NOT NULL,
       tipo TEXT NOT NULL CHECK(tipo IN ('testo','immagine','video','ricetta')),
-      sezione TEXT NOT NULL CHECK(sezione IN ('artusi','campanello','storie','generale','arte','stagionalita')),
+      sezione TEXT NOT NULL CHECK(sezione IN ('artusi','campanello','storie','generale','arte','stagionalita','leggende')),
       titolo TEXT NOT NULL,
       corpo TEXT,
       media_url TEXT,
@@ -93,13 +93,13 @@ function initDatabase() {
 
   // Aggiunge sezioni 'arte' e 'stagionalita' al CHECK constraint di contenuti (ricrea la tabella se necessario)
   const contenutiSchema = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='contenuti'").get();
-  if (contenutiSchema && !contenutiSchema.sql.includes("'stagionalita'")) {
+  if (contenutiSchema && !contenutiSchema.sql.includes("'leggende'")) {
     db.exec(`
       CREATE TABLE contenuti_new (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         istituto_id INTEGER NOT NULL,
         tipo TEXT NOT NULL CHECK(tipo IN ('testo','immagine','video','ricetta')),
-        sezione TEXT NOT NULL CHECK(sezione IN ('artusi','campanello','storie','generale','arte','stagionalita')),
+        sezione TEXT NOT NULL CHECK(sezione IN ('artusi','campanello','storie','generale','arte','stagionalita','leggende')),
         titolo TEXT NOT NULL,
         corpo TEXT,
         media_url TEXT,
@@ -114,7 +114,7 @@ function initDatabase() {
       DROP TABLE contenuti;
       ALTER TABLE contenuti_new RENAME TO contenuti;
     `);
-    console.log('Migration: aggiunte sezioni arte e stagionalita al CHECK constraint di contenuti.');
+    console.log('Migration: aggiunte sezioni arte, stagionalita e leggende al CHECK constraint di contenuti.');
   }
 
   // Seed admin account

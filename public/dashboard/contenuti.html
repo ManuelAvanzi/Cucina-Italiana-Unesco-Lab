@@ -50,6 +50,7 @@
             <button class="section-tab" data-s="storie">Storie</button>
             <button class="section-tab" data-s="arte">Arte</button>
             <button class="section-tab" data-s="stagionalita">Stagionalità</button>
+            <button class="section-tab" data-s="leggende">Leggende</button>
             <button class="section-tab" data-s="generale">Generale</button>
           </div>
         </div>
@@ -103,6 +104,7 @@
             <option value="storie">Storie Culinarie</option>
             <option value="arte">Arte italiana e cucina italiana</option>
             <option value="stagionalita">AI e Stagionalità</option>
+            <option value="leggende">Storie e leggende della cucina italiana</option>
             <option value="generale">Generale</option>
           </select>
         </div>
@@ -200,7 +202,7 @@ async function loadContenuti() {
 function renderTable() {
   const filtered = currentSezione === 'all' ? allContenuti : allContenuti.filter(c => c.sezione === currentSezione);
   document.getElementById('contenuti-count').textContent = `(${filtered.length})`;
-  const sezioneLabel = { artusi:'Artusi', campanello:'Campanello', storie:'Storie', arte:'Arte', stagionalita:'Stagionalità', generale:'Generale' };
+  const sezioneLabel = { artusi:'Artusi', campanello:'Campanello', storie:'Storie', arte:'Arte', stagionalita:'Stagionalità', leggende:'Leggende', generale:'Generale' };
   const tipoIcon = { testo:'', ricetta:'', immagine:'', video:'' };
   const tbody = document.getElementById('contenuti-tbody');
   if (!filtered.length) {
