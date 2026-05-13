@@ -47,7 +47,7 @@ function initDatabase() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       istituto_id INTEGER NOT NULL,
       tipo TEXT NOT NULL CHECK(tipo IN ('testo','immagine','video','ricetta')),
-      sezione TEXT NOT NULL CHECK(sezione IN ('artusi','campanello','storie','generale')),
+      sezione TEXT NOT NULL CHECK(sezione IN ('artusi','campanello','storie','generale','arte')),
       titolo TEXT NOT NULL,
       corpo TEXT,
       media_url TEXT,
@@ -89,6 +89,32 @@ function initDatabase() {
   const existingCols = db.prepare("PRAGMA table_info(istituti)").all().map(c => c.name);
   if (!existingCols.includes('cover_url')) {
     db.prepare("ALTER TABLE istituti ADD COLUMN cover_url TEXT").run();
+  }
+
+  // Aggiunge sezione 'arte' al CHECK constraint di contenuti (ricrea la tabella se necessario)
+  const contenutiSchema = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='contenuti'").get();
+  if (contenutiSchema && !contenutiSchema.sql.includes("'arte'")) {
+    db.exec(`
+      CREATE TABLE contenuti_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        istituto_id INTEGER NOT NULL,
+        tipo TEXT NOT NULL CHECK(tipo IN ('testo','immagine','video','ricetta')),
+        sezione TEXT NOT NULL CHECK(sezione IN ('artusi','campanello','storie','generale','arte')),
+        titolo TEXT NOT NULL,
+        corpo TEXT,
+        media_url TEXT,
+        youtube_id TEXT,
+        pubblicato INTEGER DEFAULT 0,
+        ordine INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (istituto_id) REFERENCES istituti(id) ON DELETE CASCADE
+      );
+      INSERT INTO contenuti_new SELECT * FROM contenuti;
+      DROP TABLE contenuti;
+      ALTER TABLE contenuti_new RENAME TO contenuti;
+    `);
+    console.log('Migration: aggiunta sezione arte al CHECK constraint di contenuti.');
   }
 
   // Seed admin account

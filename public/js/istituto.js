@@ -118,13 +118,14 @@ function renderIstituto(data) {
   }
 
   // Organize content by section
-  const sezioni = { artusi: [], campanello: [], storie: [], generale: [] };
+  const sezioni = { artusi: [], campanello: [], storie: [], arte: [], generale: [] };
   (data.contenuti || []).forEach(c => { if (sezioni[c.sezione]) sezioni[c.sezione].push(c); });
 
   // Render content tabs
   renderSezione('artusi', sezioni.artusi, isOwner);
   renderSezione('campanello', sezioni.campanello, isOwner);
   renderSezione('storie', sezioni.storie, isOwner);
+  renderSezione('arte', sezioni.arte, isOwner);
   renderSezione('generale', sezioni.generale, isOwner);
 
   // Render video tab
@@ -132,7 +133,7 @@ function renderIstituto(data) {
   renderVideoTab(videos);
 
   // Show/hide tab buttons based on content
-  ['artusi','campanello','storie','generale'].forEach(s => {
+  ['artusi','campanello','storie','arte','generale'].forEach(s => {
     const btn = document.querySelector(`[data-tab="${s}"]`);
     if (btn && !sezioni[s].length) btn.style.display = 'none';
   });
@@ -297,12 +298,14 @@ async function initIstitutiList() {
   const sezioneLabels = {
     artusi: 'A Scuola da Artusi',
     campanello: 'La Cucina del Campanello',
-    storie: 'Storie Culinarie'
+    storie: 'Storie Culinarie',
+    arte: 'Arte italiana e cucina italiana'
   };
   const sezioneDescs = {
     artusi: 'Istituti con ricette e video ispirati al trattato di Pellegrino Artusi.',
     campanello: 'Istituti con racconti e varianti familiari della cucina locale.',
-    storie: 'Istituti che documentano la storia e le tradizioni culinarie del territorio.'
+    storie: 'Istituti che documentano la storia e le tradizioni culinarie del territorio.',
+    arte: 'Istituti che rigenerano scene storiche di prodotti tipici, piatti e convivi da immagini d\'epoca.'
   };
 
   // Aggiorna titolo e descrizione hero se sezione attiva

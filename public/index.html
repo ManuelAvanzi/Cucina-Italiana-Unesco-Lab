@@ -58,7 +58,7 @@
     <div class="section-header" data-animate>
       <div style="display:inline-block;background:var(--verde);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.3rem .85rem;border-radius:20px;margin-bottom:.9rem;">Gli Istituti Alberghieri</div>
       <h2>I percorsi degli Istituti</h2>
-      <p>Ogni istituto alberghiero contribuisce con contenuti originali in tre sezioni tematiche</p>
+      <p>Ogni istituto alberghiero contribuisce con contenuti originali in quattro sezioni tematiche</p>
       <div class="section-line"></div>
     </div>
     <div class="grid-3" data-stagger>
@@ -106,7 +106,23 @@
           <p class="piatto-desc">Ricostruzione storica della cucina italiana attraverso un approccio storytelling. AI per elaborare contenuti da immagini storiche.</p>
         </div>
         <div class="piatto-footer">
-          <span><span class="ai-badge">AI</span> Analisi immagini</span>
+          <span>Storytelling</span>
+          <span class="btn btn-verde btn-sm">Esplora &rarr;</span>
+        </div>
+      </a>
+      <a href="/istituti.html?sezione=arte" class="piatto-card" style="text-decoration:none;color:inherit;">
+        <div class="piatto-img food-card-arte piatto-img-placeholder" id="pcard-arte" data-bg style="position:relative;overflow:hidden;">
+          <div class="piatto-img-overlay">
+            <div class="piatto-img-tag">Regenerative Art</div>
+            <h3 class="piatto-img-title">Arte &amp; Cucina Italiana</h3>
+            <span class="piatto-img-cta">Scopri le opere &rarr;</span>
+          </div>
+        </div>
+        <div class="piatto-body">
+          <p class="piatto-desc">Rigenerazione di scene storiche di prodotti tipici, piatti e convivi da immagini d'epoca. Arte e storia culinaria a confronto.</p>
+        </div>
+        <div class="piatto-footer">
+          <span>Regenerative Art &amp; History</span>
           <span class="btn btn-verde btn-sm">Esplora &rarr;</span>
         </div>
       </a>
@@ -298,9 +314,10 @@
     <div class="footer-links">
       <h4>Sezioni Istituto</h4>
       <ul>
-        <li><a href="/istituti.html">A Scuola da Artusi</a></li>
-        <li><a href="/istituti.html">Cucina del Campanello</a></li>
-        <li><a href="/istituti.html">Storie Culinarie</a></li>
+        <li><a href="/istituti.html?sezione=artusi">A Scuola da Artusi</a></li>
+        <li><a href="/istituti.html?sezione=campanello">Cucina del Campanello</a></li>
+        <li><a href="/istituti.html?sezione=storie">Storie Culinarie</a></li>
+        <li><a href="/istituti.html?sezione=arte">Arte &amp; Cucina</a></li>
       </ul>
     </div>
     <div class="footer-links">
@@ -379,13 +396,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadUnsplashImage('tema', 'artusi',     document.getElementById('pcard-artusi'));
   loadUnsplashImage('tema', 'campanello', document.getElementById('pcard-campanello'));
   loadUnsplashImage('tema', 'storie',     document.getElementById('pcard-storie'));
+  loadUnsplashImage('tema', 'arte',       document.getElementById('pcard-arte'));
 
   // Contenuti in evidenza
   try {
     const contenuti = await apiFetch('/contenuti/pubblico?limit=6');
     const grid = document.getElementById('contenuti-evidenza');
-    const sezLabel = { artusi:'A Scuola da Artusi', campanello:'Cucina del Campanello', storie:'Storie Culinarie', generale:'Generale' };
-    const gradients = { artusi:'linear-gradient(145deg,#1B4332,#2D6A4F)', campanello:'linear-gradient(145deg,#7a4a1e,#a0622a)', storie:'linear-gradient(145deg,#8B1a1a,#C44B2F)', generale:'linear-gradient(145deg,#1565C0,#42a5f5)' };
+    const sezLabel = { artusi:'A Scuola da Artusi', campanello:'Cucina del Campanello', storie:'Storie Culinarie', arte:'Arte & Cucina', generale:'Generale' };
+    const gradients = { artusi:'linear-gradient(145deg,#1B4332,#2D6A4F)', campanello:'linear-gradient(145deg,#7a4a1e,#a0622a)', storie:'linear-gradient(145deg,#8B1a1a,#C44B2F)', arte:'linear-gradient(145deg,#4a1a6b,#8B3a9E)', generale:'linear-gradient(145deg,#1565C0,#42a5f5)' };
     if (!contenuti.length) {
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><p>I contenuti saranno disponibili a breve.</p></div>`;
     } else {
