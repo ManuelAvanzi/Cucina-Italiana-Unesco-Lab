@@ -118,7 +118,7 @@ function renderIstituto(data) {
   }
 
   // Organize content by section
-  const sezioni = { artusi: [], campanello: [], storie: [], arte: [], generale: [] };
+  const sezioni = { artusi: [], campanello: [], storie: [], arte: [], stagionalita: [], generale: [] };
   (data.contenuti || []).forEach(c => { if (sezioni[c.sezione]) sezioni[c.sezione].push(c); });
 
   // Render content tabs
@@ -126,6 +126,7 @@ function renderIstituto(data) {
   renderSezione('campanello', sezioni.campanello, isOwner);
   renderSezione('storie', sezioni.storie, isOwner);
   renderSezione('arte', sezioni.arte, isOwner);
+  renderSezione('stagionalita', sezioni.stagionalita, isOwner);
   renderSezione('generale', sezioni.generale, isOwner);
 
   // Render video tab
@@ -133,7 +134,7 @@ function renderIstituto(data) {
   renderVideoTab(videos);
 
   // Show/hide tab buttons based on content
-  ['artusi','campanello','storie','arte','generale'].forEach(s => {
+  ['artusi','campanello','storie','arte','stagionalita','generale'].forEach(s => {
     const btn = document.querySelector(`[data-tab="${s}"]`);
     if (btn && !sezioni[s].length) btn.style.display = 'none';
   });
@@ -299,13 +300,15 @@ async function initIstitutiList() {
     artusi: 'A Scuola da Artusi',
     campanello: 'La Cucina del Campanello',
     storie: 'Storie Culinarie',
-    arte: 'Arte italiana e cucina italiana'
+    arte: 'Arte italiana e cucina italiana',
+    stagionalita: 'AI e Stagionalità'
   };
   const sezioneDescs = {
     artusi: 'Istituti con ricette e video ispirati al trattato di Pellegrino Artusi.',
     campanello: 'Istituti con racconti e varianti familiari della cucina locale.',
     storie: 'Istituti che documentano la storia e le tradizioni culinarie del territorio.',
-    arte: 'Istituti che rigenerano scene storiche di prodotti tipici, piatti e convivi da immagini d\'epoca.'
+    arte: 'Istituti che rigenerano scene storiche di prodotti tipici, piatti e convivi da immagini d\'epoca.',
+    stagionalita: 'Istituti che mappano ingredienti, sagre e ricette stagionali con supporto AI.'
   };
 
   // Aggiorna titolo e descrizione hero se sezione attiva
