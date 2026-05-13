@@ -118,7 +118,7 @@ function renderIstituto(data) {
   }
 
   // Organize content by section
-  const sezioni = { artusi: [], campanello: [], storie: [], arte: [], stagionalita: [], leggende: [], generale: [] };
+  const sezioni = { artusi: [], campanello: [], storie: [], arte: [], stagionalita: [], leggende: [], letteratura: [], antiquarium: [], paesaggio: [], generale: [] };
   (data.contenuti || []).forEach(c => { if (sezioni[c.sezione]) sezioni[c.sezione].push(c); });
 
   // Render content tabs
@@ -128,6 +128,9 @@ function renderIstituto(data) {
   renderSezione('arte', sezioni.arte, isOwner);
   renderSezione('stagionalita', sezioni.stagionalita, isOwner);
   renderSezione('leggende', sezioni.leggende, isOwner);
+  renderSezione('letteratura', sezioni.letteratura, isOwner);
+  renderSezione('antiquarium', sezioni.antiquarium, isOwner);
+  renderSezione('paesaggio', sezioni.paesaggio, isOwner);
   renderSezione('generale', sezioni.generale, isOwner);
 
   // Render video tab
@@ -135,7 +138,7 @@ function renderIstituto(data) {
   renderVideoTab(videos);
 
   // Show/hide tab buttons based on content
-  ['artusi','campanello','storie','arte','stagionalita','leggende','generale'].forEach(s => {
+  ['artusi','campanello','storie','arte','stagionalita','leggende','letteratura','antiquarium','paesaggio','generale'].forEach(s => {
     const btn = document.querySelector(`[data-tab="${s}"]`);
     if (btn && !sezioni[s].length) btn.style.display = 'none';
   });
@@ -303,7 +306,10 @@ async function initIstitutiList() {
     storie: 'Storie Culinarie',
     arte: 'Arte italiana e cucina italiana',
     stagionalita: 'AI e Stagionalità',
-    leggende: 'Storie e leggende della cucina italiana'
+    leggende: 'Storie e leggende della cucina italiana',
+    letteratura: 'Cucina italiana nella letteratura',
+    antiquarium: 'Antiquarium virtuale',
+    paesaggio: 'Paesaggio della cucina'
   };
   const sezioneDescs = {
     artusi: 'Istituti con ricette e video ispirati al trattato di Pellegrino Artusi.',
@@ -311,7 +317,10 @@ async function initIstitutiList() {
     storie: 'Istituti che documentano la storia e le tradizioni culinarie del territorio.',
     arte: 'Istituti che rigenerano scene storiche di prodotti tipici, piatti e convivi da immagini d\'epoca.',
     stagionalita: 'Istituti che mappano ingredienti, sagre e ricette stagionali con supporto AI.',
-    leggende: 'Istituti che ricercano e narrano storie e leggende legate ai piatti della tradizione italiana.'
+    leggende: 'Istituti che ricercano e narrano storie e leggende legate ai piatti della tradizione italiana.',
+    letteratura: 'Ricerca incrociata con AI di fonti letterarie sulla cucina italiana e interviste narrative.',
+    antiquarium: 'Identificazione con AI di strumenti culinari tradizionali con schede tecniche etnografiche.',
+    paesaggio: 'Ricerca del paesaggio agrario italiano e generazione di scene culinarie nel loro contesto originale.'
   };
 
   // Aggiorna titolo e descrizione hero se sezione attiva
