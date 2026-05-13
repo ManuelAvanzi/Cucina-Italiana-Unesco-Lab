@@ -204,6 +204,20 @@ router.put('/admin/:id', authAdmin, (req, res) => {
   }
 });
 
+// PUT /api/istituti/admin/:id/reset-password
+router.put('/admin/:id/reset-password', authAdmin, (req, res) => {
+  const { newPassword } = req.body;
+  if (!newPassword || newPassword.length < 8) {
+    return res.status(400).json({ error: 'La nuova password deve essere di almeno 8 caratteri' });
+  }
+  const db = getDb();
+  const istituto = db.prepare('SELECT id FROM istituti WHERE id=?').get(req.params.id);
+  if (!istituto) return res.status(404).json({ error: 'Istituto non trovato' });
+  const hash = bcrypt.hashSync(newPassword, 12);
+  db.prepare('UPDATE istituti SET password=? WHERE id=?').run(hash, req.params.id);
+  res.json({ success: true });
+});
+
 // PUT /api/istituti/admin/:id/toggle
 router.put('/admin/:id/toggle', authAdmin, (req, res) => {
   const db = getDb();

@@ -204,6 +204,31 @@
   </div>
 </div>
 
+<!-- MODAL RESET PASSWORD -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <h3>Reset Password Istituto</h3>
+      <button class="modal-close" onclick="closeResetModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div id="reset-alert"></div>
+      <input type="hidden" id="r-id">
+      <p style="font-size:.88rem;color:#555;margin-bottom:1.25rem;">
+        Stai resettando la password di: <strong id="r-username"></strong>
+      </p>
+      <div class="form-group">
+        <label>Nuova password *</label>
+        <input type="text" id="r-password" class="form-control" placeholder="Minimo 8 caratteri" minlength="8">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeResetModal()">Annulla</button>
+      <button class="btn btn-primary" id="reset-save-btn" onclick="confirmResetPassword()">Imposta password</button>
+    </div>
+  </div>
+</div>
+
 <script src="/admin/js/admin.js"></script>
 <script>
 let allIstituti = [];
@@ -243,6 +268,7 @@ function renderTable(list) {
         <button class="btn btn-ghost btn-sm" onclick="editIstituto(${i.id})" title="Modifica">Modifica</button>
         <button class="btn btn-ghost btn-sm" onclick="toggleIstituto(${i.id}, ${i.active})" title="${i.active?'Disabilita':'Abilita'}">${i.active?'Disabilita':'Abilita'}</button>
         <a href="/istituto.html?id=${i.id}" target="_blank" class="btn btn-ghost btn-sm" title="Visualizza">Vedi</a>
+        <button class="btn btn-ghost btn-sm" onclick="openResetModal(${i.id}, '${esc(i.username)}')" title="Reset password" style="color:#c47a00;">Reset pwd</button>
         <button class="btn btn-ghost btn-sm" onclick="deleteIstituto(${i.id})" style="color:var(--rosso);" title="Elimina">Elimina</button>
       </div></td>
     </tr>`).join('');
@@ -350,6 +376,35 @@ async function saveEditIstituto() {
   finally { btn.disabled = false; btn.textContent = 'Salva modifiche'; }
 }
 
+function openResetModal(id, username) {
+  document.getElementById('r-id').value = id;
+  document.getElementById('r-username').textContent = username;
+  document.getElementById('r-password').value = '';
+  document.getElementById('reset-alert').innerHTML = '';
+  document.getElementById('reset-modal').classList.add('active');
+}
+function closeResetModal() { document.getElementById('reset-modal').classList.remove('active'); }
+
+async function confirmResetPassword() {
+  const btn = document.getElementById('reset-save-btn');
+  const id = document.getElementById('r-id').value;
+  const newPassword = document.getElementById('r-password').value;
+  if (!newPassword || newPassword.length < 8) {
+    showAlert('reset-alert', 'Inserisci una password di almeno 8 caratteri.');
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Aggiornamento…';
+  try {
+    await adminFetch(`/istituti/admin/${id}/reset-password`, {
+      method: 'PUT',
+      body: JSON.stringify({ newPassword })
+    });
+    closeResetModal();
+    showAlert('page-alert', 'Password aggiornata con successo!', 'success');
+  } catch (e) { showAlert('reset-alert', e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Imposta password'; }
+}
+
 window.openModal = openModal;
 window.closeModal = closeModal;
 window.createIstituto = createIstituto;
@@ -359,6 +414,9 @@ window.saveEditIstituto = saveEditIstituto;
 window.toggleIstituto = toggleIstituto;
 window.deleteIstituto = deleteIstituto;
 window.filterTable = filterTable;
+window.openResetModal = openResetModal;
+window.closeResetModal = closeResetModal;
+window.confirmResetPassword = confirmResetPassword;
 </script>
 </body>
 </html>
