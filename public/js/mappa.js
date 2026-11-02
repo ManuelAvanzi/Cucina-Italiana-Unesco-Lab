@@ -17,10 +17,23 @@ async function initMappa() {
     maxBoundsViscosity: 0.7
   });
 
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  // Sfondo: OpenStreetMap (gratuito, richiede un Referer valido) con riserva Esri
+  // se le tessere OSM vengono rifiutate (403 "Access blocked").
+  const osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    referrerPolicy: 'strict-origin-when-cross-origin',
     maxZoom: 16
   }).addTo(map);
+  let fallbackAttivo = false;
+  osmLayer.on('tileerror', () => {
+    if (fallbackAttivo) return;
+    fallbackAttivo = true;
+    map.removeLayer(osmLayer);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors',
+      maxZoom: 16
+    }).addTo(map);
+  });
 
   // Custom icon factory
   function createMarkerIcon(regione) {

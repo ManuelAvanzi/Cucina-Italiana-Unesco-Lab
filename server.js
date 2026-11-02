@@ -10,6 +10,8 @@ const PORT = process.env.PORT || 3000;
 
 // Security middleware
 app.use(helmet({
+  // OpenStreetMap rifiuta (403) le tessere richieste senza Referer: helmet di default mette no-referrer
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
@@ -17,7 +19,7 @@ app.use(helmet({
       scriptSrcAttr: ["'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "fonts.googleapis.com", "unpkg.com"],
       fontSrc: ["'self'", "fonts.gstatic.com", "cdn.jsdelivr.net"],
-      imgSrc: ["'self'", "data:", "*.openstreetmap.org", "*.tile.openstreetmap.org", "*.basemaps.cartocdn.com", "i.ytimg.com", "img.youtube.com", "images.unsplash.com", "plus.unsplash.com"],
+      imgSrc: ["'self'", "data:", "*.openstreetmap.org", "*.tile.openstreetmap.org", "*.basemaps.cartocdn.com", "server.arcgisonline.com", "i.ytimg.com", "img.youtube.com", "images.unsplash.com", "plus.unsplash.com"],
       frameSrc: ["'self'", "www.youtube.com", "www.youtube-nocookie.com"],
       connectSrc: ["'self'", "nominatim.openstreetmap.org", "*.basemaps.cartocdn.com"],
     }
